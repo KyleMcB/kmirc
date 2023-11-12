@@ -3,6 +3,8 @@ rootProject.name = "MyApplication"
 include(":androidApp")
 include(":shared")
 include(":desktopApp")
+include(":client-network:contracts")
+include(":client-network:implementations")
 
 pluginManagement {
     repositories {
