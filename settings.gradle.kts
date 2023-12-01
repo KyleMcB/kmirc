@@ -7,6 +7,7 @@ include(":client-network:contracts")
 include(":client-network:ktorImpl")
 include(":client-network:test-suite")
 include(":irc_entities")
+include(":irc_parser")
 
 pluginManagement {
     repositories {
