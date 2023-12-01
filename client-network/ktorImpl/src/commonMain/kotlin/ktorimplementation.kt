@@ -2,7 +2,6 @@ package com.xingpeds.kmirc.clientnetwork
 
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
-import io.ktor.util.cio.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -38,7 +37,8 @@ class SimpleSocketKtor(val socket: Socket) : SimpleSocket {
     override val incoming: SharedFlow<String> = _incoming
 }
 
-object KtorSocketFactory : SocketFactory {
+
+object KtorSocketFactory : Connect {
     override suspend fun invoke(address: Address, port: Port): ConnectionResult {
         val selectorManager = SelectorManager(Dispatchers.IO)
         val socket: Socket = aSocket(selectorManager).tcp().connect(address.hostAddress, 80)

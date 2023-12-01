@@ -4,7 +4,9 @@ include(":androidApp")
 include(":shared")
 include(":desktopApp")
 include(":client-network:contracts")
-include(":client-network:implementations")
+include(":client-network:ktorImpl")
+include(":client-network:test-suite")
+include(":irc_entities")
 
 pluginManagement {
     repositories {
@@ -31,7 +33,7 @@ pluginManagement {
 }
 
 plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version("0.4.0")
+    id("org.gradle.toolchains.foojay-resolver-convention") version ("0.4.0")
 }
 
 dependencyResolutionManagement {
