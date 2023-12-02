@@ -1,6 +1,11 @@
 package com.xingpeds.kmirc.entities
 
-data class IrcMessage(val prefix: IrcPrefix?, val command: IrcCommand, val params: IrcParams)
+data class IrcMessage(
+    val prefix: IrcPrefix?,
+    val command: IrcCommand,
+    val params: IrcParams,
+    val longParam: String? = null
+)
 
 enum class IrcCommand {
     PRIVMSG,  // Private message between users
@@ -20,4 +25,5 @@ data class IrcPrefix(
     val user: String?,    // The username of the user, optional
     val host: String?     // The host of the user, optional
 )
-typealias IrcParams = List<String>
+
+data class IrcParams(val params: List<String>, val longParam: String? = null)

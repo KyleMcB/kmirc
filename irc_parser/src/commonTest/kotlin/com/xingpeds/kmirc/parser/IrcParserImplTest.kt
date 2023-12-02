@@ -17,7 +17,7 @@ class IrcParserImplTest {
         asserter.assertEquals(actual = lines.size, expected = 1, message = "should only have one output line")
         assertEquals(actual = lines[0].command, expected = IrcCommand.PRIVMSG, message = "expecting a privmsg")
         assertEquals(
-            actual = lines[0].params[0],
+            actual = lines[0].params.params[0],
             expected = "#channel",
             message = "first param should be the destination"
         )

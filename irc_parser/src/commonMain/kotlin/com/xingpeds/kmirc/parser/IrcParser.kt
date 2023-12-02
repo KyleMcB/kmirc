@@ -54,10 +54,10 @@ class IrcParserImpl : IrcParser {
         val paramList = params[0].trim().split(" ")
         return if (longParam != null) {
             println("$paramList :$longParam")
-            paramList + longParam
+            IrcParams(paramList, longParam)
         } else {
             println(paramList)
-            paramList
+            IrcParams(paramList)
         }
     }
 
