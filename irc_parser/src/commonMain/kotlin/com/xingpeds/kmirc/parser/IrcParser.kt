@@ -7,6 +7,27 @@ import com.xingpeds.kmirc.entities.IrcPrefix
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
+
+interface IrcPacketMarshaller : (Flow<String>) -> Flow<String>
+
+fun IrcPacketMarshaller() = IrcPacketMarshallerImpl()
+class IrcPacketMarshallerImpl() : IrcPacketMarshaller {
+    override fun invoke(input: Flow<String>): Flow<String> = flow {
+        val buffer = StringBuilder()
+        input.collect { line ->
+            buffer.append(line)
+            // is "\r\n" in the buffer?
+            var index = buffer.indexOf("\r\n")
+            while (index > -1) {
+                val split = buffer.substring(0, index + 2)
+                emit(split)
+                buffer.delete(0, index + 2)
+                index = buffer.indexOf("\r\n")
+            }
+        }
+    }
+}
+
 interface IrcParser : (String) -> Flow<IrcMessage>
 
 fun IrcParser() = IrcParserImpl()
