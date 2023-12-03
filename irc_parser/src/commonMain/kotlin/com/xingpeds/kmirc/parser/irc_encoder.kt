@@ -8,7 +8,7 @@ fun encodeMessage(message: IrcMessage): String {
     val params = message.params
 
     return if (prefix != null)
-        ":$prefix"
+        "$prefix"
     else
         ""
 }

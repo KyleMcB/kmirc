@@ -22,4 +22,13 @@ class IrcParserImplTest {
             message = "first param should be the destination"
         )
     }
+
+    @Test
+    fun serialize() = runTest {
+        val line = ":NickName!~UserName@host.com PRIVMSG #channel :Hello how are you?\r\n"
+        val parser = IrcParser()
+        val entity = parser(line).toList()[0]
+        assertEquals(actual = entity.toString(), expected = line, message = "should be the same")
+
+    }
 }

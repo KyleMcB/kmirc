@@ -84,7 +84,7 @@ class IrcParserImpl : IrcParser {
                 val prefixPart = message.substring(1, endOfPrefix)
                 val parts = prefixPart.split("!", "@", limit = 3)
 
-                val nick = parts.getOrElse(0) { "" }
+                val nick = parts.getOrElse(0) { "" }.let { if (it[0] == ':') it.substring(1) else it }
                 val user = parts.elementAtOrNull(1)
                 val host = parts.elementAtOrNull(2)
 
