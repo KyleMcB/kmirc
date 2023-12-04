@@ -1,7 +1,7 @@
 package com.xingpeds.kmirc.entities
 
 data class IrcMessage(
-    val prefix: IrcPrefix?,
+    val prefix: IrcPrefix? = null,
     val command: IrcCommand,
     val params: IrcParams,
 ) {
