@@ -8,7 +8,7 @@ include(":client-network:ktorImpl")
 include(":client-network:test-suite")
 include(":irc_entities")
 include(":irc_parser")
-
+include(":irc_engine")
 pluginManagement {
     repositories {
         gradlePluginPortal()
