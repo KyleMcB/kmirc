@@ -5,7 +5,7 @@ data class IrcMessage(
     val command: IrcCommand,
     val params: IrcParams,
 ) {
-    override fun toString(): String {
+    fun toIRCString(): String {
         return if (prefix != null) {
             "$prefix $command $params\r\n"
         } else {
@@ -20,7 +20,7 @@ data class IrcPrefix(
     val host: String?     // The host of the user, optional
 
 ) {
-    override fun toString(): String {
+    fun toIRCString(): String {
         return if (user != null && host != null) {
             ":$nick!$user@$host"
         } else if (user != null) {
@@ -33,8 +33,8 @@ data class IrcPrefix(
     }
 }
 
-data class IrcParams(val params: List<String>, val longParam: String? = null) {
-    override fun toString(): String {
+data class IrcParams(val params: List<String> = emptyList(), val longParam: String? = null) {
+    fun toIRCString(): String {
         return if (longParam != null) {
             "${params.joinToString(" ")} :$longParam"
         } else {

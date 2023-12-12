@@ -4,7 +4,7 @@ import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcMessage
 import com.xingpeds.kmirc.entities.IrcParams
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.asserter
@@ -12,11 +12,12 @@ import kotlin.test.asserter
 class EngineTest {
     @Test
     fun ping() = runTest {
+        val stream = MutableSharedFlow<IrcMessage>()
         val testScope = this
         val completionSignal = CompletableDeferred<Unit>()
         val subject = Engine(
-            input = flowOf(IrcMessage(command = IrcCommand.PING, params = IrcParams(emptyList(), "ServerName"))),
-            output = { output ->
+            input = stream,
+            output = { output: IrcMessage ->
                 println("Engine sent message: $output")
                 asserter.assertEquals(
                     actual = output.command,
@@ -31,6 +32,12 @@ class EngineTest {
                 // test is finished here
                 completionSignal.complete(Unit)
             })
+        //flowOf(
+        // IrcMessage(command = IrcCommand.PING, params = IrcParams(emptyList(), "ServerName"))
+        // )
+        stream.emit(
+            IrcMessage(command = IrcCommand.PING, params = IrcParams(emptyList(), "ServerName"))
+        )
         // test needs to wait for the engine to finish
         completionSignal.await() // Wait for the signal
     }

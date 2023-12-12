@@ -8,8 +8,8 @@ data class IrcClientState(
     val user: MutableStateFlow<String> = MutableStateFlow(""),
     val hostname: MutableStateFlow<String> = MutableStateFlow(""),
     val serverInfo: MutableStateFlow<String> = MutableStateFlow(""),
-    val ircCommands: MutableStateFlow<List<IrcMessage>> = MutableStateFlow(listOf()),
-//    val channels: MutableStateFlow<List<ChannelInfo>>,
+    val ircCommands: MutableStateFlow<List<IrcMessage>> = MutableStateFlow(emptyList()),
+    val channels: MutableStateFlow<List<ChannelState>> = MutableStateFlow(emptyList()),
 //    val connectionStatus: MutableStateFlow<ConnectionStatus>,
     // Additional fields as needed
 )

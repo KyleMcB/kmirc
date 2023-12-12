@@ -2,27 +2,41 @@ package com.xingpeds.kmirc.engine
 
 import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcMessage
+import com.xingpeds.kmirc.entities.IrcParams
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class Engine(
-    val input: Flow<IrcMessage>,
-    val output: (IrcMessage) -> Unit,
+    val input: SharedFlow<IrcMessage>,
+    val output: suspend (IrcMessage) -> Unit,
     val state: IrcClientState = IrcClientState(),
     val scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
 ) {
     init {
+
         scope.launch {
 
             input.collect { message ->
                 println("Engine received message: $message")
                 state.addMessage(message)
-
-
             }
+        }
+        scope.launch {
+            startAutoPong()
+        }
+    }
+
+    suspend fun startAutoPong() {
+        input.filter { it.command == IrcCommand.PING }.collect {
+            println("autoping triggered")
+            println(it)
+            val ircMessage = IrcMessage(command = IrcCommand.PONG, params = IrcParams(longParam = it.params.longParam))
+            println("sending: $ircMessage")
+            output(ircMessage)
         }
     }
 }
@@ -212,10 +226,16 @@ private fun IrcClientState.join(message: IrcMessage) {
 //    :WiZ JOIN #Twilight_zone        ; JOIN message from WiZ
     // if the user is me then add this channel my list of channels
     // else add this user to a channel we are already in
-    
+    val channelName: String = message.params.params.getOrNull(0) ?: throw InvalidIRCline(message)
+    if (nick.value == message.prefix?.nick) {
+        channels.update { it + ChannelState(channelName) }
+    } else {
+
+    }
+
 }
 
-class InvalidIRCline(message: IrcMessage) : Exception(message = message.toString()) {
+class InvalidIRCline(message: IrcMessage) : Exception(message.toString()) {
 
 }
 
