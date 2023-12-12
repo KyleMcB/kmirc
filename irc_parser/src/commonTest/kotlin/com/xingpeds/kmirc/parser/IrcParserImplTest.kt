@@ -28,7 +28,7 @@ class IrcParserImplTest {
         val line = ":NickName!~UserName@host.com PRIVMSG #channel :Hello how are you?\r\n"
         val parser = IrcParser()
         val entity = parser(line).toList()[0]
-        assertEquals(actual = entity.toString(), expected = line, message = "should be the same")
+        assertEquals(actual = entity.toIRCString(), expected = line, message = "should be the same")
 
     }
 }

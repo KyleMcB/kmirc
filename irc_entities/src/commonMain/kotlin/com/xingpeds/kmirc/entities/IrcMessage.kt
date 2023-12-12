@@ -7,9 +7,9 @@ data class IrcMessage(
 ) {
     fun toIRCString(): String {
         return if (prefix != null) {
-            "$prefix $command $params\r\n"
+            "${prefix.toIRCString()} $command ${params.toIRCString()}\r\n"
         } else {
-            "$command $params\r\n"
+            "$command ${params.toIRCString()}\r\n"
         }
     }
 }
