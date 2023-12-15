@@ -13,16 +13,18 @@ import kotlinx.coroutines.launch
 class Engine(
     val input: SharedFlow<IrcMessage>,
     val output: suspend (IrcMessage) -> Unit,
-    val state: IrcClientState = IrcClientState(),
+    private val mutableState: MutableIrcClientState = MutableIrcClientState(),
     val scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
 ) {
+    val state: IrcClientState = mutableState
+
     init {
 
         scope.launch {
 
             input.collect { message ->
                 println("Engine received message: $message")
-                state.addMessage(message)
+                mutableState.addMessage(message)
             }
         }
         scope.launch {
@@ -41,11 +43,11 @@ class Engine(
     }
 }
 
-private fun IrcClientState.noImpl(message: IrcMessage) {
+private fun MutableIrcClientState.noImpl(message: IrcMessage) {
     println("message handler for ${message.command} not installed yet")
 }
 
-private fun IrcClientState.addMessage(message: IrcMessage) {
+private fun MutableIrcClientState.addMessage(message: IrcMessage) {
 
     this.ircCommands.update { it + message }
     when (message.command) {
@@ -220,7 +222,7 @@ private fun IrcClientState.addMessage(message: IrcMessage) {
 
 }
 
-private fun IrcClientState.join(message: IrcMessage) {
+private fun MutableIrcClientState.join(message: IrcMessage) {
 // example
 //
 //    :WiZ JOIN #Twilight_zone        ; JOIN message from WiZ
