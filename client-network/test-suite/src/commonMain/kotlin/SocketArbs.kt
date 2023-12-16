@@ -1,5 +1,6 @@
 package com.xingpeds.kmirc.clientnetwork
 
+import SocketClosedException
 import io.kotest.property.Arb
 import io.kotest.property.RandomSource
 import io.kotest.property.arbitrary.arbitrary
@@ -28,7 +29,7 @@ class FakeSocket(val scope: CoroutineScope, val rs: RandomSource) : SimpleSocket
 
     override suspend fun write(data: String) {
         if (closed.get()) {
-            throw SimpleSocket.SocketClosedException()
+            throw SocketClosedException()
         }
     }
 

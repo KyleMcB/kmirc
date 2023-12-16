@@ -47,17 +47,30 @@ private fun MutableIrcClientState.noImpl(message: IrcMessage) {
     println("message handler for ${message.command} not installed yet")
 }
 
+/**
+ * Adds an IRC message to the client's state.
+ *
+ * @param message The IRC message to add.
+ */
 private fun MutableIrcClientState.addMessage(message: IrcMessage) {
 
     this.ircCommands.update { it + message }
     when (message.command) {
+        // used to find the admin of a server. state change only if we track server admins
         IrcCommand.ADMIN -> noImpl(message)
+        // used to set an auto reply. might track away state. not now
         IrcCommand.AWAY -> noImpl(message)
+        // server to server message, not state needed
         IrcCommand.CONNECT -> noImpl(message)
+        // report an error to an operator. no state needed for now
         IrcCommand.ERROR -> noImpl(message)
+        // get info about the server, no state needed
         IrcCommand.INFO -> noImpl(message)
+        // send an invite to user(s) might want to track this, but not needed
         IrcCommand.INVITE -> noImpl(message)
+        // check is a user is on. no state needed
         IrcCommand.ISON -> noImpl(message)
+        // definitely need to track self state and other user state
         IrcCommand.JOIN -> join(message)
         IrcCommand.KICK -> noImpl(message)
         IrcCommand.KILL -> noImpl(message)

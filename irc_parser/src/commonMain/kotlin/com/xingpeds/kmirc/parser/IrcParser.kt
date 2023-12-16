@@ -53,10 +53,8 @@ class IrcParserImpl : IrcParser {
         val longParam = if (params.size > 1) params[1] else null
         val paramList = params[0].trim().split(" ")
         return if (longParam != null) {
-            println("$paramList :$longParam")
             IrcParams(paramList, longParam)
         } else {
-            println(paramList)
             IrcParams(paramList)
         }
     }
@@ -73,7 +71,6 @@ class IrcParserImpl : IrcParser {
         }
 
         val pair = Pair(command, remainingString)
-        println("command $command")
         return pair
     }
 
@@ -89,10 +86,8 @@ class IrcParserImpl : IrcParser {
                 val host = parts.elementAtOrNull(2)
 
                 val ircPrefix = IrcPrefix(nick, user, host)
-                println("ircPrefix $ircPrefix")
 
                 val remainder = message.substring(endOfPrefix).trimStart()
-                println("remainder ($remainder)")
                 return ircPrefix to remainder
             }
         }

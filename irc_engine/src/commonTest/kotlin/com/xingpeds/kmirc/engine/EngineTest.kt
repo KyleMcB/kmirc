@@ -41,4 +41,31 @@ class EngineTest {
         // test needs to wait for the engine to finish
         completionSignal.await() // Wait for the signal
     }
+
+    @Test
+    fun selfJoin() = runTest {
+        val stream = MutableSharedFlow<IrcMessage>()
+        val testScope = this
+        val completionSignal = CompletableDeferred<Unit>()
+        val subject = Engine(
+            input = stream,
+            output = { output: IrcMessage ->
+                println("Engine sent message: $output")
+                asserter.assertEquals(
+                    actual = output.command,
+                    expected = IrcCommand.JOIN,
+                    message = "Command should be JOIN"
+                )
+                asserter.assertEquals(
+                    actual = output.params.longParam,
+                    expected = "#channel",
+                    message = "Long param should be #channel"
+                )
+                completionSignal.complete(Unit)
+            })
+        stream.emit(
+            IrcMessage(command = IrcCommand.JOIN, params = IrcParams(emptyList(), "#channel"))
+        )
+        completionSignal.await()
+    }
 }

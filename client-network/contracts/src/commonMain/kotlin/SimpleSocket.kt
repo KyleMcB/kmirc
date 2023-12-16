@@ -9,8 +9,8 @@ interface SimpleSocket : Closeable {
 
     val incoming: SharedFlow<String>
 
-    class SocketClosedException : Exception()
 }
+
 
 interface Address {
     val hostAddress: String
