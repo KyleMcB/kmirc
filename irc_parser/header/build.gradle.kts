@@ -12,7 +12,7 @@ kotlin {
             // Dependencies common across all platforms
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-                implementation(project(mapOf("path" to ":irc_entities")))
+                implementation(project(":irc_entities"))
             }
         }
         val commonTest by getting {

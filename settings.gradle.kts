@@ -5,7 +5,8 @@ rootProject.name = "MyApplication"
 //include(":desktopApp")
 include(":client-network:header")
 include(":client-network:ktorImpl")
-//include(":irc_entities")
+include(":irc_entities")
+include(":irc_parser:header")
 //include(":irc_parser")
 //include(":irc_engine")
 pluginManagement {
