@@ -1,14 +1,13 @@
 rootProject.name = "MyApplication"
 
-include(":androidApp")
-include(":shared")
-include(":desktopApp")
-include(":client-network:contracts")
+//include(":androidApp")
+//include(":shared")
+//include(":desktopApp")
+include(":client-network:header")
 include(":client-network:ktorImpl")
-include(":client-network:test-suite")
-include(":irc_entities")
-include(":irc_parser")
-include(":irc_engine")
+//include(":irc_entities")
+//include(":irc_parser")
+//include(":irc_engine")
 pluginManagement {
     repositories {
         gradlePluginPortal()

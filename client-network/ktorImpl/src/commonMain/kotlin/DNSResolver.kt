@@ -1,6 +1,9 @@
 package com.xingpeds.kmirc.clientnetwork
 
-expect object DNSResolver : DNSLookupFun {
-    override fun invoke(hostname: String): List<Address>
+fun DNSLookupFun() = DnsResolverAdapter
 
+object DnsResolverAdapter : DNSLookupFun {
+    override fun invoke(hostname: String): List<Address> = dnsResolver(hostname)
 }
+
+expect fun dnsResolver(hostname: String): List<Address>

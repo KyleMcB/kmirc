@@ -11,19 +11,29 @@ interface SimpleSocket : Closeable {
 
 }
 
-
 interface Address {
     val hostAddress: String
 }
-typealias Port = Long
 
+typealias Port = Int
+
+/**
+ * domain result type when trying to connect to another computer.
+ * Basic success/failure
+ * Success -> you have an open socket
+ * Failure -> connection refused/ or something else went wrong
+ */
 sealed class ConnectionResult {
     data class Success(val connection: SimpleSocket) : ConnectionResult()
     sealed class Failure : ConnectionResult() {
         data object UndefinedError : Failure()
+        data object ConnectionRefused : Failure()
     }
 }
 
+/**
+ * attempt to connect to an address at a port
+ */
 fun interface Connect : suspend (Address, Port) -> ConnectionResult
 
 /**

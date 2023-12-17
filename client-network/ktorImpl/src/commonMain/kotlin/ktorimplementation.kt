@@ -8,16 +8,17 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import java.net.ConnectException
 
-
-class SimpleSocketKtor(val socket: Socket) : SimpleSocket {
+class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket {
     init {
         val readChannel = socket.openReadChannel()
         socket.launch {
-            while (true) {
+            while (!readChannel.isClosedForRead) {
                 val line: String = readChannel.readUTF8Line() ?: continue
                 _incoming.emit(line)
             }
+            close()
         }
     }
 
@@ -33,7 +34,7 @@ class SimpleSocketKtor(val socket: Socket) : SimpleSocket {
         sendChannel.writeStringUtf8(data)
     }
 
-    val _incoming = MutableSharedFlow<String>()
+    private val _incoming = MutableSharedFlow<String>()
     override val incoming: SharedFlow<String> = _incoming
 }
 
@@ -41,8 +42,18 @@ class SimpleSocketKtor(val socket: Socket) : SimpleSocket {
 object KtorSocketFactory : Connect {
     override suspend fun invoke(address: Address, port: Port): ConnectionResult {
         val selectorManager = SelectorManager(Dispatchers.IO)
-        val socket: Socket = aSocket(selectorManager).tcp().connect(address.hostAddress, 80)
-        return ConnectionResult.Success(SimpleSocketKtor(socket))
+        return try {
+            ConnectionResult.Success(
+                SimpleSocketKtorAdapter(
+                    aSocket(selectorManager).tcp().connect(address.hostAddress, port)
+                )
+            )
+
+        } catch (e: ConnectException) {
+            ConnectionResult.Failure.ConnectionRefused
+        } catch (e: Throwable) {
+            ConnectionResult.Failure.UndefinedError
+        }
     }
 
 }
