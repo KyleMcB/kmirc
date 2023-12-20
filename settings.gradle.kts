@@ -1,3 +1,7 @@
+/*
+ * Copyright 2024 Kyle McBurnett
+ */
+
 rootProject.name = "MyApplication"
 
 //include(":androidApp")
@@ -7,6 +11,7 @@ include(":client-network:header")
 include(":client-network:ktorImpl")
 include(":irc_entities")
 include(":irc_parser:header")
+include(":TestUtils")
 //include(":irc_parser")
 //include(":irc_engine")
 pluginManagement {

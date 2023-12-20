@@ -1,31 +1,23 @@
+/*
+ * Copyright 2024 Kyle McBurnett
+ */
+
 package com.xingpeds.kmirc.parser
 
-import kotlinx.coroutines.flow.Flow
+import assert
+import assertFlowNeverEmits
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
-suspend fun flowNeverEmits(flow: Flow<*>) {
-    var hasValues = false
-    flow.collect {
-        hasValues = true
-    }
-
-    assert(!hasValues) { "Flow emitted some values" }
-}
-
-fun Any?.assert(expected: Any?) {
-    assertEquals(actual = this, expected = expected)
-}
 
 class MarshallerTest {
     @Test
     fun noIRCPacket() = runTest {
         val internetPackets = flowOf("hello", "world", "never has irc terminator")
         val output = marshallIrcPackets(internetPackets)
-        flowNeverEmits(output)
+        assertFlowNeverEmits(output)
     }
 
     @Test
