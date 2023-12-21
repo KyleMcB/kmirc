@@ -8,12 +8,12 @@ import kotlin.test.Test
 
 
 class ParserTest : ParserTestBase() {
-    override fun getTestSubject(): IrcLineParser {
+    override suspend fun getTestSubject(): IrcLineParser {
         return Parser
     }
 
     @Test
-    fun test1() = runTest {
+    fun tests() = runTest {
         runAllTest()
     }
 }

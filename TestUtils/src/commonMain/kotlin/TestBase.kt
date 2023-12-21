@@ -6,6 +6,7 @@ data class Test(val name: String, val testLambda: suspend () -> Unit) {
     override fun hashCode(): Int = name.hashCode()
 
     override fun equals(other: Any?): Boolean = name == other
+    override fun toString(): String = name
 }
 
 abstract class TestBase {
@@ -25,7 +26,18 @@ abstract class TestBase {
     suspend fun runAllTest() {
         list.forEach {
             println("Running $it")
-            it.testLambda()
+            try {
+                it.testLambda()
+                println("Test Passed")
+
+            } catch (e: Throwable) {
+                println(
+                    """
+                        Test Failed
+                    """.trimIndent()
+                )
+                throw e
+            }
         }
     }
 }
