@@ -44,12 +44,12 @@ data class IrcPrefix(
     }
 }
 
-data class IrcParams(val params: List<String> = emptyList(), val longParam: String? = null) {
+data class IrcParams(val list: List<String> = emptyList(), val longParam: String? = null) {
     fun toIRCString(): String {
         return if (longParam != null) {
-            "${params.joinToString(" ")} :$longParam"
+            "${list.joinToString(" ")} :$longParam"
         } else {
-            params.joinToString(" ")
+            list.joinToString(" ")
         }
     }
 }
