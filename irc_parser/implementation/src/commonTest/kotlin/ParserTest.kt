@@ -13,7 +13,14 @@ class ParserTest : ParserTestBase() {
     }
 
     @Test
-    fun tests() = runTest {
-        runAllTest()
+    override fun `test join example on`() = runTest {
+        super.`join example one`()
     }
+
+    @Test
+    override fun `test join with prefix`() = runTest {
+        super.`join example with prefix`()
+    }
+
+
 }
