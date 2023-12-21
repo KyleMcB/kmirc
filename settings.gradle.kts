@@ -14,6 +14,7 @@ include(":irc_parser:header")
 include(":irc_parser:header_test")
 include(":irc_parser:implementation")
 include(":TestUtils")
+include(":client_state:header")
 //include(":irc_parser")
 //include(":irc_engine")
 pluginManagement {

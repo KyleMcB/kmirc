@@ -11,7 +11,8 @@ sealed interface IIrcEvent {
     data class PrivateMessage(val user: IIrcUser, val message: String)
     data class Quit(val user: IIrcUser, val reason: String)
     data class NickChange(val user: IIrcUser, val newNick: String)
-    data class ModeChange(val user: IIrcUser, val channel: IIrcChannel, val mode: String)
+    data class UserModeChange(val user: IIrcUser, val channel: IIrcChannel, val mode: String)
+    data class ChannelModeChange(val channel: IIrcChannel, val mode: String)
     data class TopicChange(val user: IIrcUser, val channel: IIrcChannel, val topic: String)
     data class ChannelNotice(val user: IIrcUser, val channel: IIrcChannel, val message: String)
 }
