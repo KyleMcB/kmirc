@@ -17,6 +17,6 @@ class ParserTest : ParserTestBase() {
 
     @Test
     fun test1() = runTest {
-        super.exampleOne()
+        runAllTest()
     }
 }

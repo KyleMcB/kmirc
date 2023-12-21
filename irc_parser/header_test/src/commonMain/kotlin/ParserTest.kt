@@ -9,8 +9,12 @@ import kotlinx.coroutines.flow.toList
 import kotlin.test.assertTrue
 
 
-abstract class ParserTestBase {
+abstract class ParserTestBase : TestBase() {
     abstract fun getTestSubject(): IrcLineParser
+
+    init {
+        addTest(Test("join example one", this::exampleOne))
+    }
 
     suspend fun exampleOne() {
 
