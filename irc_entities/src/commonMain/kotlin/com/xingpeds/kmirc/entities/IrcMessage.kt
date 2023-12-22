@@ -45,7 +45,7 @@ data class IrcPrefix(
 }
 
 data class IrcParams(val list: List<String> = emptyList(), val longParam: String? = null) {
-    constructor(vararg params: String, longParam: String? = null) : this(params.asList(), longParam)
+    constructor(vararg params: String?, longParam: String? = null) : this(params.asList().filterNotNull(), longParam)
 
     fun toIRCString(): String {
         return if (longParam != null) {

@@ -12,22 +12,22 @@ interface ClientState {
     val channels: StateFlow<List<ChannelState>>
     val messages: StateFlow<List<IIrcMessage>>
     val nickState: StateFlow<NickStateMachine>
-    val self: UserState
+//    val self: UserState
 }
 
 data class MutableClientState(
-    val mChannels: MutableStateFlow<List<MutableChannelState>>,
-    val mMessages: MutableStateFlow<List<IIrcMessage>>,
-    val mNickSate: MutableStateFlow<NickStateMachine>,
-    val mSelf: MutableUserState
+    val mChannels: MutableStateFlow<List<MutableChannelState>> = MutableStateFlow(emptyList()),
+    val mMessages: MutableStateFlow<List<IIrcMessage>> = MutableStateFlow(emptyList()),
+    val mNickSate: MutableStateFlow<NickStateMachine> = MutableStateFlow(NickStateMachine.NickLess),
+//    val mSelf: MutableUserState = MutableUserState()
 ) : ClientState {
     override val channels: StateFlow<List<ChannelState>>
         get() = mChannels
     override val messages: StateFlow<List<IIrcMessage>>
         get() = mMessages
     override val nickState: StateFlow<NickStateMachine>
-        get() = TODO("Not yet implemented")
-    override val self: UserState
-        get() = mSelf
+        get() = mNickSate
+//    override val self: UserState
+//        get() = mSelf
 
 }

@@ -34,9 +34,16 @@ class IrcEngine(
         var nickacquired = false
         engineScope.launch {
             send(IrcMessage(command = IrcCommand.NICK, params = IrcParams(wantedNick.nick)))
-
+//            Command: USER
+//            Parameters: <username> <hostname> <servername> <realname>
+            send(
+                IrcMessage(
+                    command = IrcCommand.USER,
+                    params = IrcParams(wantedNick.username, wantedNick.hostname, longParam = wantedNick.realName)
+                )
+            )
             inputFlow.takeWhile { nickacquired == false }.collect {
-
+                nickacquired = true
             }
         }
         engineScope.launch {
