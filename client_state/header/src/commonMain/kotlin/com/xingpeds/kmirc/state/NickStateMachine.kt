@@ -13,7 +13,7 @@ sealed interface NickStateMachine {
     /**
      * nick attempted, and refused. Need ot try again
      */
-    data class Refused(val message: String) : NickStateMachine
+    data class Refused(val message: String, val attempt: Int) : NickStateMachine
 
     /**
      * Server accepted nick. State should get updated.

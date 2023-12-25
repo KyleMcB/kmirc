@@ -1,3 +1,7 @@
+/*
+ * Copyright 2024 Kyle McBurnett
+ */
+
 package com.xingpeds.kmirc.clientnetwork
 
 import io.ktor.network.selector.*
@@ -11,6 +15,8 @@ import kotlinx.coroutines.launch
 import java.net.ConnectException
 
 class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket {
+    private val sendChannel = socket.openWriteChannel(autoFlush = true)
+
     init {
         val readChannel = socket.openReadChannel()
         socket.launch {
@@ -30,7 +36,7 @@ class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket {
 
 
     override suspend fun write(data: String) {
-        val sendChannel = socket.openWriteChannel(autoFlush = true)
+        println("writing to socket: $data")
         sendChannel.writeStringUtf8(data)
     }
 

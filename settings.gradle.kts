@@ -18,8 +18,8 @@ include(":client_state:header")
 include(":client_irc_engine:header")
 include(":client_irc_engine:implementation")
 include(":Utility_Functions")
-//include(":irc_parser")
-//include(":irc_engine")
+include(":bot_prototype:core")
+include(":bot_prototype:dep_inject")
 pluginManagement {
     repositories {
         gradlePluginPortal()
