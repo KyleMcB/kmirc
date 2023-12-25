@@ -17,6 +17,10 @@ import java.net.ConnectException
 class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket {
     private val sendChannel = socket.openWriteChannel(autoFlush = true)
 
+    // New SharedFlow for socket closed signal
+    private val _socketClosed = MutableSharedFlow<Boolean>()
+    override val socketClosed: SharedFlow<Boolean> = _socketClosed
+
     init {
         val readChannel = socket.openReadChannel()
         socket.launch {
@@ -24,16 +28,16 @@ class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket {
                 val line: String = readChannel.readUTF8Line() ?: continue
                 _incoming.emit(line)
             }
+            _socketClosed.emit(true)
             close()
         }
     }
 
     override fun close() {
-
         socket.close()
         socket.cancel()
-    }
 
+    }
 
     override suspend fun write(data: String) {
         println("writing to socket: $data")
@@ -61,5 +65,4 @@ object KtorSocketFactory : Connect {
             ConnectionResult.Failure.UndefinedError
         }
     }
-
 }

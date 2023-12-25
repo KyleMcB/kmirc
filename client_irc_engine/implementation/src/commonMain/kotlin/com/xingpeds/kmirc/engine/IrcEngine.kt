@@ -19,9 +19,9 @@ import kotlinx.coroutines.launch
 class IrcEngine(
     val wantedNick: IIrcUser,
     val send: suspend (IIrcMessage) -> Unit,
-    val mState: MutableClientState,
     val inputFlow: Flow<IIrcMessage>,
-    private val engineScope: CoroutineScope
+    private val engineScope: CoroutineScope,
+    private val mState: MutableClientState = MutableClientState()
 ) : IClientIrcEngine {
     private var attemptedNick: String = wantedNick.nick
     private var nickRetryCounter: Int = 0
@@ -115,7 +115,12 @@ class IrcEngine(
         send(
             IrcMessage(
                 command = IrcCommand.USER,
-                params = IrcParams(wantedNick.username, wantedNick.hostname, longParam = wantedNick.realName)
+                params = IrcParams(
+                    wantedNick.username,
+                    wantedNick.hostname,
+                    "*"/* server name */,
+                    longParam = wantedNick.realName
+                )
             )
         )
     }

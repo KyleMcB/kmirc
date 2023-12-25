@@ -1,3 +1,7 @@
+/*
+ * Copyright 2024 Kyle McBurnett
+ */
+
 package com.xingpeds.kmirc.clientnetwork
 
 import kotlinx.coroutines.flow.SharedFlow
@@ -8,6 +12,7 @@ interface SimpleSocket : Closeable {
     suspend fun write(data: String)
 
     val incoming: SharedFlow<String>
+    val socketClosed: SharedFlow<Boolean>
 
 }
 
