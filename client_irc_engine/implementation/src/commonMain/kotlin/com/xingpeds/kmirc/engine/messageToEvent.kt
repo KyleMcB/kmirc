@@ -4,11 +4,9 @@
 
 package com.xingpeds.kmirc.engine
 
-import com.xingpeds.kmirc.entities.IIrcEvent
-import com.xingpeds.kmirc.entities.IIrcMessage
-import com.xingpeds.kmirc.entities.IrcCommand
+import com.xingpeds.kmirc.entities.*
 
-fun messageToEvent(message: IIrcMessage): IIrcEvent = when (message.command) {
+fun messageToEvent(message: IIrcMessage): IIrcEvent? = when (message.command) {
     IrcCommand.PASS -> TODO()
     IrcCommand.NICK -> TODO()
     IrcCommand.USER -> TODO()
@@ -33,7 +31,7 @@ fun messageToEvent(message: IIrcMessage): IIrcEvent = when (message.command) {
     IrcCommand.ADMIN -> TODO()
     IrcCommand.INFO -> TODO()
     IrcCommand.PRIVMSG -> TODO()
-    IrcCommand.NOTICE -> TODO()
+    IrcCommand.NOTICE -> sendNoticeEvent(message)
     IrcCommand.WHO -> TODO()
     IrcCommand.WHOIS -> TODO()
     IrcCommand.WHOWAS -> TODO()
@@ -176,4 +174,27 @@ fun messageToEvent(message: IIrcMessage): IIrcEvent = when (message.command) {
     IrcCommand.RPL_INFOSTART -> TODO()
     IrcCommand.ERR_YOUWILLBEBANNED -> TODO()
     IrcCommand.ERR_NOSERVICEHOST -> TODO()
+}
+
+private fun sendNoticeEvent(message: IIrcMessage): IIrcEvent.Notice? {
+    val user = message.prefix?.user
+    val host = message.prefix?.host
+    val nick = message.prefix?.nick
+    val text = message.params.longParam
+    return if (nick != null) {
+        val targetString: String = message.params.list[0]
+        val target: IrcTarget = if (targetString.startsWith("#")) {
+            IrcTarget.Channel(targetString)
+        } else {
+            IrcTarget.User(targetString)
+        }
+        val from: IrcFrom = if (user == null && host == null) {
+            IrcFrom.Server(nick)
+        } else {
+            IrcFrom.User(nick)
+        }
+        IIrcEvent.Notice(target = target, from = from, message = text ?: "")
+    } else {
+        null
+    }
 }

@@ -145,6 +145,7 @@ class IrcEngine(
             send(IrcMessage(command = IrcCommand.PONG, params = ping.ircParams))
         }.launchIn(engineScope)
         eventList.onINIT.onEach { sendNickAndUserRequest() }.launchIn(engineScope)
+
     }
 
 }
