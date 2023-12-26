@@ -2,10 +2,7 @@
  * Copyright 2024 Kyle McBurnett
  */
 
-import com.xingpeds.kmirc.entities.IrcCommand
-import com.xingpeds.kmirc.entities.IrcMessage
-import com.xingpeds.kmirc.entities.IrcParams
-import com.xingpeds.kmirc.entities.IrcPrefix
+import com.xingpeds.kmirc.entities.*
 import com.xingpeds.kmirc.parser.IrcLineParser
 import com.xingpeds.kmirc.parser.ParseResult
 import kotlinx.coroutines.flow.Flow
@@ -13,11 +10,10 @@ import kotlinx.coroutines.flow.map
 
 object Parser : IrcLineParser {
     override fun Flow<String>.mapIrcParse(): Flow<ParseResult> = map { ircLine ->
-        println("[parser] line $ircLine")
         val (prefix, messageWithoutPrefix) = extractPrefix(ircLine)
         val (command, messageWithoutCommand) = extractCommand(messageWithoutPrefix)
+
         if (command == null) {
-            println("parsing failure\n$ircLine")
             ParseResult.InvalidIrcLine
         } else {
             val params = extractParameters(messageWithoutCommand)
@@ -28,16 +24,14 @@ object Parser : IrcLineParser {
 
     override fun mapToIrcCommand(inputFlow: Flow<String>): Flow<ParseResult> = inputFlow.mapIrcParse()
 
-
     private fun extractCommand(message: String): Pair<IrcCommand?, String> {
         val words = message.split(" ", limit = 2)
         val firstWord = words.first().uppercase()
         val remainingString: String = if (words.size > 1) words[1] else ""
-
         val command = try {
-            IrcCommand.valueOf(firstWord)
+            commandLookup[firstWord]
         } catch (e: IllegalArgumentException) {
-            null // Return null if the word does not match any command
+            null
         }
 
         return Pair(command, remainingString)
@@ -49,13 +43,10 @@ object Parser : IrcLineParser {
             if (endOfPrefix != -1) {
                 val prefixPart = message.substring(1, endOfPrefix)
                 val parts = prefixPart.split("!", "@", limit = 3)
-
                 val nick = parts.getOrElse(0) { "" }.let { if (it[0] == ':') it.substring(1) else it }
                 val user = parts.elementAtOrNull(1)
                 val host = parts.elementAtOrNull(2)
-
                 val ircPrefix = IrcPrefix(nick, user, host)
-
                 val remainder = message.substring(endOfPrefix).trimStart()
                 return ircPrefix to remainder
             }
@@ -67,6 +58,7 @@ object Parser : IrcLineParser {
         val params: List<String> = message.split(":", limit = 2)
         val longParam = if (params.size > 1) params[1] else null
         val paramList = params[0].trim().split(" ")
+
         return if (longParam != null) {
             IrcParams(paramList, longParam)
         } else {
@@ -74,4 +66,3 @@ object Parser : IrcLineParser {
         }
     }
 }
-

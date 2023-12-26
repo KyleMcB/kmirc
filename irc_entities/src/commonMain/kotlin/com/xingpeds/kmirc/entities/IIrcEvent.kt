@@ -5,6 +5,7 @@
 package com.xingpeds.kmirc.entities
 
 sealed interface IIrcEvent {
+    data object Notice : IIrcEvent
     data object INIT : IIrcEvent //this is for a tcp connection
     data class PING(val ircParams: IrcParams) : IIrcEvent
     data class JOIN(val user: IIrcUser, val channels: List<IIrcChannel>) : IIrcEvent

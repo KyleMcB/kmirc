@@ -18,6 +18,11 @@ class ParserTest : ParserTestBase() {
     }
 
     @Test
+    override fun `number command example test`() = runTest {
+        super.`number command example`()
+    }
+
+    @Test
     override fun `join example on test`() = runTest {
         super.`join example one`()
     }

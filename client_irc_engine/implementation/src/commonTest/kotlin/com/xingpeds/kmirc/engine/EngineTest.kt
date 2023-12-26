@@ -7,12 +7,11 @@ package com.xingpeds.kmirc.engine
 import assert
 import com.xingpeds.kmirc.entities.*
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import kotlin.test.fail
 
 class EngineTest {
     val username = "TestUser"
@@ -22,44 +21,40 @@ class EngineTest {
         "TestNick", username = username, hostname = hostname, realName = realName
     )
 
+
+    fun runWaitingTest(block: TestScope.(testComplete: () -> Unit) -> Unit) = runTest {
+        val completed = CompletableDeferred<Boolean>()
+        block({ completed.complete(true) })
+        completed.await()
+    }
+
     @Test
-    fun prototyping() = runTest {
-        val subject = IrcEngine(
+    fun userCommand() = runWaitingTest { testCompleted ->
+        val engine: IClientIrcEngine = IrcEngine(
             wantedNick = ircUser,
-            send = {
-            }, input = emptyFlow(), this.backgroundScope
+            send = { message: IIrcMessage ->
+                println("[engineTest] $message sent")
+                if (message.command == IrcCommand.USER) {
+                    val output = message.toIRCString()
+                    output.assert("USER $username $hostname * :$realName\r\n")
+                    testCompleted()
+                }
+            },
+            input = emptyFlow(),
+            engineScope = this.backgroundScope
         )
     }
 
     @Test
-    fun userCommand() = runTest {
+    fun pongCommand() = runWaitingTest { complete ->
         val longParam = "iW|dHYrFO^"
-        val userAssertDone = CompletableDeferred<Boolean>()
-        val pongAssertDone = CompletableDeferred<Boolean>()
         val engine: IClientIrcEngine = IrcEngine(
             wantedNick = ircUser,
             send = { message: IIrcMessage ->
-                println("[enginetest engine sent: $message")
-                when (message.command) {
-                    IrcCommand.USER -> {
-                        //assert correctness
-                        //                           Command: USER
-                        //                           Parameters: <username> <hostname> <servername> <realname>
-                        //                           USER guest tolmoon tolsun :Ronnie Reagan
-                        val output = message.toIRCString()
-                        output.assert("USER $username $hostname * :$realName\r\n")
-                        userAssertDone.complete(true)
-                        //signal test is done
-                    }
-
-                    IrcCommand.NICK -> Unit //ignore for now
-                    IrcCommand.PONG -> {
-                        val output = message.toIRCString()
-                        output.assert("PONG :iW|dHYrFO^\r\n")
-                        pongAssertDone.complete(true)
-                    }
-
-                    else -> fail("engine should send any other messages at startup")
+                if (message.command == IrcCommand.PONG) {
+                    val output = message.toIRCString()
+                    output.assert("PONG :iW|dHYrFO^\r\n")
+                    complete()
                 }
             },
             input = flowOf(
@@ -68,11 +63,23 @@ class EngineTest {
                     params = IrcParams(longParam = longParam)
                 )
             ),
-            engineScope = this.backgroundScope
+            engineScope = backgroundScope
         )
-        pongAssertDone.await()
-        userAssertDone.await()
-        backgroundScope.cancel()
-        //wait for done signal
+    }
+
+    @Test
+    fun nickCommand() = runWaitingTest { complete ->
+        val engine: IClientIrcEngine = IrcEngine(
+            wantedNick = ircUser,
+            send = { message: IIrcMessage ->
+                if (message.command == IrcCommand.NICK) {
+                    val output = message.toIRCString()
+                    output.assert("NICK ${ircUser.nick}\r\n")
+                    complete()
+                }
+            },
+            input = emptyFlow(),
+            engineScope = backgroundScope
+        )
     }
 }

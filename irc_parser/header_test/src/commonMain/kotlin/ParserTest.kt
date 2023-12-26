@@ -27,6 +27,21 @@ abstract class ParserTestBase {
         item.params.longParam.assert("irc.example.com")
     }
 
+//    :*.freenode.net 372 hellobotlongname :  #anonchan                - Chat anonymously.
+
+    abstract fun `number command example test`()
+    suspend fun `number command example`() {
+        val testSubject = getTestSubject()
+
+        val input = flowOf(":*.freenode.net 372 hellobotlongname :  #anonchan                - Chat anonymously.")
+        val result = testSubject.mapToIrcCommand(input).toList()
+        result.size.assert(1)
+        val item: ParseResult = result[0]
+        require(item is ParseResult.ParseSuccess)
+        item.command.assert(IrcCommand.RPL_MOTD)
+        item.params.list.assert(listOf("hellobotlongname"))
+    }
+
     abstract fun `join example on test`(): Unit
     suspend fun `join example one`() {
         val testSubject = this.getTestSubject()

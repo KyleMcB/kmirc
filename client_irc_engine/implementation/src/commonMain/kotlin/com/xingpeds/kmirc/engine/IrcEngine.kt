@@ -31,6 +31,7 @@ class IrcEngine(
     }
 
 
+    val eventList: EventList = EventListImpl
     override val events: SharedFlow<IIrcEvent>
         get() = mEvents
     override val state: ClientState
@@ -41,45 +42,16 @@ class IrcEngine(
     private var retryCount = 0
 
     init {
-//        engineScope.launch {
-//            inputFlow.onEach {
-//                println("engine received: $it")
-//            }.launchIn(engineScope)
-//
-//            inputFlow.filter { it.command == IrcCommand.PING }.onEach {
-//                val ircMessage = IrcMessage(command = IrcCommand.PONG, params = it.params)
-//                send(ircMessage)
-//            }.launchIn(engineScope)
-//
-//            sendNickAndUserRequest()
-//            inputFlow.onEach { message ->
-//                when (message.command) {
-//                    IrcCommand.ERR_NICKNAMEINUSE, IrcCommand.ERR_NICKCOLLISION -> {
-//                        if (retryCount < 3) {
-//                            //ask user for a new nick
-//                            sendNickAndUserRequest()
-//                            delay(2000)
-//                            retryCount++
-//                        } else {
-//                            // handle max retry exceed
-//                            // ...
-//                        }
-//                    }
-//
-//                    else -> Unit
-//                }
-//            }.launchIn(engineScope)
-//
-//            inputFlow.onEach { message ->
-//                val event = messageToEvent(message)
-//            }.launchIn(engineScope)
-//        }
+
         inputFlow.onEach {
             val event = try {
                 messageToEvent(it)
             } catch (e: Throwable) {
-                println(e)
+                println("[engine] Can not turn ${it.command} into event\n${e.message}")
                 null
+            }
+            if (event == null) {
+                println("[engine] command ${it.command} has no event implemented yet")
             }
             event?.let { it1 -> mEvents.emit(it1) }
         }.launchIn(engineScope)
@@ -94,19 +66,22 @@ class IrcEngine(
         try {
             events.collect { event ->
                 println("[engine] collected event: $event")
+
+
                 when (event) {
-                    is IIrcEvent.ChannelMessage -> TODO()
-                    is IIrcEvent.ChannelModeChange -> TODO()
-                    is IIrcEvent.ChannelNotice -> TODO()
-                    IIrcEvent.INIT -> sendNickAndUserRequest()
-                    is IIrcEvent.JOIN -> TODO()
-                    is IIrcEvent.NickChange -> TODO()
-                    is IIrcEvent.PART -> TODO()
-                    is IIrcEvent.PING -> send(IrcMessage(command = IrcCommand.PONG, params = event.ircParams))
-                    is IIrcEvent.PrivateMessage -> TODO()
-                    is IIrcEvent.Quit -> TODO()
-                    is IIrcEvent.TopicChange -> TODO()
-                    is IIrcEvent.UserModeChange -> TODO()
+                    is IIrcEvent.ChannelMessage -> Unit
+                    is IIrcEvent.ChannelModeChange -> Unit
+                    is IIrcEvent.ChannelNotice -> Unit
+                    IIrcEvent.INIT -> EventListImpl.mINIT.emit(event as IIrcEvent.INIT) //sendNickAndUserRequest()
+                    is IIrcEvent.JOIN -> Unit
+                    is IIrcEvent.NickChange -> Unit
+                    is IIrcEvent.PART -> Unit
+                    is IIrcEvent.PING -> EventListImpl.mPing.emit(event) //send(IrcMessage(command = IrcCommand.PONG, params = event.ircParams))
+                    is IIrcEvent.PrivateMessage -> Unit
+                    is IIrcEvent.Quit -> Unit
+                    is IIrcEvent.TopicChange -> Unit
+                    is IIrcEvent.UserModeChange -> Unit
+                    IIrcEvent.Notice -> Unit
                 }
             }
         } catch (e: Throwable) {
@@ -160,8 +135,16 @@ class IrcEngine(
         )
     }
 
+
     private fun updateState(message: IIrcMessage): IIrcMessage {
         TODO("Not yet implemented")
+    }
+
+    init {
+        eventList.onPING.onEach { ping: IIrcEvent.PING ->
+            send(IrcMessage(command = IrcCommand.PONG, params = ping.ircParams))
+        }.launchIn(engineScope)
+        eventList.onINIT.onEach { sendNickAndUserRequest() }.launchIn(engineScope)
     }
 
 }
