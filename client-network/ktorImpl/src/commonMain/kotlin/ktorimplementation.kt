@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import java.net.ConnectException
+import java.nio.ByteBuffer
 
 class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket {
     private val sendChannel = socket.openWriteChannel(autoFlush = true)
@@ -25,22 +26,13 @@ class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket {
         val readChannel = socket.openReadChannel()
         socket.launch {
             while (!readChannel.isClosedForRead) {
-                readChannel.read(min = 5) { byteBuffer ->
-
-                }
-                val line: String = readChannel.readUTF8Line() ?: continue
-                val hi = readChannel.read { byteBuffer ->
-                    byteBuffer.flip()
-                    val thing: ByteArray = ByteArray(byteBuffer.remaining())
-                    byteBuffer.get(thing)
-                    byteBuffer.clear()
+                readChannel.read(5) { byteBuffer: ByteBuffer ->
+                    val bytes = ByteArray(byteBuffer.remaining())
+                    byteBuffer.get(bytes)
                     launch {
-                        val string = thing.decodeToString()
-                        println("[socket] in $string")
+                        val string: String = bytes.decodeToString()
                         _incoming.emit(string)
-
                     }
-                    byteBuffer.flip()
                 }
             }
             _socketClosed.emit(true)
