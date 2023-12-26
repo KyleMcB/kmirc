@@ -6,12 +6,10 @@ package com.xingpeds.kmirc.engine
 
 import assert
 import com.xingpeds.kmirc.entities.*
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import runWaitingTest
 
 class EngineTest {
     val username = "TestUser"
@@ -21,12 +19,6 @@ class EngineTest {
         "TestNick", username = username, hostname = hostname, realName = realName
     )
 
-
-    fun runWaitingTest(block: TestScope.(testComplete: () -> Unit) -> Unit) = runTest {
-        val completed = CompletableDeferred<Boolean>()
-        block({ completed.complete(true) })
-        completed.await()
-    }
 
     @Test
     fun userCommand() = runWaitingTest { testCompleted ->
