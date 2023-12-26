@@ -16,9 +16,7 @@ import kotlinx.coroutines.flow.flow
 fun marshallIrcPackets(input: Flow<String>): Flow<String> = flow {
     val buffer = StringBuilder(1024)
     input.collect { packet ->
-        println("[marshaller] raw $packet")
         buffer.append(packet)
-        println("[marchaller] buffer=${buffer.toString()}")
 
         while (buffer.contains("\r\n")) {
             val index = buffer.indexOf("\r\n")

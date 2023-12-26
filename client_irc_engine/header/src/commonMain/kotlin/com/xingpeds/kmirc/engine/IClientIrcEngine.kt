@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
  * events
  */
 interface IClientIrcEngine {
-    fun stop()
-
     val events: SharedFlow<IIrcEvent>
     val state: ClientState
     val self: StateFlow<NickStateMachine>

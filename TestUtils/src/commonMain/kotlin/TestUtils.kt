@@ -22,7 +22,7 @@ fun Any?.assert(expected: Any?) {
     assertEquals(actual = this, expected = expected)
 }
 
-fun runWaitingTest(block: TestScope.(testComplete: () -> Unit) -> Unit) = runTest {
+fun runWaitingTest(block: suspend TestScope.(testComplete: () -> Unit) -> Unit) = runTest {
     val completed = CompletableDeferred<Boolean>()
     block({ completed.complete(true) })
     completed.await()

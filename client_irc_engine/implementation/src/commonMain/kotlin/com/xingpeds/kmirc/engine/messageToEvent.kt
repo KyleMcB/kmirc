@@ -193,7 +193,8 @@ private fun sendNoticeEvent(message: IIrcMessage): IIrcEvent.Notice? {
         } else {
             IrcFrom.User(nick)
         }
-        IIrcEvent.Notice(target = target, from = from, message = text ?: "")
+        val noticeEvent = IIrcEvent.Notice(target = target, from = from, message = text ?: "")
+        noticeEvent
     } else {
         null
     }

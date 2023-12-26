@@ -8,6 +8,7 @@ import assert
 import com.xingpeds.kmirc.entities.*
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import org.junit.Test
 import runWaitingTest
 
@@ -73,5 +74,31 @@ class EngineTest {
             input = emptyFlow(),
             engineScope = backgroundScope
         )
+    }
+
+    @Test
+    fun noticeCommand() = runWaitingTest { complete ->
+        val longParam = "*** Found your hostname (c-24-17-115-100.hsd1.wa.comcast.net)"
+        //        :*.freenode.net NOTICE hellobotlongname :*** Found your hostname (c-24-17-115-100.hsd1.wa.comcast.net)
+        val subject = IrcEngine(
+            wantedNick = ircUser,
+            send = {},
+            input = flowOf(
+                IrcMessage(
+                    command = IrcCommand.NOTICE,
+                    prefix = IrcPrefix("*.freenode.net"),
+                    params = IrcParams("hellobotlongname", longParam = longParam)
+                )
+            ),
+            engineScope = backgroundScope,
+        )
+        println("collector starting")
+        backgroundScope.launch {
+            subject.eventList.onNOTICE.collect { notice ->
+                println("[engine test] got $notice")
+                notice.message.assert(longParam)
+                complete()
+            }
+        }
     }
 }

@@ -27,8 +27,8 @@ data class IrcMessage(
 
 data class IrcPrefix(
     val nick: String,     // The nickname of the user
-    val user: String?,    // The username of the user, optional
-    val host: String?     // The host of the user, optional
+    val user: String? = null,    // The username of the user, optional
+    val host: String? = null     // The host of the user, optional
 
 ) {
     fun toIRCString(): String {
