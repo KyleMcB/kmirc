@@ -25,8 +25,23 @@ class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket {
         val readChannel = socket.openReadChannel()
         socket.launch {
             while (!readChannel.isClosedForRead) {
+                readChannel.read(min = 5) { byteBuffer ->
+
+                }
                 val line: String = readChannel.readUTF8Line() ?: continue
-                _incoming.emit(line)
+                val hi = readChannel.read { byteBuffer ->
+                    byteBuffer.flip()
+                    val thing: ByteArray = ByteArray(byteBuffer.remaining())
+                    byteBuffer.get(thing)
+                    byteBuffer.clear()
+                    launch {
+                        val string = thing.decodeToString()
+                        println("[socket] in $string")
+                        _incoming.emit(string)
+
+                    }
+                    byteBuffer.flip()
+                }
             }
             _socketClosed.emit(true)
             close()
@@ -40,11 +55,12 @@ class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket {
     }
 
     override suspend fun write(data: String) {
-        println("writing to socket: $data")
+        println("[socket] out: $data")
         sendChannel.writeStringUtf8(data)
+        sendChannel.flush()
     }
 
-    private val _incoming = MutableSharedFlow<String>()
+    private val _incoming = MutableSharedFlow<String>(replay = 1000)
     override val incoming: SharedFlow<String> = _incoming
 }
 

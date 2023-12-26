@@ -13,6 +13,11 @@ class ParserTest : ParserTestBase() {
     }
 
     @Test
+    override fun `ping exmaple test`() = runTest {
+        super.`ping example`()
+    }
+
+    @Test
     override fun `join example on test`() = runTest {
         super.`join example one`()
     }

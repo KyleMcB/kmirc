@@ -31,16 +31,10 @@ val parser: IrcLineParser = getParser()
 fun main(args: Array<String>) = runBlocking {
     //attempt to connect
     val addresses = dnsLookUp(serverHostName)
-    println(addresses)
     val connectionAttempt = connect(addresses[0], serverPort)
     when (connectionAttempt) {
         is ConnectionResult.Success -> {
             val connection = connectionAttempt.connection
-            launch {
-                connection.incoming.collect { message ->
-                    println(message)
-                }
-            }
             launch {
                 connection.socketClosed.collect {
                     exitProcess(0)
@@ -54,7 +48,7 @@ fun main(args: Array<String>) = runBlocking {
                     connection.write(iIrcMessage.toIRCString())
                 },
                 mState = com.xingpeds.kmirc.state.MutableClientState(),
-                scope = CoroutineScope(Dispatchers.IO)
+                scope = CoroutineScope(Dispatchers.Default)
             )
         }
 

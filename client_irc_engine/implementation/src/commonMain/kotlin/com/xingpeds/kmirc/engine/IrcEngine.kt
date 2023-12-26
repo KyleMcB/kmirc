@@ -9,23 +9,28 @@ import com.xingpeds.kmirc.state.ClientState
 import com.xingpeds.kmirc.state.MutableClientState
 import com.xingpeds.kmirc.state.NickStateMachine
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class IrcEngine(
     val wantedNick: IIrcUser,
     val send: suspend (IIrcMessage) -> Unit,
-    val inputFlow: Flow<IIrcMessage>,
+    input: Flow<IIrcMessage>,
     private val engineScope: CoroutineScope,
     private val mState: MutableClientState = MutableClientState()
 ) : IClientIrcEngine {
     private var attemptedNick: String = wantedNick.nick
     private var nickRetryCounter: Int = 0
-    private val mEvents = MutableSharedFlow<IIrcEvent>()
+    private val mEvents =
+        MutableSharedFlow<IIrcEvent>(replay = 100, extraBufferCapacity = 100, onBufferOverflow = BufferOverflow.SUSPEND)
+
+    private val inputFlow = input.shareIn(engineScope, SharingStarted.Eagerly, replay = 100)
+    override fun stop() {
+
+    }
+
+
     override val events: SharedFlow<IIrcEvent>
         get() = mEvents
     override val state: ClientState
@@ -36,44 +41,84 @@ class IrcEngine(
     private var retryCount = 0
 
     init {
-        engineScope.launch {
-            sendNickAndUserRequest()
-            inputFlow.collect { message ->
-                when (message.command) {
-                    IrcCommand.ERR_NICKNAMEINUSE, IrcCommand.ERR_NICKCOLLISION -> {
-                        if (retryCount < 3) {
-                            //ask user for a new nick
-                            sendNickAndUserRequest()
-                            delay(2000)
-                            retryCount++
-                        } else {
-                            // handle max retry exceed
-                            // ...
-                        }
-                    }
-
-                    else -> TODO()
-
-                }
+//        engineScope.launch {
+//            inputFlow.onEach {
+//                println("engine received: $it")
+//            }.launchIn(engineScope)
+//
+//            inputFlow.filter { it.command == IrcCommand.PING }.onEach {
+//                val ircMessage = IrcMessage(command = IrcCommand.PONG, params = it.params)
+//                send(ircMessage)
+//            }.launchIn(engineScope)
+//
+//            sendNickAndUserRequest()
+//            inputFlow.onEach { message ->
+//                when (message.command) {
+//                    IrcCommand.ERR_NICKNAMEINUSE, IrcCommand.ERR_NICKCOLLISION -> {
+//                        if (retryCount < 3) {
+//                            //ask user for a new nick
+//                            sendNickAndUserRequest()
+//                            delay(2000)
+//                            retryCount++
+//                        } else {
+//                            // handle max retry exceed
+//                            // ...
+//                        }
+//                    }
+//
+//                    else -> Unit
+//                }
+//            }.launchIn(engineScope)
+//
+//            inputFlow.onEach { message ->
+//                val event = messageToEvent(message)
+//            }.launchIn(engineScope)
+//        }
+        inputFlow.onEach {
+            val event = try {
+                messageToEvent(it)
+            } catch (e: Throwable) {
+                println(e)
+                null
             }
-        }
+            event?.let { it1 -> mEvents.emit(it1) }
+        }.launchIn(engineScope)
+        startEventBroadcaster()
         engineScope.launch {
-            inputFlow.collect { message ->
-                val event = messageToEvent(message)
-            }
+
+            mEvents.emit(IIrcEvent.INIT)
         }
     }
 
-    //I would prefer to have the nick statemachine inside of the event system
-    //but since any message means the nick is accepted it needs to be a seperate state machine
+    internal fun startEventBroadcaster() = engineScope.launch {
+        try {
+            events.collect { event ->
+                println("[engine] collected event: $event")
+                when (event) {
+                    is IIrcEvent.ChannelMessage -> TODO()
+                    is IIrcEvent.ChannelModeChange -> TODO()
+                    is IIrcEvent.ChannelNotice -> TODO()
+                    IIrcEvent.INIT -> sendNickAndUserRequest()
+                    is IIrcEvent.JOIN -> TODO()
+                    is IIrcEvent.NickChange -> TODO()
+                    is IIrcEvent.PART -> TODO()
+                    is IIrcEvent.PING -> send(IrcMessage(command = IrcCommand.PONG, params = event.ircParams))
+                    is IIrcEvent.PrivateMessage -> TODO()
+                    is IIrcEvent.Quit -> TODO()
+                    is IIrcEvent.TopicChange -> TODO()
+                    is IIrcEvent.UserModeChange -> TODO()
+                }
+            }
+        } catch (e: Throwable) {
+            println(e)
+        }
+
+    }
+
     private suspend fun updateNickState(message: IIrcMessage) {
-        //I need a currently attempted nickname
         when (val nickState: NickStateMachine = state.nickState.value) {
             is NickStateMachine.Accept -> Unit
             NickStateMachine.NickLess -> {
-                //what does it mean for a message to come in while nickless?
-                //It could be an error and should move sate machine to refused
-                // it could be anything else indicating the nick was accepted
                 handleNickMessage(message)
             }
 
@@ -81,30 +126,20 @@ class IrcEngine(
                 handleNickMessage(message)
             }
         }
-
     }
 
-    /**
-     * helper to [updateNickState] for readablitiy
-     */
     private suspend fun handleNickMessage(message: IIrcMessage) {
         when (message.command) {
             IrcCommand.ERR_NONICKNAMEGIVEN -> {
-                //this feels impossible...
                 throw Exception("No nickname given. Should probably be impossible")
             }
 
             IrcCommand.ERR_ERRONEUSNICKNAME -> {
-                //inc the fail counter and try a new nickname
                 nickRetryCounter++
                 mState.mNickSate.emit(NickStateMachine.Refused("In use", nickRetryCounter))
-                // the client is going to have to deal with this. If it is a user client, then ask for
-                // a nickname. If a bot, use a backup nick, or new nickname generating algo.
-                // so emitting a blocked Refused state is all the engine can do here.
             }
 
             else -> {
-                //nick accepted
                 mState.mNickSate.emit(NickStateMachine.Accept(attemptedNick))
             }
         }

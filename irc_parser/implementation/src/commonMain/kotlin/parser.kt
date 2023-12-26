@@ -13,9 +13,11 @@ import kotlinx.coroutines.flow.map
 
 object Parser : IrcLineParser {
     override fun Flow<String>.mapIrcParse(): Flow<ParseResult> = map { ircLine ->
+        println("[parser] line $ircLine")
         val (prefix, messageWithoutPrefix) = extractPrefix(ircLine)
         val (command, messageWithoutCommand) = extractCommand(messageWithoutPrefix)
         if (command == null) {
+            println("parsing failure\n$ircLine")
             ParseResult.InvalidIrcLine
         } else {
             val params = extractParameters(messageWithoutCommand)

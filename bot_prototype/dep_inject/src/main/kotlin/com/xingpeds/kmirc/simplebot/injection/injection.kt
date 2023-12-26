@@ -18,8 +18,6 @@ import com.xingpeds.kmirc.parser.marshallIrcPackets
 import com.xingpeds.kmirc.state.MutableClientState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
 
 
@@ -45,8 +43,17 @@ object ImplementationModule {
 }
 
 object Adapters {
-    fun socketToEngineAdapter(socketFlow: Flow<String>): Flow<IIrcMessage> = flow {
-        val message: Flow<ParseResult> = Parser.mapToIrcCommand(marshallIrcPackets(socketFlow))
-        emitAll(message.filterIsInstance<ParseResult.ParseSuccess>())
+    suspend fun socketToEngineAdapter(socketFlow: Flow<String>): Flow<IIrcMessage> {
+        val marshalled = marshallIrcPackets(socketFlow)
+        val parsed = Parser.mapToIrcCommand(marshalled)
+        return flow {
+            parsed.collect { parsed ->
+                when (parsed) {
+                    ParseResult.InvalidIrcLine -> println("[adapter] ignoring parse failure")
+                    is ParseResult.ParseSuccess -> emit(parsed)
+                }
+            }
+        }
+//        emitAll(message.filterIsInstance<ParseResult.ParseSuccess>())
     }
 }

@@ -14,6 +14,19 @@ import kotlin.test.assertTrue
 abstract class ParserTestBase {
     abstract suspend fun getTestSubject(): IrcLineParser
 
+    abstract fun `ping exmaple test`()
+    suspend fun `ping example`() {
+        val testSubject: IrcLineParser = getTestSubject()
+        val testInputFlow: Flow<String> = flowOf("PING :irc.example.com")
+        val result: List<ParseResult> = testSubject.mapToIrcCommand(testInputFlow).toList()
+        result.size.assert(1)
+        val item: ParseResult = result[0]
+        require(item is ParseResult.ParseSuccess)
+        item.prefix.assert(null)
+        item.command.assert(IrcCommand.PING)
+        item.params.longParam.assert("irc.example.com")
+    }
+
     abstract fun `join example on test`(): Unit
     suspend fun `join example one`() {
         val testSubject = this.getTestSubject()

@@ -49,7 +49,12 @@ data class IrcParams(val list: List<String> = emptyList(), val longParam: String
 
     fun toIRCString(): String {
         return if (longParam != null) {
-            "${list.joinToString(" ")} :$longParam"
+            if (list.isEmpty()) {
+                ":$longParam"
+            } else {
+                val params = list.joinToString(" ").trim()
+                "$params :$longParam"
+            }
         } else {
             list.joinToString(" ")
         }

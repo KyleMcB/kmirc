@@ -38,7 +38,7 @@ fun messageToEvent(message: IIrcMessage): IIrcEvent = when (message.command) {
     IrcCommand.WHOIS -> TODO()
     IrcCommand.WHOWAS -> TODO()
     IrcCommand.KILL -> TODO()
-    IrcCommand.PING -> TODO()
+    IrcCommand.PING -> IIrcEvent.PING(message.params)
     IrcCommand.PONG -> TODO()
     IrcCommand.ERROR -> TODO()
     IrcCommand.AWAY -> TODO()
