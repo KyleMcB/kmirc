@@ -15,8 +15,9 @@ sealed class IrcFrom : CharSequence {
 }
 
 sealed interface IIrcEvent {
+    object PICK_NEW_NICK : IIrcEvent
     data class Notice(val target: IrcTarget, val from: IrcFrom, val message: String) : IIrcEvent
     data object INIT : IIrcEvent //this is for a tcp connection
     data class PING(val ircParams: IrcParams) : IIrcEvent
-    data class PRIVMSG(val from: IrcFrom, val target: IrcTarget, val message: String)
+    data class PRIVMSG(val from: IrcFrom, val target: IrcTarget, val message: String) : IIrcEvent
 }

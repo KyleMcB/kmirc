@@ -30,7 +30,7 @@ fun messageToEvent(message: IIrcMessage): IIrcEvent? = when (message.command) {
     IrcCommand.TRACE -> TODO()
     IrcCommand.ADMIN -> TODO()
     IrcCommand.INFO -> TODO()
-    IrcCommand.PRIVMSG -> TODO()
+    IrcCommand.PRIVMSG -> sendPrivmsgEvent(message)
     IrcCommand.NOTICE -> sendNoticeEvent(message)
     IrcCommand.WHO -> TODO()
     IrcCommand.WHOIS -> TODO()
@@ -174,6 +174,25 @@ fun messageToEvent(message: IIrcMessage): IIrcEvent? = when (message.command) {
     IrcCommand.RPL_INFOSTART -> TODO()
     IrcCommand.ERR_YOUWILLBEBANNED -> TODO()
     IrcCommand.ERR_NOSERVICEHOST -> TODO()
+}
+
+fun sendPrivmsgEvent(message: IIrcMessage): IIrcEvent? {
+
+// user or server
+    val host = message.prefix?.host
+    val nickOrServer = message.prefix?.nick ?: return null
+    val from: IrcFrom = if (host == null) {
+        IrcFrom.Server(nickOrServer)
+    } else {
+        IrcFrom.User(nickOrServer)
+    }
+    val target: IrcTarget = if (isChannel(message.params.list[0])) {
+        IrcTarget.Channel(message.params.list[0])
+    } else {
+        IrcTarget.User(message.params.list[0])
+    }
+    val privmsgText: String = message.params.longParam ?: return null
+    return IIrcEvent.PRIVMSG(from = from, target = target, message = privmsgText)
 }
 
 private fun sendNoticeEvent(message: IIrcMessage): IIrcEvent.Notice? {

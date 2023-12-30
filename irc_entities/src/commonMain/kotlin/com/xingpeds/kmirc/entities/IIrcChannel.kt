@@ -8,3 +8,7 @@ interface IIrcChannel {
 
     val name: String
 }
+
+fun isChannel(name: String): Boolean {
+    return name.startsWith("#")
+}

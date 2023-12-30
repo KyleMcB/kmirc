@@ -12,22 +12,30 @@ interface ClientState {
     val channels: StateFlow<List<ChannelState>>
     val messages: StateFlow<List<IIrcMessage>>
     val nickState: StateFlow<NickStateMachine>
-//    val self: UserState
+//    val selfNick: StateFlow<CharSequence>
 }
 
-data class MutableClientState(
-    val mChannels: MutableStateFlow<List<MutableChannelState>> = MutableStateFlow(emptyList()),
-    val mMessages: MutableStateFlow<List<IIrcMessage>> = MutableStateFlow(emptyList()),
-    val mNickSate: MutableStateFlow<NickStateMachine> = MutableStateFlow(NickStateMachine.NickLess),
-//    val mSelf: MutableUserState = MutableUserState()
-) : ClientState {
+interface ISelfNickState {
+    val selfNickState: StateFlow<NickStateMachine>
+}
+
+object SelfNickState : ISelfNickState {
+    val selfNick = MutableStateFlow<NickStateMachine>(NickStateMachine.NickLess)
+    override val selfNickState: StateFlow<NickStateMachine>
+        get() = selfNick
+}
+
+object MutableClientState : ClientState {
+
+    private val mChannels: MutableStateFlow<List<ChannelState>> = MutableStateFlow(emptyList())
+    private val mMessages = MutableStateFlow<List<IIrcMessage>>(emptyList())
     override val channels: StateFlow<List<ChannelState>>
         get() = mChannels
     override val messages: StateFlow<List<IIrcMessage>>
         get() = mMessages
     override val nickState: StateFlow<NickStateMachine>
-        get() = mNickSate
-//    override val self: UserState
-//        get() = mSelf
+        get() = SelfNickState.selfNick
+//    override val selfNick: StateFlow<CharSequence>
+//        get() = SelfNickState.selfNick.filterIsInstance<NickStateMachine.Accept>()
 
 }

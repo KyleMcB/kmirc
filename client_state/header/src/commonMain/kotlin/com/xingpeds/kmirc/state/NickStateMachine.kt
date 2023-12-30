@@ -18,5 +18,5 @@ sealed interface NickStateMachine {
     /**
      * Server accepted nick. State should get updated.
      */
-    data class Accept(val nick: String) : NickStateMachine
+    data class Accept(val nick: String) : NickStateMachine, CharSequence by nick
 }

@@ -9,7 +9,6 @@ import com.xingpeds.kmirc.clientnetwork.Connect
 import com.xingpeds.kmirc.clientnetwork.ConnectionResult
 import com.xingpeds.kmirc.engine.IClientIrcEngine
 import com.xingpeds.kmirc.entities.IIrcMessage
-import com.xingpeds.kmirc.entities.IrcUser
 import com.xingpeds.kmirc.parser.IrcLineParser
 import com.xingpeds.kmirc.simplebot.injection.Adapters
 import com.xingpeds.kmirc.simplebot.injection.ImplementationModule.getConnectFun
@@ -40,15 +39,14 @@ fun main(args: Array<String>) = runBlocking {
                     exitProcess(0)
                 }
             }
-
+//        val nickManager = Nick
             val engine: IClientIrcEngine = getEngine(
-                wantedNick = IrcUser(nick = "hellobotlongname", "kotlinBot", "*", "kotlin irc bot by Kyle McBurnett"),
                 inputFlow = Adapters.socketToEngineAdapter(connection.incoming), // I need to get the marshaller and parser
                 sendFun = { iIrcMessage: IIrcMessage ->
                     connection.write(iIrcMessage.toIRCString())
                 },
-                mState = com.xingpeds.kmirc.state.MutableClientState(),
-                scope = CoroutineScope(Dispatchers.Default)
+                scope = CoroutineScope(Dispatchers.Default),
+                processors = emptyList() //needs to get a nickstatemanager...
             )
         }
 

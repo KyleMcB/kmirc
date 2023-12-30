@@ -23,6 +23,7 @@ interface EventList {
 //    val onTopicChange: SharedFlow<IIrcEvent.TopicChange>
 //    val onChannelNotice: SharedFlow<IIrcEvent.ChannelNotice>
     val onINIT: SharedFlow<IIrcEvent.INIT>
+    val onPRIVMSG: SharedFlow<IIrcEvent.PRIVMSG>
 }
 
 internal object EventListImpl : EventList {
@@ -44,6 +45,10 @@ internal object EventListImpl : EventList {
     val mNotice = MutableSharedFlow<IIrcEvent.Notice>(replay = 10)
     override val onNOTICE: SharedFlow<IIrcEvent.Notice>
         get() = mNotice
+
+    val mPRIVMSG = MutableSharedFlow<IIrcEvent.PRIVMSG>(replay = 10)
+    override val onPRIVMSG: SharedFlow<IIrcEvent.PRIVMSG>
+        get() = mPRIVMSG
 
     //    override val onJOIN: SharedFlow<IIrcEvent.JOIN>
 //        get() = mJoin
