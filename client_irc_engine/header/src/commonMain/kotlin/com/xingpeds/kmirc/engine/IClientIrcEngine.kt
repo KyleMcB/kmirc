@@ -5,7 +5,6 @@
 package com.xingpeds.kmirc.engine
 
 import com.xingpeds.kmirc.entities.IIrcEvent
-import com.xingpeds.kmirc.entities.IIrcMessage
 import kotlinx.coroutines.flow.SharedFlow
 
 /**
@@ -17,8 +16,4 @@ interface IClientIrcEngine {
     val events: SharedFlow<IIrcEvent>
 }
 
-interface MessageProcessor {
 
-    suspend fun process(message: IIrcMessage, broadcast: (IIrcEvent) -> Unit)
-
-}

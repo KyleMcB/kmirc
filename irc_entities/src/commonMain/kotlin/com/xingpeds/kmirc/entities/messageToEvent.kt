@@ -2,11 +2,9 @@
  * Copyright 2024 Kyle McBurnett
  */
 
-package com.xingpeds.kmirc.engine
+package com.xingpeds.kmirc.entities
 
-import com.xingpeds.kmirc.entities.*
-
-fun messageToEvent(message: IIrcMessage): IIrcEvent? = when (message.command) {
+fun messageToEvent(message: IIrcMessage): IIrcEvent = when (message.command) {
     IrcCommand.PASS -> TODO()
     IrcCommand.NICK -> TODO()
     IrcCommand.USER -> TODO()
@@ -14,7 +12,7 @@ fun messageToEvent(message: IIrcMessage): IIrcEvent? = when (message.command) {
     IrcCommand.OPER -> TODO()
     IrcCommand.QUIT -> TODO()
     IrcCommand.SQUIT -> TODO()
-    IrcCommand.JOIN -> TODO()
+    IrcCommand.JOIN -> IIrcEvent.JOIN(message)
     IrcCommand.PART -> TODO()
     IrcCommand.MODE -> TODO()
     IrcCommand.TOPIC -> TODO()
@@ -30,8 +28,8 @@ fun messageToEvent(message: IIrcMessage): IIrcEvent? = when (message.command) {
     IrcCommand.TRACE -> TODO()
     IrcCommand.ADMIN -> TODO()
     IrcCommand.INFO -> TODO()
-    IrcCommand.PRIVMSG -> sendPrivmsgEvent(message)
-    IrcCommand.NOTICE -> sendNoticeEvent(message)
+    IrcCommand.PRIVMSG -> IIrcEvent.PRIVMSG(message)
+    IrcCommand.NOTICE -> IIrcEvent.Notice(message)
     IrcCommand.WHO -> TODO()
     IrcCommand.WHOIS -> TODO()
     IrcCommand.WHOWAS -> TODO()
@@ -176,46 +174,3 @@ fun messageToEvent(message: IIrcMessage): IIrcEvent? = when (message.command) {
     IrcCommand.ERR_NOSERVICEHOST -> TODO()
 }
 
-//todo move this logic to the constructor of the ircEvent and write kotest propetry tests
-fun sendPrivmsgEvent(message: IIrcMessage): IIrcEvent? {
-
-// user or server
-    val host = message.prefix?.host
-    val nickOrServer = message.prefix?.nick ?: return null
-    val from: IrcFrom = if (host == null) {
-        IrcFrom.Server(nickOrServer)
-    } else {
-        IrcFrom.User(nickOrServer)
-    }
-    val target: IrcTarget = if (isChannel(message.params.list[0])) {
-        IrcTarget.Channel(message.params.list[0])
-    } else {
-        IrcTarget.User(message.params.list[0])
-    }
-    val privmsgText: String = message.params.longParam ?: return null
-    return IIrcEvent.PRIVMSG(from = from, target = target, message = privmsgText)
-}
-
-private fun sendNoticeEvent(message: IIrcMessage): IIrcEvent.Notice? {
-    val user = message.prefix?.user
-    val host = message.prefix?.host
-    val nick = message.prefix?.nick
-    val text = message.params.longParam
-    return if (nick != null) {
-        val targetString: String = message.params.list[0]
-        val target: IrcTarget = if (targetString.startsWith("#")) {
-            IrcTarget.Channel(targetString)
-        } else {
-            IrcTarget.User(targetString)
-        }
-        val from: IrcFrom = if (user == null && host == null) {
-            IrcFrom.Server(nick)
-        } else {
-            IrcFrom.User(nick)
-        }
-        val noticeEvent = IIrcEvent.Notice(target = target, from = from, message = text ?: "")
-        noticeEvent
-    } else {
-        null
-    }
-}

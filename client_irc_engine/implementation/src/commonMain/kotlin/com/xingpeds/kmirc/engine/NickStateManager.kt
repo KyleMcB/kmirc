@@ -31,7 +31,7 @@ class NickStateManager(
             IrcCommand.ERR_ERRONEUSNICKNAME -> {
                 nickRetryCounter++
                 mState.emit(NickStateMachine.Refused("In use", nickRetryCounter))
-                broadcast(IIrcEvent.PICK_NEW_NICK)
+                broadcast(IIrcEvent.PickNewNick)
             }
 
             else -> {
