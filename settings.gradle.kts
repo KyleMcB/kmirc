@@ -3,7 +3,7 @@
  */
 
 rootProject.name = "MyApplication"
-val excludedDirs = setOf(".gradle", ".idea", ".run", ".git", "build")
+val excludedDirs = setOf(".gradle", ".idea", ".run", ".git", "build", "src")
 
 // Recursive function to enter all the directories that has a build.gradle.kts file and include them
 fun includeModules(set: Set<String>, prefix: String, dir: File): Set<String> {

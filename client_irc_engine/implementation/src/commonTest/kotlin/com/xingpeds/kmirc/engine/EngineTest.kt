@@ -19,8 +19,6 @@ class EngineTest {
         "TestNick", username = username, hostname = hostname, realName = realName
     )
 
-
-
     @Test
     fun pongCommand() = runWaitingTest { complete ->
         val longParam = "iW|dHYrFO^"
@@ -41,7 +39,6 @@ class EngineTest {
             engineScope = backgroundScope
         )
     }
-
 
 
     @Test
