@@ -6,16 +6,16 @@ package com.xingpeds.kmirc.engine
 
 import com.xingpeds.kmirc.entities.*
 import com.xingpeds.kmirc.state.NickStateMachine
+import com.xingpeds.kmirc.state.SelfNickState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
 class NickStateManager(
     val wantedNick: IIrcUser,
-    private val mState: MutableStateFlow<NickStateMachine> = MutableStateFlow(NickStateMachine.NickLess),
+    private val mState: MutableStateFlow<NickStateMachine> = SelfNickState.selfNick, //todo I might want to move this class into its module so the rest of the engine can not see the mutable state
     private val send: suspend (IIrcMessage) -> Unit,
     private val scope: CoroutineScope,
     private val events: Flow<IIrcEvent>

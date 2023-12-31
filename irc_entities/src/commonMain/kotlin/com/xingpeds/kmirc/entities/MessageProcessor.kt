@@ -4,9 +4,11 @@
 
 package com.xingpeds.kmirc.entities
 
-
 interface MessageProcessor {
 
     suspend fun process(message: IIrcMessage, broadcast: (IIrcEvent) -> Unit)
+
+    override fun equals(other: Any?): Boolean
+    override fun hashCode(): Int
 
 }

@@ -18,8 +18,6 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 implementation(project(":irc_entities"))
                 implementation(project(":client_state:header"))
-                implementation(project(":client_state:mutable_impl"))
-                implementation(project(":client_irc_engine:header"))
             }
         }
         val commonTest by getting {
