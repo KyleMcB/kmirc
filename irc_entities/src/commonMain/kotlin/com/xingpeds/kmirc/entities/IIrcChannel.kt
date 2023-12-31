@@ -4,7 +4,7 @@
 
 package com.xingpeds.kmirc.entities
 
-interface IIrcChannel {
+interface IIrcChannel : {
 
     val name: String
 }

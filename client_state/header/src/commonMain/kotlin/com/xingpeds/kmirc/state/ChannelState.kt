@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 interface ChannelState : IIrcChannel {
-    val topic: StateFlow<String>
-
+    val nicks: StateFlow<List<String>>
 }
 
-data class MutableChannelState(override val name: String, val mTopic: MutableStateFlow<String>) : ChannelState {
-    override val topic: StateFlow<String>
-        get() = mTopic
+data class MutableChannelState(override val name: String) : ChannelState {
+    val mNicks = MutableStateFlow<List<String>>(emptyList())
+    override val nicks: StateFlow<List<String>>
+        get() = mNicks
 }

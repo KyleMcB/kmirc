@@ -62,7 +62,7 @@ object SelfNickState : ISelfNickState {
  */
 object MutableClientState : ClientState {
 
-    private val mChannels: MutableStateFlow<List<ChannelState>> = MutableStateFlow(emptyList())
+    val mChannels: MutableStateFlow<List<MutableChannelState>> = MutableStateFlow(emptyList())
 
     //    private val mMessages = MutableStateFlow<List<IIrcMessage>>(emptyList())
     override val channels: StateFlow<List<ChannelState>>
@@ -98,9 +98,11 @@ object StateMessageProcessor : MessageProcessor {
                 //is it me?
                 val nick = event.nick
                 if (nick == SelfNickState.selfNickState.value.toString()) {
-                    // add a channel to a list of channels I am in
+                    MutableClientState.mChannels.update { it + MutableChannelState(event.channel) }
                 } else {
-                    // add a user to a list of users in a channel
+                    MutableClientState.mChannels.value.first { it.name == event.channel }.mNicks.update {
+                        it + event.nick
+                    }
                 }
             }
         }
