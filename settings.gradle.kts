@@ -3,23 +3,50 @@
  */
 
 rootProject.name = "MyApplication"
+val excludedDirs = setOf(".gradle", ".idea", ".run", ".git", "build")
 
-//include(":androidApp")
-//include(":shared")
-//include(":desktopApp")
-include(":client-network:header")
-include(":client-network:ktorImpl")
-include(":irc_entities")
-include(":irc_parser:header")
-include(":irc_parser:header_test")
-include(":irc_parser:implementation")
-include(":TestUtils")
-include(":client_state:header")
-include(":client_irc_engine:header")
-include(":client_irc_engine:implementation")
-include(":Utility_Functions")
-include(":bot_prototype:core")
-include(":bot_prototype:dep_inject")
+// Recursive function to enter all the directories that has a build.gradle.kts file and include them
+fun includeModules(set: Set<String>, prefix: String, dir: File): Set<String> {
+    val gradlePath = "$prefix:${dir.name}".removePrefix(":kmirc")
+    val intermediateSet = set + if (dir.listFiles()?.firstOrNull { it.name == "build.gradle.kts" } != null &&
+        gradlePath != "") {
+        println("including $gradlePath")
+        setOf(gradlePath)
+    } else {
+        emptySet()
+    }
+    return dir.listFiles()?.filter { !excludedDirs.contains(it.name) && it.isDirectory }
+        ?.fold(intermediateSet) { acc: Set<String>, file: File? ->
+            acc + includeModules(
+                intermediateSet,
+                gradlePath,
+                file ?: File(".")
+            )
+        } ?: emptySet()
+}
+
+val output = includeModules(emptySet(), "", rootDir).toList().sorted()
+println("set $output")
+val list = mutableListOf<String>()
+list.add(":androidApp")
+list.add(":shared")
+list.add(":desktopApp")
+list.add(":client-network:header")
+list.add(":client-network:ktorImpl")
+list.add(":irc_entities")
+list.add(":irc_parser:header")
+list.add(":irc_parser:header_test")
+list.add(":irc_parser:implementation")
+list.add(":TestUtils")
+list.add(":client_state:header")
+list.add(":client_irc_engine:header")
+list.add(":client_irc_engine:implementation")
+list.add(":Utility_Functions")
+list.add(":bot_prototype:core")
+list.add(":bot_prototype:dep_inject")
+list.sort()
+println("manual $list")
+include(output)
 pluginManagement {
     repositories {
         gradlePluginPortal()
