@@ -7,6 +7,7 @@ package com.xingpeds.kmirc.engine
 import com.xingpeds.kmirc.entities.*
 import com.xingpeds.kmirc.state.NickStateMachine
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -14,10 +15,10 @@ import kotlinx.coroutines.launch
 
 class NickStateManager(
     val wantedNick: IIrcUser,
-    private val mState: MutableStateFlow<NickStateMachine>,
+    private val mState: MutableStateFlow<NickStateMachine> = MutableStateFlow(NickStateMachine.NickLess),
     private val send: suspend (IIrcMessage) -> Unit,
     private val scope: CoroutineScope,
-    private val events: SharedFlow<IIrcEvent>
+    private val events: Flow<IIrcEvent>
 ) : MessageProcessor {
     private var attemptedNick: String = wantedNick.nick
     private var nickRetryCounter: Int = 0

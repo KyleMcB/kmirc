@@ -19,21 +19,7 @@ class EngineTest {
         "TestNick", username = username, hostname = hostname, realName = realName
     )
 
-//    @Test TODO move user test to nick state machine tests
-//    fun userCommand() = runWaitingTest { testCompleted ->
-//        val engine: IClientIrcEngine = IrcEngine(
-//            send = { message: IIrcMessage ->
-//                println("[engineTest] $message sent")
-//                if (message.command == IrcCommand.USER) {
-//                    val output = message.toIRCString()
-//                    output.assert("USER $username $hostname * :$realName\r\n")
-//                    testCompleted()
-//                }
-//            },
-//            input = emptyFlow(),
-//            engineScope = this.backgroundScope
-//        )
-//    }
+
 
     @Test
     fun pongCommand() = runWaitingTest { complete ->
@@ -56,20 +42,7 @@ class EngineTest {
         )
     }
 
-//    @Test TODO: move nick test to the nickstatemachine tests
-//    fun nickCommand() = runWaitingTest { complete ->
-//        val engine: IClientIrcEngine = IrcEngine(
-//            send = { message: IIrcMessage ->
-//                if (message.command == IrcCommand.NICK) {
-//                    val output = message.toIRCString()
-//                    output.assert("NICK ${ircUser.nick}\r\n")
-//                    complete()
-//                }
-//            },
-//            input = emptyFlow(),
-//            engineScope = backgroundScope
-//        )
-//    }
+
 
     @Test
     fun noticeCommand() = runWaitingTest { complete ->
