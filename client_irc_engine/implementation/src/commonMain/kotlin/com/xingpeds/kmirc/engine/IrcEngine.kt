@@ -19,9 +19,6 @@ class IrcEngine(
     private val mEvents =
         MutableSharedFlow<IIrcEvent>(replay = 100, extraBufferCapacity = 100, onBufferOverflow = BufferOverflow.SUSPEND)
 
-//    private val inputFlow = input.shareIn(engineScope, SharingStarted.Eagerly, replay = 100)
-
-
     val eventList: EventList = EventListImpl
 
     override val events: SharedFlow<IIrcEvent>
@@ -31,22 +28,18 @@ class IrcEngine(
     init {
         input.onEach { message ->
             val event = try {
-                println("Attempting to convert message to event; $message") // Debug statement
                 messageToEvent(message)
             } catch (e: Throwable) {
                 null
             }
             if (event != null) {
-                println("Event successfully created") // Debug statement
                 processors.forEach { processor ->
                     processor.process(message) { event ->
-                        println("Processing event") // Debug statement
                         engineScope.launch {
                             mEvents.emit(event)
                         }
                     }
                 }
-                println("Emitting event") // Debug statement
                 mEvents.emit(event)
             }
         }.launchIn(engineScope)
@@ -61,7 +54,6 @@ class IrcEngine(
     internal fun startEventBroadcaster() = engineScope.launch {
         events.collect { event ->
 
-            println("Starting to broadcast event $event") // Debug statement
 
             when (event) {
                 IIrcEvent.INIT -> {
@@ -77,18 +69,13 @@ class IrcEngine(
                 }
 
                 is IIrcEvent.PRIVMSG -> {
-                    println("Received PRIVMSG. Broadcasting...") // Debug statement
                     EventListImpl.mPRIVMSG.emit(event)
                 }
 
                 else -> TODO("add single event broadcaster for $event")
             }
-
-            println("Finished broadcasting event") // Debug statement
-
         }
     }
-
 
     init {
         eventList.onPING.onEach { ping: IIrcEvent.PING ->
