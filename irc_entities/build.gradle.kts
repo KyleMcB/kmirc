@@ -31,6 +31,7 @@ koverReport {
         rule {
             isEnabled = true
             minBound(98)
+//            minBound(98, metric = MetricType.BRANCH) //TODO be more strict
             filters {
                 includes {
                     packages("com.xingpeds.kmirc.entities.events")

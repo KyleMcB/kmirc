@@ -10,6 +10,7 @@ import com.xingpeds.kmirc.state.SelfNickState
 import com.xingpeds.kmirc.state.StateMessageProcessor
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
 /*
@@ -18,6 +19,7 @@ import kotlin.test.Test
 
 class StateMessageProcessorTests {
     val testNick = "testNick"
+
 
     init {
         SelfNickState.selfNick.update { NickStateMachine.Accept(testNick) }
@@ -47,5 +49,10 @@ class StateMessageProcessorTests {
                 finishTest()
             }
         }
+    }
+
+    @Test
+    fun noStateChange() = runTest {
+
     }
 }

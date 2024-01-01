@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.update
  */
 object StateMessageProcessor : MessageProcessor {
     override suspend fun process(message: IIrcMessage, broadcast: (IIrcEvent) -> Unit) {
+        MutableClientState.mMessages.update { it.take(99) + message }
         when (val event = messageToEvent(message)) {
             IIrcEvent.INIT -> Unit // no state change on init
             is IIrcEvent.Notice -> MutableClientState.mNotices.update { it + event }
