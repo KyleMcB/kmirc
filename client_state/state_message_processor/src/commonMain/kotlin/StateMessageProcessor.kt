@@ -1,9 +1,14 @@
-package com.xingpeds.kmirc.state
+/*
+ * Copyright 2024 Kyle McBurnett
+ */
 
 import com.xingpeds.kmirc.entities.IIrcEvent
 import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.MessageProcessor
 import com.xingpeds.kmirc.entities.messageToEvent
+import com.xingpeds.kmirc.state.MutableChannelState
+import com.xingpeds.kmirc.state.MutableClientState
+import com.xingpeds.kmirc.state.SelfNickState
 import kotlinx.coroutines.flow.update
 
 /**
@@ -32,7 +37,7 @@ object StateMessageProcessor : MessageProcessor {
         }
     }
 
-    override fun equals(other: Any?): Boolean = this.hashCode() == other.hashCode()
+    override fun equals(other: Any?): Boolean = hashCode() == other.hashCode()
 
     override fun hashCode(): Int = "StateMessageProcessor".hashCode()
 }
