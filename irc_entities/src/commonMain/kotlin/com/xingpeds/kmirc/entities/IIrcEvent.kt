@@ -48,7 +48,7 @@ sealed interface IIrcEvent {
     data class PING(val ircParams: IrcParams) : IIrcEvent
     data class PRIVMSG(val from: IrcFrom, val target: IrcTarget, val message: String) : IIrcEvent {
         constructor(message: IIrcMessage) : this(
-            from = if (message.prefix?.host == null) {
+            from = if (message.prefix?.host == null && message.prefix?.user == null) {
                 IrcFrom.Server(message.prefix?.nick ?: throw Exception("privmsg missing server prefix"))
             } else {
                 IrcFrom.User(message.prefix?.nick ?: throw Exception("privmsg missing nick"))
