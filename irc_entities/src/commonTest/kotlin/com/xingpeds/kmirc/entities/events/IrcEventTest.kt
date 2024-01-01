@@ -9,12 +9,16 @@ import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcMessage
 import com.xingpeds.kmirc.entities.IrcParams
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.boolean
 import io.kotest.property.arbitrary.domain
+import io.kotest.property.arbitrary.string
 import io.kotest.property.arbs.name
 import io.kotest.property.checkAll
 import kotlinx.coroutines.test.runTest
 import nickPrefixArb
 import org.junit.Test
+import serverPrefixArb
+import kotlin.test.assertFailsWith
 
 class IrcEventTest {
     @Test
@@ -41,6 +45,70 @@ class IrcEventTest {
                 IrcMessage(prefix, command = IrcCommand.JOIN, params = IrcParams(channelName.toString()))
             IIrcEvent.JOIN(message)
         }
+    }
 
+    @Test
+    fun notice() = runTest {
+        checkAll(nickPrefixArb, Arb.boolean(), Arb.string(), Arb.name()) { prefix, targetChannel, message, targetName ->
+            val line: IrcMessage = IrcMessage(
+                prefix, IrcCommand.NOTICE, IrcParams(
+                    if (targetChannel) {
+                        "#$targetName"
+                    } else {
+                        targetName.toString()
+                    }, longParam = message
+                )
+            )
+            IIrcEvent.Notice(line)
+        }
+    }
+
+    @Test
+    fun privmsgFromNick() = runTest {
+//        :Angel PRIVMSG Wiz :Hello are you receiving this message ?
+        checkAll(nickPrefixArb, Arb.boolean(), Arb.string(), Arb.name()) { prefix, targetChannel, message, targetName ->
+            val line: IrcMessage = IrcMessage(
+                prefix, IrcCommand.PRIVMSG, IrcParams(
+                    if (targetChannel) {
+                        "#$targetName"
+                    } else {
+                        targetName.toString()
+                    }, longParam = message
+                )
+            )
+            IIrcEvent.PRIVMSG(line)
+        }
+    }
+
+    @Test
+    fun privmsgFromServer() = runTest {
+//        :Angel PRIVMSG Wiz :Hello are you receiving this message ?
+        checkAll(
+            serverPrefixArb,
+            Arb.boolean(),
+            Arb.string(),
+            Arb.name()
+        ) { prefix, targetChannel, message, targetName ->
+            val line: IrcMessage = IrcMessage(
+                prefix, IrcCommand.PRIVMSG, IrcParams(
+                    if (targetChannel) {
+                        "#$targetName"
+                    } else {
+                        targetName.toString()
+                    }, longParam = message
+                )
+            )
+            IIrcEvent.PRIVMSG(line)
+        }
+    }
+
+    @Test
+    fun joinMissingNick() {
+        val message: IIrcMessage =
+            IrcMessage(null, command = IrcCommand.JOIN, params = IrcParams("#hello"))
+        assertFailsWith<IllegalIRCMessage> {
+            IIrcEvent.JOIN(message)
+
+        }
     }
 }
