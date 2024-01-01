@@ -36,7 +36,8 @@ class EngineTest {
                     params = IrcParams(longParam = longParam)
                 )
             ),
-            engineScope = backgroundScope
+            engineScope = backgroundScope,
+            processors = emptySet()
         )
     }
 
@@ -55,6 +56,7 @@ class EngineTest {
                 )
             ),
             engineScope = backgroundScope,
+            processors = emptySet()
         )
         backgroundScope.launch {
             subject.eventList.onNOTICE.collect { notice ->
@@ -77,7 +79,7 @@ class EngineTest {
                     params = IrcParams("hellobotlongname", longParam = "VERSION")
                 )
             ),
-            processors = emptyList(),
+            processors = emptySet(),
             engineScope = backgroundScope
         )
         backgroundScope.launch {

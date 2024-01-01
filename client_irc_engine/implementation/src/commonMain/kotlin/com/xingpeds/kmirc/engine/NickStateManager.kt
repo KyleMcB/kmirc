@@ -74,4 +74,8 @@ class NickStateManager(
 
     override suspend fun process(message: IIrcMessage, broadcast: (IIrcEvent) -> Unit) =
         updateNickState(message, broadcast)
+
+    override fun equals(other: Any?): Boolean = hashCode() == other.hashCode()
+
+    override fun hashCode(): Int = "NickStateManager".hashCode()
 }

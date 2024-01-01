@@ -5,7 +5,6 @@
 package com.xingpeds.kmirc.engine
 
 import com.xingpeds.kmirc.entities.*
-import com.xingpeds.kmirc.state.StateMessageProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
@@ -14,7 +13,7 @@ import kotlinx.coroutines.launch
 class IrcEngine(
     val send: suspend (IIrcMessage) -> Unit,
     input: Flow<IIrcMessage>,
-    private val processors: Set<MessageProcessor> = setOf(StateMessageProcessor, NickStateManager()),
+    private val processors: Set<MessageProcessor>,
     private val engineScope: CoroutineScope,
 ) : IClientIrcEngine {
     private val mEvents =
