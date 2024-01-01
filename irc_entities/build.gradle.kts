@@ -20,6 +20,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(project(":TestUtils"))
+                implementation(project(":TestArbs"))
             }
         }
     }

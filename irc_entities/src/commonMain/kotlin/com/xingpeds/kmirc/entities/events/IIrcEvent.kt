@@ -16,9 +16,8 @@ sealed interface IIrcEvent {
 
     data object PickNewNick : IIrcEvent
     data class Notice(val target: IrcTarget, val from: IrcFrom, val message: String) : IIrcEvent {
-        constructor(message: IIrcMessage) : this( //todo
-            from = prefixToFrom(message.prefix ?: throw Exception("prefix is missing for Notice message"))
-                ?: throw Exception("can not convert prefix to IrcFrom"),
+        constructor(message: IIrcMessage) : this(
+            from = prefixToFrom(message.prefix ?: throw Exception("prefix is missing for Notice message")),
             target = if (isChannel(message.params.list[0])) {
                 IrcTarget.Channel(message.params.list[0])
             } else {
