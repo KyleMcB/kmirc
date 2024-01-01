@@ -12,12 +12,7 @@ import org.junit.Test
 import runWaitingTest
 
 class EngineTest {
-    val username = "TestUser"
-    val hostname = "testHostname"
-    val realName = "test realname"
-    private val ircUser = IrcUser(
-        "TestNick", username = username, hostname = hostname, realName = realName
-    )
+
 
     @Test
     fun pongCommand() = runWaitingTest { complete ->

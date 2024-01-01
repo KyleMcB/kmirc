@@ -1,12 +1,13 @@
+/*
+ * Copyright 2024 Kyle McBurnett
+ */
+
 package com.xingpeds.kmirc.engine
 
 import assert
-import com.xingpeds.kmirc.entities.IIrcEvent
-import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcUser
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.emptyFlow
+import com.xingpeds.kmirc.entities.events.IIrcEvent
 import kotlinx.coroutines.flow.flowOf
 import runWaitingTest
 import kotlin.test.Test
@@ -20,23 +21,24 @@ class NickStateManagerTest {
         nickName, username = username, hostname = hostname, realName = realName
     )
 
-        @Test
+    @Test
     fun userCommand() = runWaitingTest { complete ->
-            NickStateManager(
-                wantedNick = ircUser,
-                send = {
-                    if (it.command == IrcCommand.USER) {
-                        it.params.list[0].assert(username)
-                        it.params.list[1].assert(hostname)
-                        it.params.longParam.assert(realName)
-                        complete()
-                    }
+        NickStateManager(
+            wantedNick = ircUser,
+            send = {
+                if (it.command == IrcCommand.USER) {
+                    it.params.list[0].assert(username)
+                    it.params.list[1].assert(hostname)
+                    it.params.longParam.assert(realName)
+                    complete()
+                }
 
-                },
-                scope = backgroundScope,
-                events = flowOf(IIrcEvent.INIT)
-            )
+            },
+            scope = backgroundScope,
+            events = flowOf(IIrcEvent.INIT)
+        )
     }
+
     @Test
     fun nickCommand() = runWaitingTest { complete ->
         NickStateManager(

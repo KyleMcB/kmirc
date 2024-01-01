@@ -1,6 +1,10 @@
+/*
+ * Copyright 2024 Kyle McBurnett
+ */
+
 package com.xingpeds.kmirc.state
 
-import com.xingpeds.kmirc.entities.IIrcEvent
+import com.xingpeds.kmirc.entities.events.IIrcEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

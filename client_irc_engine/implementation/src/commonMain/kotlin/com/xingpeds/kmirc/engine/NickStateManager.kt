@@ -5,6 +5,7 @@
 package com.xingpeds.kmirc.engine
 
 import com.xingpeds.kmirc.entities.*
+import com.xingpeds.kmirc.entities.events.IIrcEvent
 import com.xingpeds.kmirc.state.NickStateMachine
 import com.xingpeds.kmirc.state.SelfNickState
 import kotlinx.coroutines.CoroutineScope

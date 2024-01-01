@@ -3,9 +3,9 @@
  */
 package com.xingpeds.kmirc.state
 
-import com.xingpeds.kmirc.entities.IIrcEvent
 import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.MessageProcessor
+import com.xingpeds.kmirc.entities.events.IIrcEvent
 import com.xingpeds.kmirc.entities.messageToEvent
 import kotlinx.coroutines.flow.update
 

@@ -5,6 +5,7 @@
 package com.xingpeds.kmirc.engine
 
 import com.xingpeds.kmirc.entities.*
+import com.xingpeds.kmirc.entities.events.IIrcEvent
 
 fun messageToEvent(message: IIrcMessage): IIrcEvent? = when (message.command) {
     IrcCommand.PASS -> TODO()

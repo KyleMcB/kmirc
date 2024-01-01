@@ -4,7 +4,11 @@
 
 package com.xingpeds.kmirc.engine
 
-import com.xingpeds.kmirc.entities.*
+import com.xingpeds.kmirc.entities.IIrcMessage
+import com.xingpeds.kmirc.entities.IrcCommand
+import com.xingpeds.kmirc.entities.IrcMessage
+import com.xingpeds.kmirc.entities.MessageProcessor
+import com.xingpeds.kmirc.entities.events.IIrcEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*

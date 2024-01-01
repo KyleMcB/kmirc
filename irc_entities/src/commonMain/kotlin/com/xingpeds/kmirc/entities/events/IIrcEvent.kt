@@ -2,25 +2,9 @@
  * Copyright 2024 Kyle McBurnett
  */
 
-package com.xingpeds.kmirc.entities
+package com.xingpeds.kmirc.entities.events
 
-sealed class IrcTarget : CharSequence {
-    data class User(val user: String) : IrcTarget(), CharSequence by user
-    data class Channel(val channel: String) : IrcTarget(), CharSequence by channel
-}
-
-sealed class IrcFrom : CharSequence {
-    data class User(val user: String) : IrcFrom(), CharSequence by user
-    data class Server(val server: String) : IrcFrom(), CharSequence by server
-}
-
-fun prefixToFrom(prefix: IrcPrefix): IrcFrom? {
-    return if (prefix.host == null) {
-        IrcFrom.Server(prefix.nick)
-    } else {
-        IrcFrom.User(prefix.nick)
-    }
-}
+import com.xingpeds.kmirc.entities.*
 
 sealed interface IIrcEvent {
     data class JOIN(val channel: String, val nick: String) : IIrcEvent {

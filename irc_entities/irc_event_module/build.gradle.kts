@@ -24,17 +24,11 @@ kotlin {
         }
     }
 }
-
 koverReport {
     verify {
         rule {
             isEnabled = true
             minBound(98)
-            filters {
-                includes {
-                    packages("com.xingpeds.kmirc.entities.events")
-                }
-            }
         }
     }
 }

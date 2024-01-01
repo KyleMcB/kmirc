@@ -4,7 +4,7 @@
 
 package com.xingpeds.kmirc.engine
 
-import com.xingpeds.kmirc.entities.IIrcEvent
+import com.xingpeds.kmirc.entities.events.IIrcEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 
