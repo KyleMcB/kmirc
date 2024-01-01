@@ -34,5 +34,5 @@ object StateMessageProcessor : MessageProcessor {
 
     override fun equals(other: Any?): Boolean = this.hashCode() == other.hashCode()
 
-    override fun hashCode(): Int = this.javaClass.name.hashCode()
+    override fun hashCode(): Int = "StateMessageProcessor".hashCode()
 }
