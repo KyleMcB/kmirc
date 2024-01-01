@@ -1,14 +1,12 @@
 /*
  * Copyright 2024 Kyle McBurnett
  */
+package com.xingpeds.kmirc.state
 
 import com.xingpeds.kmirc.entities.IIrcEvent
 import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.MessageProcessor
 import com.xingpeds.kmirc.entities.messageToEvent
-import com.xingpeds.kmirc.state.MutableChannelState
-import com.xingpeds.kmirc.state.MutableClientState
-import com.xingpeds.kmirc.state.SelfNickState
 import kotlinx.coroutines.flow.update
 
 /**
@@ -21,7 +19,6 @@ object StateMessageProcessor : MessageProcessor {
             IIrcEvent.INIT -> Unit // no state change on init
             is IIrcEvent.Notice -> MutableClientState.mNotices.update { it + event }
             is IIrcEvent.PING -> Unit // no state change on PING
-            is IIrcEvent.PRIVMSG -> MutableClientState.mPrivmsgs.update { it + event }
             IIrcEvent.PickNewNick -> Unit // is this where I want to handle the nick state?
             is IIrcEvent.JOIN -> {
                 //is it me?
@@ -34,6 +31,8 @@ object StateMessageProcessor : MessageProcessor {
                     }
                 }
             }
+
+            is IIrcEvent.PRIVMSG -> MutableClientState.mPrivmsgs.update { it + event }
         }
     }
 
