@@ -7,6 +7,8 @@ import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.MessageProcessor
 import com.xingpeds.kmirc.entities.events.IIrcEvent
 import com.xingpeds.kmirc.entities.messageToEvent
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 
 /**
@@ -22,12 +24,19 @@ object StateMessageProcessor : MessageProcessor {
             is IIrcEvent.PING -> Unit // no state change on PING
             IIrcEvent.PickNewNick -> Unit // is this where I want to handle the nick state?
             is IIrcEvent.JOIN -> {
-                //is it me?
+                println(event)
                 val nick = event.nick
                 if (nick == SelfNickState.selfNickState.value.toString()) {
-                    MutableClientState.mChannels.update { it + MutableChannelState(event.channel) }
+                    println("selfjoin")
+                    MutableClientState.mChannels.update {
+                        it + mapOf(event.channel to MutableChannelState(event.channel))
+                    }
                 } else {
-                    MutableClientState.mChannels.value.first { it.name == event.channel }.mNicks.update {
+                    println("add nick to channel")
+                    val members: MutableStateFlow<Set<String>> =
+                        MutableClientState.mChannels.first()[event.channel]?.mMembers
+                            ?: throw Exception("channel [${event.channel}] not found\nchannels: ${MutableClientState.mChannels.first()}")
+                    members.update {
                         it + event.nick
                     }
                 }

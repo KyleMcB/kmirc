@@ -4,14 +4,13 @@
 
 import com.xingpeds.kmirc.entities.*
 import com.xingpeds.kmirc.entities.events.IIrcEvent
-import com.xingpeds.kmirc.state.MutableClientState
-import com.xingpeds.kmirc.state.NickStateMachine
-import com.xingpeds.kmirc.state.SelfNickState
-import com.xingpeds.kmirc.state.StateMessageProcessor
-import kotlinx.coroutines.flow.update
+import com.xingpeds.kmirc.state.*
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.fail
 
 /*
  * Copyright 2024 Kyle McBurnett
@@ -19,6 +18,14 @@ import kotlin.test.Test
 
 class StateMessageProcessorTests {
     val testNick = "testNick"
+    val state = MutableClientState
+    private suspend fun assertNoStateChange() {
+        coroutineScope {
+            state.mChannels.filterNot { it.isEmpty() }.onEach { fail("state changed: $it") }.launchIn(this)
+            state.mNotices.filterNot { it.isEmpty() }.onEach { fail("state changed: $it") }.launchIn(this)
+            state.mPrivmsgs.filterNot { it.isEmpty() }.onEach { fail("state changed: $it") }.launchIn(this)
+        }
+    }
 
 
     init {
@@ -43,7 +50,7 @@ class StateMessageProcessorTests {
         })
         backgroundScope.launch {
 
-            MutableClientState.privmsgs.collect { messages: List<IIrcEvent.PRIVMSG> ->
+            state.privmsgs.collect { messages: List<IIrcEvent.PRIVMSG> ->
                 println(messages)
                 messages.lastOrNull()?.from.assert(IrcFrom.User("otherNick"))
                 finishTest()
@@ -53,6 +60,60 @@ class StateMessageProcessorTests {
 
     @Test
     fun noStateChange() = runTest {
+        backgroundScope.launch {
+            assertNoStateChange()
+        }
 
+        StateMessageProcessor.process(message = IrcMessage(
+            command = IrcCommand.PING, params = IrcParams(longParam = "irc.server.com")
+        ), broadcast = {})
+    }
+
+    @Test
+    fun onJoin() = runWaitingTest { completeTest ->
+        val channelName = "#channelName"
+        state.mChannels.emit(
+            mapOf(
+                channelName to MutableChannelState(channelName)
+            )
+        )
+        backgroundScope.launch {
+            state.channels.collect {
+                println(it)
+            }
+        }
+//        :WiZ JOIN #Twilight_zone        ; JOIN message from WiZ
+        backgroundScope.launch {
+            state.channels.collect { list ->
+                list.forEach { (channelName, channelState): Map.Entry<ChannelName, ChannelState> ->
+                    backgroundScope.launch {
+                        channelState.members.collect {
+                            println(it)
+                        }
+                    }
+                }
+            }
+        }
+
+        StateMessageProcessor.process(message = IrcMessage(
+            prefix = IrcPrefix("otherNick", host = "otherhost"),
+            command = IrcCommand.JOIN,
+            params = IrcParams(
+                channelName
+            )
+        ), broadcast = {})
+        state.channels.filterNot { it.isEmpty() }.onEach { map: Map<ChannelName, ChannelState> ->
+            println(map)
+//            map.lastOrNull()?.members?.value?.contains("otherNick").assert(true)
+            map[channelName]?.members?.first()?.contains("otherNick").assert(true)
+            completeTest()
+        }.launchIn(backgroundScope)
+    }
+
+    @Test
+    fun bla() = runTest {
+        val thing = MutableStateFlow("")
+        thing.value = "hello"
+        thing.value.assert("hello")
     }
 }

@@ -16,9 +16,9 @@ import kotlinx.coroutines.flow.StateFlow
  */
 object MutableClientState : ClientState {
 
-    val mChannels: MutableStateFlow<List<MutableChannelState>> = MutableStateFlow(emptyList())
+    val mChannels: MutableStateFlow<Map<ChannelName, MutableChannelState>> = MutableStateFlow(emptyMap())
     val mMessages = MutableStateFlow<List<IIrcMessage>>(emptyList())
-    override val channels: StateFlow<List<ChannelState>>
+    override val channels: StateFlow<Map<ChannelName, ChannelState>>
         get() = mChannels
 
     val mNotices = MutableStateFlow<List<IIrcEvent.Notice>>(emptyList())

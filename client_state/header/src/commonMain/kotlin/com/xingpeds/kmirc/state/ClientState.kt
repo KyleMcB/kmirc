@@ -9,6 +9,8 @@ import com.xingpeds.kmirc.entities.events.IIrcEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+typealias ChannelName = String
+
 /**
  * ClientState interface defines the primary state elements of an IRC client.
  */
@@ -16,7 +18,7 @@ interface ClientState {
     /**
      * Channel list represented as a StateFlow.
      */
-    val channels: StateFlow<List<ChannelState>>
+    val channels: StateFlow<Map<ChannelName, ChannelState>>
 
     /**
      * Message list represented as a StateFlow.
