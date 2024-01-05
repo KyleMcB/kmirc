@@ -64,56 +64,39 @@ class StateMessageProcessorTests {
             assertNoStateChange()
         }
 
-        StateMessageProcessor.process(message = IrcMessage(
-            command = IrcCommand.PING, params = IrcParams(longParam = "irc.server.com")
-        ), broadcast = {})
+        StateMessageProcessor.process(
+            message = IrcMessage(
+                command = IrcCommand.PING,
+                params = IrcParams(longParam = "irc.server.com")
+            ),
+            broadcast = {}
+        )
+
     }
 
     @Test
-    fun onJoin() = runWaitingTest { completeTest ->
+    fun onOtherJoin() = runWaitingTest { completeTest ->
+//        :WiZ JOIN #Twilight_zone        ; JOIN message from WiZ
+        // pre-existing state. We are in channel #channelName
         val channelName = "#channelName"
         state.mChannels.emit(
             mapOf(
                 channelName to MutableChannelState(channelName)
             )
         )
-        backgroundScope.launch {
-            state.channels.collect {
-                println(it)
-            }
-        }
-//        :WiZ JOIN #Twilight_zone        ; JOIN message from WiZ
-        backgroundScope.launch {
-            state.channels.collect { list ->
-                list.forEach { (channelName, channelState): Map.Entry<ChannelName, ChannelState> ->
-                    backgroundScope.launch {
-                        channelState.members.collect {
-                            println(it)
-                        }
-                    }
-                }
-            }
-        }
-
-        StateMessageProcessor.process(message = IrcMessage(
-            prefix = IrcPrefix("otherNick", host = "otherhost"),
-            command = IrcCommand.JOIN,
-            params = IrcParams(
-                channelName
-            )
-        ), broadcast = {})
+        //
+        StateMessageProcessor.process(
+            message = IrcMessage(
+                prefix = IrcPrefix("otherNick", host = "otherhost"), command = IrcCommand.JOIN, params = IrcParams(
+                    channelName
+                )
+            ),
+            broadcast = { }
+        )
         state.channels.filterNot { it.isEmpty() }.onEach { map: Map<ChannelName, ChannelState> ->
             println(map)
-//            map.lastOrNull()?.members?.value?.contains("otherNick").assert(true)
             map[channelName]?.members?.first()?.contains("otherNick").assert(true)
             completeTest()
         }.launchIn(backgroundScope)
-    }
-
-    @Test
-    fun bla() = runTest {
-        val thing = MutableStateFlow("")
-        thing.value = "hello"
-        thing.value.assert("hello")
     }
 }

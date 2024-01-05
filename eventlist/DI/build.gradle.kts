@@ -9,7 +9,9 @@ plugins {
 
 kotlin {
 
-    jvm()
+    jvm() {
+        withJava()
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -17,17 +19,10 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 implementation(project(":irc_entities"))
-//                implementation(project(":client_state:header"))
+                implementation(project(":eventlist:impl"))
                 implementation(project(":eventlist:header"))
-                implementation(project(":eventlist:DI"))
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(project(":TestUtils"))
-                implementation("org.jetbrains.kotlin:kotlin-test:1.9.20")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-            }
-        }
+
     }
 }

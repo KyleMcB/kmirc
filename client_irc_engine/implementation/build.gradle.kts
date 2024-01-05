@@ -20,6 +20,7 @@ kotlin {
                 implementation(project(":client_state:header"))
                 implementation(project(":client_state:mutable_impl"))
                 implementation(project(":client_irc_engine:header"))
+                implementation(project(":eventlist:header"))
             }
         }
         val commonTest by getting {
