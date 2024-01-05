@@ -17,13 +17,15 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 implementation(project(":irc_entities"))
-//                implementation(project(":client_state:header"))
                 implementation(project(":eventlist:header"))
                 implementation(project(":eventlist:DI"))
+                implementation(project(":client_state:header"))
+
             }
         }
         val commonTest by getting {
             dependencies {
+                implementation(project(":eventlist:impl"))
                 implementation(project(":TestUtils"))
                 implementation("org.jetbrains.kotlin:kotlin-test:1.9.20")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")

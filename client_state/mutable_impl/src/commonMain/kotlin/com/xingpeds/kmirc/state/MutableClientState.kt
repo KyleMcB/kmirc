@@ -28,8 +28,6 @@ object MutableClientState : ClientState {
     override val privmsgs: StateFlow<List<IIrcEvent.PRIVMSG>>
         get() = mPrivmsgs
 
-    //    override val messages: StateFlow<List<IIrcMessage>>
-//        get() = mMessages
     override val nickState: StateFlow<NickStateMachine>
         get() = SelfNickState.selfNick
 }

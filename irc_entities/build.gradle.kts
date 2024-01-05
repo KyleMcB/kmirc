@@ -14,6 +14,9 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
+            dependencies {
+                api(project(":Utility_Functions"))
+            }
 
         }
         val commonTest by getting {
