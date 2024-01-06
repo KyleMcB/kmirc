@@ -6,7 +6,16 @@ package com.xingpeds.kmirc.entities.events
 
 import com.xingpeds.kmirc.entities.*
 
+/**
+ * IIrcEvent is a sealed interface that represents various IRC events. Including Client only events, such as INIT.
+ */
 sealed interface IIrcEvent {
+
+    /**
+     * JOIN event
+     * @param [channel] the name of the channel someone joined
+     * @param [nick] the name of the nick that joined the channel
+     */
     data class JOIN(val channel: String, val nick: String) : IIrcEvent {
         constructor(message: IIrcMessage) : this(
             channel = message.params.list[0],
@@ -14,7 +23,14 @@ sealed interface IIrcEvent {
         )
     }
 
+    /**
+     * PickNewNick object for handling the case of NickName picking.
+     */
     data object PickNewNick : IIrcEvent
+
+    /**
+     * Notice data class for holding information about IRC notices.
+     */
     data class Notice(val target: IrcTarget, val from: IrcFrom, val message: String) : IIrcEvent {
         constructor(message: IIrcMessage) : this(
             from = prefixToFrom(message.prefix ?: throw IllegalIRCMessage("prefix is missing for Notice message")),
@@ -27,8 +43,20 @@ sealed interface IIrcEvent {
         )
     }
 
-    data object INIT : IIrcEvent //this is for a tcp connection
+    /**
+     * INIT object for handling the case of TCP connection initiation.
+     */
+    data object INIT : IIrcEvent
+
+    /**
+     * PING data class for handling the case of a PING event.
+     * @param ircParams the parameters that were on the incoming ping message
+     */
     data class PING(val ircParams: IrcParams) : IIrcEvent
+
+    /**
+     * PRIVMSG data class for holding information about private messages in IRC.
+     */
     data class PRIVMSG(val from: IrcFrom, val target: IrcTarget, val message: String) : IIrcEvent {
         constructor(message: IIrcMessage) : this(
             from = if (message.prefix?.host == null && message.prefix?.user == null) {
@@ -46,4 +74,7 @@ sealed interface IIrcEvent {
     }
 }
 
+/**
+ * IllegalIRCMessage class for handling illegal message situations.
+ */
 class IllegalIRCMessage(override val message: String?) : Exception()

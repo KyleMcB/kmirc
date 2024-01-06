@@ -16,7 +16,7 @@ import runWaitingTest
 class BroadcasterTest {
 
     @Test
-    fun pongCommand() = runWaitingTest { complete ->
+    fun pongCommand(): Unit = runWaitingTest { complete ->
         val longParam = "iW|dHYrFO^"
         val engine: IClientIrcEngine = EventBroadcaster(
             send = { message: IIrcMessage ->
@@ -38,7 +38,7 @@ class BroadcasterTest {
 
 
     @Test
-    fun noticeCommand() = runWaitingTest { complete ->
+    fun noticeCommand(): Unit = runWaitingTest { complete ->
         val longParam = "*** Found your hostname (c-24-17-115-100.hsd1.wa.comcast.net)"
         //        :*.freenode.net NOTICE hellobotlongname :*** Found your hostname (c-24-17-115-100.hsd1.wa.comcast.net)
         backgroundScope.launchNow {
@@ -60,7 +60,7 @@ class BroadcasterTest {
     }
 
     @Test
-    fun privmsg() = runWaitingTest { testComplete ->
+    fun privmsg(): Unit = runWaitingTest { testComplete ->
 //        :Harambe!~harambe@freenode/service/Harambe PRIVMSG hellobotlongname :VERSION
         backgroundScope.launchNow {
             MutableEventList.onPRIVMSG.collect {
