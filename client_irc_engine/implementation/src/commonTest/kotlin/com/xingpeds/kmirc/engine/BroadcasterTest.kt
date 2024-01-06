@@ -13,13 +13,12 @@ import launchNow
 import org.junit.Test
 import runWaitingTest
 
-class EngineTest {
-
+class BroadcasterTest {
 
     @Test
     fun pongCommand() = runWaitingTest { complete ->
         val longParam = "iW|dHYrFO^"
-        val engine: IClientIrcEngine = IrcEngine(
+        val engine: IClientIrcEngine = EventBroadcaster(
             send = { message: IIrcMessage ->
                 i("engineTest") {
                     message.toString()
@@ -49,7 +48,7 @@ class EngineTest {
                 complete()
             }
         }
-        val subject = IrcEngine(
+        val subject = EventBroadcaster(
             send = {}, input = flowOf(
                 IrcMessage(
                     command = IrcCommand.NOTICE,
@@ -71,7 +70,7 @@ class EngineTest {
             }
 
         }
-        val engine = IrcEngine(
+        val engine = EventBroadcaster(
             send = {}, input = flowOf(
                 IrcMessage(
                     prefix = IrcPrefix(nick = "Harambe", user = "harambe", host = "freenode/service/Harambe"),

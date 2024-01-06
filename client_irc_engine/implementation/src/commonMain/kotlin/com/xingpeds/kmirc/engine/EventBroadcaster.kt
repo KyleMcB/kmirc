@@ -17,7 +17,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class IrcEngine(
+class EventBroadcaster(
     val send: suspend (IIrcMessage) -> Unit,
     input: Flow<IIrcMessage>,
     private val processors: Set<MessageProcessor>,

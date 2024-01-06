@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class NickStateManager(
     val wantedNick: IIrcUser,
-    private val mState: MutableStateFlow<NickStateMachine> = SelfNickState.selfNick, //todo I might want to move this class into its module so the rest of the engine can not see the mutable state
+    private val mState: MutableStateFlow<NickStateMachine> = SelfNickState.selfNick,
     private val send: suspend (IIrcMessage) -> Unit,
     private val scope: CoroutineScope,
     private val events: Flow<IIrcEvent>

@@ -8,8 +8,8 @@ import Parser
 import com.xingpeds.kmirc.clientnetwork.Connect
 import com.xingpeds.kmirc.clientnetwork.DNSLookupFun
 import com.xingpeds.kmirc.clientnetwork.KtorSocketFactory
+import com.xingpeds.kmirc.engine.EventBroadcaster
 import com.xingpeds.kmirc.engine.IClientIrcEngine
-import com.xingpeds.kmirc.engine.IrcEngine
 import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.MessageProcessor
 import com.xingpeds.kmirc.parser.IrcLineParser
@@ -35,7 +35,7 @@ object ImplementationModule {
         scope: CoroutineScope,
         processors: Set<MessageProcessor>
     ): IClientIrcEngine =
-        IrcEngine(sendFun, inputFlow, processors = processors, scope)
+        EventBroadcaster(sendFun, inputFlow, processors = processors, scope)
 
     fun getParser(): IrcLineParser = Parser
 }
