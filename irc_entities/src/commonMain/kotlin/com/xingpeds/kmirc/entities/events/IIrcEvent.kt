@@ -30,6 +30,9 @@ sealed interface IIrcEvent {
 
     /**
      * Notice data class for holding information about IRC notices.
+     * @param target channel/user that the notice is addressed to
+     * @param from the server/user that notice was created by
+     * @param message the content of the notice
      */
     data class Notice(val target: IrcTarget, val from: IrcFrom, val message: String) : IIrcEvent {
         constructor(message: IIrcMessage) : this(
@@ -56,6 +59,9 @@ sealed interface IIrcEvent {
 
     /**
      * PRIVMSG data class for holding information about private messages in IRC.
+     * @param target channel/user that the notice is addressed to
+     * @param from the server/user that notice was created by
+     * @param message the content of the notice
      */
     data class PRIVMSG(val from: IrcFrom, val target: IrcTarget, val message: String) : IIrcEvent {
         constructor(message: IIrcMessage) : this(
@@ -63,13 +69,11 @@ sealed interface IIrcEvent {
                 IrcFrom.Server(message.prefix?.nick ?: throw IllegalIRCMessage("privmsg missing server prefix"))
             } else {
                 IrcFrom.User(message.prefix?.nick ?: throw IllegalIRCMessage("privmsg missing nick"))
-            },
-            target = if (isChannel(message.params.list[0])) {
+            }, target = if (isChannel(message.params.list[0])) {
                 IrcTarget.Channel(message.params.list[0])
             } else {
                 IrcTarget.User(message.params.list[0])
-            },
-            message = message.params.longParam ?: throw IllegalIRCMessage("privmsg missing longparam")
+            }, message = message.params.longParam ?: throw IllegalIRCMessage("privmsg missing longparam")
         )
     }
 }
