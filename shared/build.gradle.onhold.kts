@@ -1,3 +1,7 @@
+/*
+ * Copyright 2024 Kyle McBurnett
+ */
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")

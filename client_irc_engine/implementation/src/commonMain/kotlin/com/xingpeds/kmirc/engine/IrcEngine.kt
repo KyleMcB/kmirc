@@ -4,11 +4,14 @@
 
 package com.xingpeds.kmirc.engine
 
+import co.touchlab.kermit.Logger.Companion.i
 import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcMessage
 import com.xingpeds.kmirc.entities.MessageProcessor
 import com.xingpeds.kmirc.entities.events.IIrcEvent
+import com.xingpeds.kmirc.events.EventList
+import com.xingpeds.kmirc.events.MutableEventList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
@@ -23,7 +26,14 @@ class IrcEngine(
     private val mEvents =
         MutableSharedFlow<IIrcEvent>(replay = 100, extraBufferCapacity = 100, onBufferOverflow = BufferOverflow.SUSPEND)
 
-    val eventList: EventList = EventListImpl
+    val eventList: EventList = MutableEventList
+
+    init {
+        eventList.onPING.onEach { ping: IIrcEvent.PING ->
+            send(IrcMessage(command = IrcCommand.PONG, params = ping.ircParams))
+        }.launchIn(engineScope)
+
+    }
 
     override val events: SharedFlow<IIrcEvent>
         get() = mEvents
@@ -57,38 +67,24 @@ class IrcEngine(
 
     internal fun startEventBroadcaster() = engineScope.launch {
         events.collect { event ->
-
+            i("engine") {
+                "event $event"
+            }
 
             when (event) {
-                IIrcEvent.INIT -> {
-                    EventListImpl.mINIT.emit(event as IIrcEvent.INIT)
-                }
+                IIrcEvent.INIT -> MutableEventList.mInit.emit(event as IIrcEvent.INIT)
 
-                is IIrcEvent.PING -> {
-                    EventListImpl.mPing.emit(event)
-                }
+                is IIrcEvent.PING -> MutableEventList.mPing.emit(event)
 
-                is IIrcEvent.Notice -> {
-                    EventListImpl.mNotice.emit(event)
-                }
+                is IIrcEvent.Notice -> MutableEventList.mNotice.emit(event)
 
-                is IIrcEvent.PRIVMSG -> {
-                    EventListImpl.mPRIVMSG.emit(event)
-                }
+                is IIrcEvent.PRIVMSG -> MutableEventList.mPrivmsg.emit(event)
 
-                else -> TODO("add single event broadcaster for $event")
+                is IIrcEvent.JOIN -> MutableEventList.mJoin.emit(event)
+                IIrcEvent.PickNewNick -> TODO()
             }
         }
     }
 
-    init {
-        eventList.onPING.onEach { ping: IIrcEvent.PING ->
-            send(IrcMessage(command = IrcCommand.PONG, params = ping.ircParams))
-        }.launchIn(engineScope)
 
-        eventList.onPRIVMSG.onEach { msg: IIrcEvent.PRIVMSG ->
-            println("Caught a PRIVMSG event: ${msg.toString()}") // Debug statement
-        }.launchIn(engineScope)
-
-    }
 }

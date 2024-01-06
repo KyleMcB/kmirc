@@ -10,8 +10,8 @@ import com.xingpeds.kmirc.clientnetwork.DNSLookupFun
 import com.xingpeds.kmirc.clientnetwork.KtorSocketFactory
 import com.xingpeds.kmirc.engine.IClientIrcEngine
 import com.xingpeds.kmirc.engine.IrcEngine
-import com.xingpeds.kmirc.engine.MessageProcessor
 import com.xingpeds.kmirc.entities.IIrcMessage
+import com.xingpeds.kmirc.entities.MessageProcessor
 import com.xingpeds.kmirc.parser.IrcLineParser
 import com.xingpeds.kmirc.parser.ParseResult
 import com.xingpeds.kmirc.parser.marshallIrcPackets
@@ -33,7 +33,7 @@ object ImplementationModule {
         sendFun: suspend (IIrcMessage) -> Unit,
         inputFlow: Flow<IIrcMessage>,
         scope: CoroutineScope,
-        processors: List<MessageProcessor>
+        processors: Set<MessageProcessor>
     ): IClientIrcEngine =
         IrcEngine(sendFun, inputFlow, processors = processors, scope)
 

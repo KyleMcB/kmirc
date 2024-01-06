@@ -46,7 +46,7 @@ fun main(args: Array<String>) = runBlocking {
                     connection.write(iIrcMessage.toIRCString())
                 },
                 scope = CoroutineScope(Dispatchers.Default),
-                processors = emptyList() //needs to get a nickstatemanager...
+                processors = emptySet() //needs to get a nickstatemanager...
             )
         }
 
