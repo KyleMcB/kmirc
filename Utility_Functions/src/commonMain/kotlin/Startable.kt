@@ -9,6 +9,9 @@ import kotlinx.coroutines.Job
  * and the instance needs an initial construction/startup call
  */
 interface Startable {
+    /**
+     * constructor alternative
+     */
     fun start()
 }
 
@@ -18,5 +21,8 @@ interface Startable {
  * This version has a suspendable init function
  */
 interface StartableJob {
+    /**
+     * constructor alternative
+     */
     fun start(): Job
 }

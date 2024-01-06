@@ -6,9 +6,11 @@
 package com.xingpeds.kmirc.state
 
 import com.xingpeds.kmirc.entities.events.IIrcEvent
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+/**
+ * Name of a channel type, Might include validation later TODO add validation
+ */
 typealias ChannelName = String
 
 /**
@@ -40,13 +42,10 @@ interface ISelfNickState {
      * Client's nickname state represented as a StateFlow.
      */
     val selfNickState: StateFlow<NickStateMachine>
+
+    /**
+     * is nick the client's nick
+     */
+    suspend fun isNickMe(nick: String): Boolean
 }
 
-/**
- * SelfNickState class represents a singleton implementation of the ISelfNickState interface.
- */
-object SelfNickState : ISelfNickState {
-    val selfNick = MutableStateFlow<NickStateMachine>(NickStateMachine.NickLess)
-    override val selfNickState: StateFlow<NickStateMachine>
-        get() = selfNick
-}

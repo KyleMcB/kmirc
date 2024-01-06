@@ -22,4 +22,6 @@ sealed interface NickStateMachine : CharSequence {
     companion object {
         const val empty = ""
     }
+
+
 }

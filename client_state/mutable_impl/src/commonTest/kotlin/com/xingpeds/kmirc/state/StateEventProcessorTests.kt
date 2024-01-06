@@ -19,16 +19,32 @@ import co.touchlab.kermit.Logger.Companion.i as info
 
 class StateEventProcessorTests {
 
-    fun test(testBlock: suspend CoroutineScope.() -> Unit) = runTest() {
+    fun test(testBlock: suspend CoroutineScope.() -> Unit): Unit = runTest() {
         StateEventProcessor.scope = backgroundScope
         val startJob = StateEventProcessor.start()
         backgroundScope.testBlock()
         startJob.cancel()
     }
 
+    @Test
+    fun selfJoin(): Unit = test {
+        val selfNick = "testSelfNick"
+        val channelName = "#channelName"
+        MutableNickState.selfNick.emit(com.xingpeds.kmirc.state.NickStateMachine.Accept(selfNick))
+        val joinEvent = IIrcEvent.JOIN(channel = channelName, nick = selfNick)
+        launchNow {
+            info("test") { "start assert collector" }
+            val channelMap: Map<ChannelName, ChannelState> = MutableClientState.channels.first { it.isNotEmpty() }
+            channelMap.containsKey(channelName).assert(true)
+
+        }
+        info("test") { "emitting join event" }
+        MutableEventList.mJoin.emit(joinEvent)
+    }
+
 
     @Test
-    fun notice() = test {
+    fun notice(): Unit = test {
         val noticeEvent = IIrcEvent.Notice(
             target = IrcTarget.User("testnick"),
             from = IrcFrom.User("fromNick"),
@@ -38,6 +54,7 @@ class StateEventProcessorTests {
             "expected: $noticeEvent"
         }
         launchNow {
+            //TODO this file should be testing the state not events
             MutableEventList.mNotice.collect {
                 info("test") {
                     it.toString()

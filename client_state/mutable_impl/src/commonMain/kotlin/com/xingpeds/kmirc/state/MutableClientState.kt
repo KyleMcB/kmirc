@@ -29,5 +29,5 @@ object MutableClientState : ClientState {
         get() = mPrivmsgs
 
     override val nickState: StateFlow<NickStateMachine>
-        get() = SelfNickState.selfNick
+        get() = MutableNickState.selfNick
 }
