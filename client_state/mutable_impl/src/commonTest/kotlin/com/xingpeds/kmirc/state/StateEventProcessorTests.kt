@@ -22,39 +22,35 @@ class StateEventProcessorTests {
     fun test(testBlock: suspend CoroutineScope.() -> Unit): Unit = runTest() {
         StateEventProcessor.scope = backgroundScope
         val startJob = StateEventProcessor.start()
+        startJob.join()
         backgroundScope.testBlock()
         startJob.cancel()
     }
 
     @Test
     fun selfJoin(): Unit = test {
+        //setup state
         val selfNick = "testSelfNick"
         val channelName = "#channelName"
-        MutableNickState.selfNick.emit(com.xingpeds.kmirc.state.NickStateMachine.Accept(selfNick))
+        MutableNickState.selfNick.emit(NickStateMachine.Accept(selfNick))
         val joinEvent = IIrcEvent.JOIN(channel = channelName, nick = selfNick)
-        launchNow {
-            info("test") { "start assert collector" }
-            val channelMap: Map<ChannelName, ChannelState> = MutableClientState.channels.first { it.isNotEmpty() }
-            channelMap.containsKey(channelName).assert(true)
-
-        }
-        info("test") { "emitting join event" }
+        //fire event
         MutableEventList.mJoin.emit(joinEvent)
+        // check state
+        val channelMap: Map<ChannelName, ChannelState> = MutableClientState.channels.first { it.isNotEmpty() }
+        channelMap.containsKey(channelName).assert(true)
     }
 
 
     @Test
     fun notice(): Unit = test {
         val noticeEvent = IIrcEvent.Notice(
-            target = IrcTarget.User("testnick"),
-            from = IrcFrom.User("fromNick"),
-            message = "notice message"
+            target = IrcTarget.User("testnick"), from = IrcFrom.User("fromNick"), message = "notice message"
         )
         info("test") {
             "expected: $noticeEvent"
         }
         launchNow {
-            //TODO this file should be testing the state not events
             MutableEventList.mNotice.collect {
                 info("test") {
                     it.toString()
