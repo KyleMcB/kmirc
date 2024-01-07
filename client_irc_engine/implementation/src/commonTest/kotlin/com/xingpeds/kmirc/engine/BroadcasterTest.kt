@@ -4,8 +4,9 @@
 
 package com.xingpeds.kmirc.engine
 
+import LogTag
+import Logged
 import assert
-import co.touchlab.kermit.Logger.Companion.i
 import com.xingpeds.kmirc.entities.*
 import com.xingpeds.kmirc.events.MutableEventList
 import kotlinx.coroutines.flow.flowOf
@@ -13,16 +14,13 @@ import launchNow
 import org.junit.Test
 import runWaitingTest
 
-class BroadcasterTest {
+class BroadcasterTest : Logged by LogTag("BroadcasterTest") {
 
     @Test
     fun pongCommand(): Unit = runWaitingTest { complete ->
         val longParam = "iW|dHYrFO^"
         val engine: IClientIrcEngine = EventBroadcaster(
             send = { message: IIrcMessage ->
-                i("engineTest") {
-                    message.toString()
-                }
                 if (message.command == IrcCommand.PONG) {
                     val output = message.toIRCString()
                     output.assert("PONG :iW|dHYrFO^\r\n")
@@ -73,7 +71,7 @@ class BroadcasterTest {
         val engine = EventBroadcaster(
             send = {}, input = flowOf(
                 IrcMessage(
-                    prefix = IrcPrefix(nick = "Harambe", user = "harambe", host = "freenode/service/Harambe"),
+                    prefix = IrcPrefix(nickOrServer = "Harambe", user = "harambe", host = "freenode/service/Harambe"),
                     command = IrcCommand.PRIVMSG,
                     params = IrcParams("hellobotlongname", longParam = "VERSION")
                 )

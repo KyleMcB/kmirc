@@ -15,8 +15,8 @@ import io.kotest.property.arbitrary.string
 
 
 val nickPrefixArb = arbitrary { rs: RandomSource ->
-    IrcPrefix(nick = Arb.string().bind(), user = Arb.string().bind(), host = Arb.string().bind())
+    IrcPrefix(nickOrServer = Arb.string().bind(), user = Arb.string().bind(), host = Arb.string().bind())
 }
 val serverPrefixArb = arbitrary {
-    IrcPrefix(nick = Arb.domain().bind())
+    IrcPrefix(nickOrServer = Arb.domain().bind())
 }

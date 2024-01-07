@@ -19,7 +19,7 @@ sealed interface IIrcEvent {
     data class JOIN(val channel: String, val nick: String) : IIrcEvent {
         constructor(message: IIrcMessage) : this(
             channel = message.params.list[0],
-            nick = message.prefix?.nick ?: throw IllegalIRCMessage("JOIN message missing nick")
+            nick = message.prefix?.nickOrServer ?: throw IllegalIRCMessage("JOIN message missing nick")
         )
     }
 
@@ -31,7 +31,7 @@ sealed interface IIrcEvent {
     data class PART(val channel: String, val nick: String) : IIrcEvent {
         constructor(message: IIrcMessage) : this(
             channel = message.params.list[0],
-            nick = message.prefix?.nick ?: throw IllegalIRCMessage("Part message missing prefix")
+            nick = message.prefix?.nickOrServer ?: throw IllegalIRCMessage("Part message missing prefix")
         )
     }
 
@@ -78,9 +78,9 @@ sealed interface IIrcEvent {
     data class PRIVMSG(val from: IrcFrom, val target: IrcTarget, val message: String) : IIrcEvent {
         constructor(message: IIrcMessage) : this(
             from = if (message.prefix?.host == null && message.prefix?.user == null) {
-                IrcFrom.Server(message.prefix?.nick ?: throw IllegalIRCMessage("privmsg missing server prefix"))
+                IrcFrom.Server(message.prefix?.nickOrServer ?: throw IllegalIRCMessage("privmsg missing server prefix"))
             } else {
-                IrcFrom.User(message.prefix?.nick ?: throw IllegalIRCMessage("privmsg missing nick"))
+                IrcFrom.User(message.prefix?.nickOrServer ?: throw IllegalIRCMessage("privmsg missing nick"))
             }, target = if (isChannel(message.params.list[0])) {
                 IrcTarget.Channel(message.params.list[0])
             } else {

@@ -64,7 +64,7 @@ abstract class ParserTestBase {
             parseResult is ParseResult.ParseSuccess
         }
         require(parseResult is ParseResult.ParseSuccess)
-        parseResult.prefix!!.nick.assert("nick")
+        parseResult.prefix!!.nickOrServer.assert("nick")
         parseResult.prefix!!.user.assert("user")
         parseResult.prefix!!.host.assert("hostname")
     }

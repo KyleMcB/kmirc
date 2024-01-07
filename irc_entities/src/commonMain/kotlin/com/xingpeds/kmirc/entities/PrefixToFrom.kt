@@ -8,8 +8,8 @@ fun prefixToFrom(prefix: IrcPrefix): IrcFrom {
     // this condition is getting an exception in the header module for now.
     // this definition of server vs nick is my own arbitrary choice
     return if (prefix.host == null && prefix.user == null) {
-        IrcFrom.Server(prefix.nick)
+        IrcFrom.Server(prefix.nickOrServer)
     } else {
-        IrcFrom.User(prefix.nick)
+        IrcFrom.User(prefix.nickOrServer)
     }
 }

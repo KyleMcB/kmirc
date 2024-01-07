@@ -182,7 +182,7 @@ fun sendPrivmsgEvent(message: IIrcMessage): IIrcEvent? {
 
 // user or server
     val host = message.prefix?.host
-    val nickOrServer = message.prefix?.nick ?: return null
+    val nickOrServer = message.prefix?.nickOrServer ?: return null
     val from: IrcFrom = if (host == null) {
         IrcFrom.Server(nickOrServer)
     } else {
@@ -200,7 +200,7 @@ fun sendPrivmsgEvent(message: IIrcMessage): IIrcEvent? {
 private fun sendNoticeEvent(message: IIrcMessage): IIrcEvent.Notice? {
     val user = message.prefix?.user
     val host = message.prefix?.host
-    val nick = message.prefix?.nick
+    val nick = message.prefix?.nickOrServer
     val text = message.params.longParam
     return if (nick != null) {
         val targetString: String = message.params.list[0]
