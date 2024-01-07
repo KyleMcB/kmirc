@@ -86,9 +86,5 @@ object StateEventProcessor : StartableJob, Logged by LogTag("StateEventProvessor
                 members + event.nick
             }
         }
-
     }
-
-//    override val tag: String
-//        get() = "StateEventProvessor"
 }
