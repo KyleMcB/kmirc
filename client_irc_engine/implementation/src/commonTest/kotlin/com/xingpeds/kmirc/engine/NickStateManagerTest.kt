@@ -8,6 +8,7 @@ import assert
 import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcUser
 import com.xingpeds.kmirc.entities.events.IIrcEvent
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import runWaitingTest
 import kotlin.test.Test
@@ -35,7 +36,9 @@ class NickStateManagerTest {
 
             },
             scope = backgroundScope,
-            events = flowOf(IIrcEvent.INIT)
+            events = flowOf(IIrcEvent.INIT),
+            broadcast = {},
+            messages = emptyFlow()
         ).start().join()
     }
 
@@ -51,7 +54,9 @@ class NickStateManagerTest {
 
             },
             scope = backgroundScope,
-            events = flowOf(IIrcEvent.INIT)
+            events = flowOf(IIrcEvent.INIT),
+            broadcast = {},
+            messages = emptyFlow()
         ).start().join()
     }
 }

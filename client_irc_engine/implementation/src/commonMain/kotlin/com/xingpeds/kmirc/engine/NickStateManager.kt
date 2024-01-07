@@ -26,14 +26,16 @@ import kotlinx.coroutines.launch
 class NickStateManager(
     val wantedNick: IIrcUser,
     private val send: suspend (IIrcMessage) -> Unit,
+    private val broadcast: suspend (IIrcEvent) -> Unit,
     private val events: Flow<IIrcEvent>,
+    private val messages: Flow<IIrcMessage>,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     private val mState: MutableStateFlow<NickStateMachine> = MutableNickState.selfNick,
 ) : StartableJob, Logged by LogTag("NickStateManager") {
     private var attemptedNick: String = wantedNick.nick
     private var nickRetryCounter: Int = 0
 
-    private suspend fun handleNickMessage(message: IIrcMessage, broadcast: (IIrcEvent) -> Unit) {
+    private suspend fun handleNickMessage(message: IIrcMessage) {
         when (message.command) {
             IrcCommand.ERR_NONICKNAMEGIVEN -> {
                 throw Exception("No nickname given. Should probably be impossible")
@@ -51,11 +53,11 @@ class NickStateManager(
         }
     }
 
-    private suspend fun updateNickState(message: IIrcMessage, broadcast: (IIrcEvent) -> Unit) {
+    private suspend fun updateNickState(message: IIrcMessage) {
         when (mState.value) {
             is NickStateMachine.Accept -> Unit
-            NickStateMachine.NickLess -> handleNickMessage(message, broadcast)
-            is NickStateMachine.Refused -> handleNickMessage(message, broadcast)
+            NickStateMachine.NickLess -> handleNickMessage(message)
+            is NickStateMachine.Refused -> handleNickMessage(message)
         }
     }
 
@@ -78,6 +80,11 @@ class NickStateManager(
         scope.launch {
             events.filterIsInstance<IIrcEvent.INIT>().collect {
                 sendNickAndUserRequest()
+            }
+        }
+        scope.launch {
+            messages.collect { message ->
+                updateNickState(message)
             }
         }
     }
