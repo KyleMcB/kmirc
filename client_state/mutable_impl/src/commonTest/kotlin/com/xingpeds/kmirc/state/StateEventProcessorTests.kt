@@ -24,7 +24,6 @@ class StateEventProcessorTests {
         val startJob = StateEventProcessor.start()
         startJob.join()
         backgroundScope.testBlock()
-        startJob.cancel()
     }
 
     @Test
