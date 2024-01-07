@@ -1,3 +1,8 @@
+## Current progress
+
+* Currently only the JVM is supported, but adding other platforms should be easy
+* filling out the events and state handling parts
+
 # Knockout Simplicity: KMIRC
 
 KMIRC is short for Kotlin Multiplatform IRC. Coincidentally, they are my initials too - Kyle McBurnett.
