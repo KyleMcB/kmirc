@@ -13,16 +13,16 @@ import runWaitingTest
 import kotlin.test.Test
 
 class NickStateManagerTest {
-    val username = "TestUser"
-    val hostname = "testHostname"
-    val realName = "test realname"
-    val nickName = "TestNick"
+    private val username = "TestUser"
+    private val hostname = "testHostname"
+    private val realName = "test realname"
+    private val nickName = "TestNick"
     private val ircUser = IrcUser(
         nickName, username = username, hostname = hostname, realName = realName
     )
 
     @Test
-    fun userCommand() = runWaitingTest { complete ->
+    fun userCommand(): Unit = runWaitingTest { complete ->
         NickStateManager(
             wantedNick = ircUser,
             send = {
@@ -36,11 +36,11 @@ class NickStateManagerTest {
             },
             scope = backgroundScope,
             events = flowOf(IIrcEvent.INIT)
-        )
+        ).start().join()
     }
 
     @Test
-    fun nickCommand() = runWaitingTest { complete ->
+    fun nickCommand(): Unit = runWaitingTest { complete ->
         NickStateManager(
             wantedNick = ircUser,
             send = {
@@ -52,6 +52,6 @@ class NickStateManagerTest {
             },
             scope = backgroundScope,
             events = flowOf(IIrcEvent.INIT)
-        )
+        ).start().join()
     }
 }

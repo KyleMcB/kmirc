@@ -4,23 +4,32 @@
 
 package com.xingpeds.kmirc.engine
 
+import LogTag
+import Logged
+import StartableJob
 import com.xingpeds.kmirc.entities.*
 import com.xingpeds.kmirc.entities.events.IIrcEvent
+import com.xingpeds.kmirc.state.MutableNickState
 import com.xingpeds.kmirc.state.NickStateMachine
-import com.xingpeds.kmirc.state.SelfNickState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
+/**
+ * manages the state machine to get a nick/user/realname registered with the irc server
+ * @param wantedNick the initial wanted nick/user/realname
+ */
 class NickStateManager(
     val wantedNick: IIrcUser,
-    private val mState: MutableStateFlow<NickStateMachine> = SelfNickState.selfNick,
     private val send: suspend (IIrcMessage) -> Unit,
-    private val scope: CoroutineScope,
-    private val events: Flow<IIrcEvent>
-) : MessageProcessor {
+    private val events: Flow<IIrcEvent>,
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
+    private val mState: MutableStateFlow<NickStateMachine> = MutableNickState.selfNick,
+) : StartableJob, Logged by LogTag("NickStateManager") {
     private var attemptedNick: String = wantedNick.nick
     private var nickRetryCounter: Int = 0
 
@@ -50,14 +59,6 @@ class NickStateManager(
         }
     }
 
-    init {
-        scope.launch {
-            events.filterIsInstance<IIrcEvent.INIT>().collect {
-                sendNickAndUserRequest()
-            }
-        }
-    }
-
     private suspend fun sendNickAndUserRequest() {
         send(IrcMessage(command = IrcCommand.NICK, params = IrcParams(wantedNick.nick)))
         send(
@@ -73,10 +74,12 @@ class NickStateManager(
         )
     }
 
-    override suspend fun process(message: IIrcMessage, broadcast: (IIrcEvent) -> Unit) =
-        updateNickState(message, broadcast)
+    override fun start(): Job = scope.launch {
+        scope.launch {
+            events.filterIsInstance<IIrcEvent.INIT>().collect {
+                sendNickAndUserRequest()
+            }
+        }
+    }
 
-    override fun equals(other: Any?): Boolean = hashCode() == other.hashCode()
-
-    override fun hashCode(): Int = "NickStateManager".hashCode()
 }

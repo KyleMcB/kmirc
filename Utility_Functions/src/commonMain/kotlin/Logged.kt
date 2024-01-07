@@ -58,8 +58,8 @@ fun Logged.v(message: String): Unit =
 /**
  * basic error logging
  */
-inline fun Logged.withErrorLogging(action: () -> Unit) {
-    try {
+inline fun <T> Logged.withErrorLogging(action: () -> T): T {
+    return try {
         action()
     } catch (e: Throwable) {
         val trace = e.stackTrace.joinToString(separator = "\n") { stackTraceElement ->
