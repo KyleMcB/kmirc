@@ -25,7 +25,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class StateEventProcessorTests : Logged {
 
-    fun test(timeout: Duration = 10.seconds, testBlock: suspend CoroutineScope.() -> Unit): Unit =
+    private fun test(timeout: Duration = 10.seconds, testBlock: suspend CoroutineScope.() -> Unit): Unit =
         runTest(timeout = timeout) {
             StateEventProcessor.scope = backgroundScope
             val startJob = StateEventProcessor.start()
@@ -34,7 +34,7 @@ class StateEventProcessorTests : Logged {
         }
 
     @Test
-    fun otherJoin(): Unit = test(20.seconds) {
+    fun otherJoin(): Unit = test {
         //setup state
         val selfNick = "testSelfNick"
         val channelName = "#channelName"
