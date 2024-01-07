@@ -3,9 +3,19 @@
  */
 
 rootProject.name = "MyApplication"
-val excludedDirs = setOf(".gradle", "gradle", ".idea", ".run", ".git", "build", "src")
+/**
+ * Directories that should not be traversed while looking for modules to include in the gradle build
+ */
+val excludedDirs: Set<String> = setOf(".gradle", "gradle", ".idea", ".run", ".git", "build", "src")
 
-// Recursive function to enter all the directories that has a build.gradle.kts file and include them
+/**
+ * Recursively includes all the directories that have a `build.gradle.kts` file and adds them to the given set.
+ *
+ * @param set The set of modules to include from recursive call one step up in the stack
+ * @param prefix The prefix to be added to the module path.
+ * @param dir The current directory to be checked for inclusion.
+ * @return The set of included module paths.
+ */
 fun includeModules(set: Set<String>, prefix: String, dir: File): Set<String> {
     val gradlePath = "$prefix:${dir.name}".removePrefix(":kmirc")
     val intermediateSet = set + if (dir.listFiles()?.firstOrNull { it.name == "build.gradle.kts" } != null &&
@@ -25,28 +35,7 @@ fun includeModules(set: Set<String>, prefix: String, dir: File): Set<String> {
         } ?: emptySet()
 }
 
-val output = includeModules(emptySet(), "", rootDir).toList().sorted()
-println("set $output")
-val list = mutableListOf<String>()
-list.add(":androidApp")
-list.add(":shared")
-list.add(":desktopApp")
-list.add(":client-network:header")
-list.add(":client-network:ktorImpl")
-list.add(":irc_entities")
-list.add(":irc_parser:header")
-list.add(":irc_parser:header_test")
-list.add(":irc_parser:implementation")
-list.add(":TestUtils")
-list.add(":client_state:header")
-list.add(":client_irc_engine:header")
-list.add(":client_irc_engine:implementation")
-list.add(":Utility_Functions")
-list.add(":bot_prototype:core")
-list.add(":bot_prototype:dep_inject")
-list.sort()
-println("manual $list")
-include(output)
+include(includeModules(emptySet(), "", rootDir))
 pluginManagement {
     repositories {
         gradlePluginPortal()
