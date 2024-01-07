@@ -24,6 +24,18 @@ sealed interface IIrcEvent {
     }
 
     /**
+     * Part event. When a user leaves a channel
+     * @param channel the channel someone just left
+     * @param nick the user the just left
+     */
+    data class PART(val channel: String, val nick: String) : IIrcEvent {
+        constructor(message: IIrcMessage) : this(
+            channel = message.params.list[0],
+            nick = message.prefix?.nick ?: throw IllegalIRCMessage("Part message missing prefix")
+        )
+    }
+
+    /**
      * PickNewNick object for handling the case of NickName picking.
      */
     data object PickNewNick : IIrcEvent

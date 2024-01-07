@@ -4,32 +4,33 @@
 
 package com.xingpeds.kmirc.engine
 
-import co.touchlab.kermit.Logger.Companion.i
+import LogTag
+import Logged
 import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcMessage
-import com.xingpeds.kmirc.entities.MessageProcessor
 import com.xingpeds.kmirc.entities.events.IIrcEvent
-import com.xingpeds.kmirc.events.EventList
 import com.xingpeds.kmirc.events.MutableEventList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import v
 
+/**
+ * Takes in general irc messages and fires individual event bus events
+ * @param send send an Irc message over the network
+ */
 class EventBroadcaster(
     val send: suspend (IIrcMessage) -> Unit,
     input: Flow<IIrcMessage>,
-    private val processors: Set<MessageProcessor>,
     private val engineScope: CoroutineScope,
-) : IClientIrcEngine {
+) : IClientIrcEngine, Logged by LogTag("EventBroadcaster") {
     private val mEvents =
         MutableSharedFlow<IIrcEvent>(replay = 100, extraBufferCapacity = 100, onBufferOverflow = BufferOverflow.SUSPEND)
 
-    val eventList: EventList = MutableEventList
-
     init {
-        eventList.onPING.onEach { ping: IIrcEvent.PING ->
+        MutableEventList.onPING.onEach { ping: IIrcEvent.PING ->
             send(IrcMessage(command = IrcCommand.PONG, params = ping.ircParams))
         }.launchIn(engineScope)
 
@@ -47,13 +48,6 @@ class EventBroadcaster(
                 null
             }
             if (event != null) {
-                processors.forEach { processor ->
-                    processor.process(message) { event ->
-                        engineScope.launch {
-                            mEvents.emit(event)
-                        }
-                    }
-                }
                 mEvents.emit(event)
             }
         }.launchIn(engineScope)
@@ -66,11 +60,9 @@ class EventBroadcaster(
     }
 
     internal fun startEventBroadcaster() = engineScope.launch {
+        v("starting event broadcaster")
         events.collect { event ->
-            i("engine") {
-                "event $event"
-            }
-
+            v("event: $event")
             when (event) {
                 IIrcEvent.INIT -> MutableEventList.mInit.emit(event as IIrcEvent.INIT)
 
@@ -82,6 +74,7 @@ class EventBroadcaster(
 
                 is IIrcEvent.JOIN -> MutableEventList.mJoin.emit(event)
                 IIrcEvent.PickNewNick -> TODO()
+                is IIrcEvent.PART -> TODO()
             }
         }
     }

@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 interface IClientIrcEngine {
 
+    /**
+     * all irc events
+     */
     val events: SharedFlow<IIrcEvent>
 }
 

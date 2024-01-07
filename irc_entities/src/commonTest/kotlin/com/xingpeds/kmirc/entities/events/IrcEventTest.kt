@@ -31,14 +31,27 @@ class IrcEventTest {
     }
 
     @Test
-    fun ping() = runTest {
+    fun part(): Unit = runTest {
+        checkAll(nickPrefixArb, Arb.name()) { prefix, channelName ->
+            IIrcEvent.PART(
+                message = IrcMessage(
+                    prefix = prefix,
+                    command = IrcCommand.PART,
+                    params = IrcParams(channelName.toString())
+                )
+            )
+        }
+    }
+
+    @Test
+    fun ping(): Unit = runTest {
         checkAll(Arb.domain()) { domain ->
             IIrcEvent.PING(IrcParams(longParam = domain))
         }
     }
 
     @Test
-    fun join() = runTest {
+    fun join(): Unit = runTest {
         //:WiZ JOIN #Twilight_zone        ; JOIN message from WiZ
         checkAll(nickPrefixArb, Arb.name()) { prefix, channelName ->
             val message: IIrcMessage =
@@ -48,7 +61,7 @@ class IrcEventTest {
     }
 
     @Test
-    fun notice() = runTest {
+    fun notice(): Unit = runTest {
         checkAll(nickPrefixArb, Arb.boolean(), Arb.string(), Arb.name()) { prefix, targetChannel, message, targetName ->
             val line: IrcMessage = IrcMessage(
                 prefix, IrcCommand.NOTICE, IrcParams(
@@ -64,10 +77,10 @@ class IrcEventTest {
     }
 
     @Test
-    fun privmsgFromNick() = runTest {
+    fun privmsgFromNick(): Unit = runTest {
 //        :Angel PRIVMSG Wiz :Hello are you receiving this message ?
         checkAll(nickPrefixArb, Arb.boolean(), Arb.string(), Arb.name()) { prefix, targetChannel, message, targetName ->
-            val line: IrcMessage = IrcMessage(
+            val line = IrcMessage(
                 prefix, IrcCommand.PRIVMSG, IrcParams(
                     if (targetChannel) {
                         "#$targetName"
@@ -81,7 +94,7 @@ class IrcEventTest {
     }
 
     @Test
-    fun privmsgFromServer() = runTest {
+    fun privmsgFromServer(): Unit = runTest {
 //        :Angel PRIVMSG Wiz :Hello are you receiving this message ?
         checkAll(
             serverPrefixArb,

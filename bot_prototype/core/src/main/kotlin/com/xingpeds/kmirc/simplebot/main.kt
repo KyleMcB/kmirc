@@ -30,8 +30,7 @@ val parser: IrcLineParser = getParser()
 fun main(args: Array<String>) = runBlocking {
     //attempt to connect
     val addresses = dnsLookUp(serverHostName)
-    val connectionAttempt = connect(addresses[0], serverPort)
-    when (connectionAttempt) {
+    when (val connectionAttempt = connect(addresses[0], serverPort)) {
         is ConnectionResult.Success -> {
             val connection = connectionAttempt.connection
             launch {

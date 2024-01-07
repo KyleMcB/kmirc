@@ -4,6 +4,8 @@
 
 package com.xingpeds.kmirc.entities
 
+import LogTag
+import Logged
 import io.kotest.property.checkAll
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,17 +13,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
-class IrcUserTest {
-    val nick = "([a-zA-Z0-9\\-\\[\\]\\\\\\`\\^\\{\\}]+)" // Nicks can have a lot of special characters
-    val user = "([a-zA-Z0-9\\-]+)" // Assuming alphanumeric for user
-    val host = "([a-zA-Z0-9\\-\\.]+)" // Hosts could be alphanumeric & can include periods and hyphens
+class IrcUserTest : Logged by LogTag("IrcUserTest") {
+    private val nick = "([a-zA-Z0-9\\-\\[\\]\\\\\\`\\^\\{\\}]+)" // Nicks can have a lot of special characters
+    private val user = "([a-zA-Z0-9\\-]+)" // Assuming alphanumeric for user
+    private val host = "([a-zA-Z0-9\\-\\.]+)" // Hosts could be alphanumeric & can include periods and hyphens
 
-    val servername = user // Assuming that server names are similar to user, update if required
+    private val servername = user // Assuming that server names are similar to user, update if required
 
-    val prefixPattern = "^(($servername)|($nick(!$user)?(@$host)?))\$".toRegex()
+    private val prefixPattern = "^(($servername)|($nick(!$user)?(@$host)?))\$".toRegex()
+
 
     @Test
-    fun constructTest() = runTest {
+    fun constructTest(): Unit = runTest {
         val job = CoroutineScope(Dispatchers.Unconfined).launch {
 
             checkAll<String, String?, String?, String?> { a, b, c, d ->
@@ -32,7 +35,7 @@ class IrcUserTest {
     }
 
     @Test
-    fun validPrefixOutput() = runTest {
+    fun validPrefixOutput(): Unit = runTest {
         val job = CoroutineScope(Dispatchers.Unconfined).launch {
 
             checkAll<String, String?, String?, String?> { a, b, c, d ->

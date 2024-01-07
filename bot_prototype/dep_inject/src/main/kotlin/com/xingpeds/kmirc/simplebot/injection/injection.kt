@@ -35,7 +35,7 @@ object ImplementationModule {
         scope: CoroutineScope,
         processors: Set<MessageProcessor>
     ): IClientIrcEngine =
-        EventBroadcaster(sendFun, inputFlow, processors = processors, scope)
+        EventBroadcaster(sendFun, inputFlow, scope)
 
     fun getParser(): IrcLineParser = Parser
 }

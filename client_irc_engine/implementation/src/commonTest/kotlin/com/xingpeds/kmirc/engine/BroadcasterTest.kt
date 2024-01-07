@@ -32,7 +32,7 @@ class BroadcasterTest {
                 IrcMessage(
                     command = IrcCommand.PING, params = IrcParams(longParam = longParam)
                 )
-            ), engineScope = backgroundScope, processors = emptySet()
+            ), engineScope = backgroundScope
         )
     }
 
@@ -55,7 +55,7 @@ class BroadcasterTest {
                     prefix = IrcPrefix("*.freenode.net"),
                     params = IrcParams("hellobotlongname", longParam = longParam)
                 )
-            ), engineScope = backgroundScope, processors = emptySet()
+            ), engineScope = backgroundScope
         )
     }
 
@@ -77,7 +77,7 @@ class BroadcasterTest {
                     command = IrcCommand.PRIVMSG,
                     params = IrcParams("hellobotlongname", longParam = "VERSION")
                 )
-            ), processors = emptySet(), engineScope = backgroundScope
+            ), engineScope = backgroundScope
         )
     }
 }
