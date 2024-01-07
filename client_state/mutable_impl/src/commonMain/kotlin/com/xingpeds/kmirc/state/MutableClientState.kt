@@ -4,7 +4,6 @@
 
 package com.xingpeds.kmirc.state
 
-import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.events.IIrcEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,15 +15,24 @@ import kotlinx.coroutines.flow.StateFlow
  */
 object MutableClientState : ClientState {
 
+    /**
+     * map of channel name to channel state
+     */
     val mChannels: MutableStateFlow<Map<ChannelName, MutableChannelState>> = MutableStateFlow(emptyMap())
-    val mMessages = MutableStateFlow<List<IIrcMessage>>(emptyList())
     override val channels: StateFlow<Map<ChannelName, ChannelState>>
         get() = mChannels
 
-    val mNotices = MutableStateFlow<List<IIrcEvent.Notice>>(emptyList())
-    val mPrivmsgs = MutableStateFlow<List<IIrcEvent.PRIVMSG>>(emptyList())
+    /**
+     * All notices the client has seen
+     */
+    val mNotices: MutableStateFlow<List<IIrcEvent.Notice>> = MutableStateFlow(emptyList())
     override val notices: StateFlow<List<IIrcEvent.Notice>>
         get() = mNotices
+
+    /**
+     * All privmsgs the client has seen
+     */
+    val mPrivmsgs: MutableStateFlow<List<IIrcEvent.PRIVMSG>> = MutableStateFlow(emptyList())
     override val privmsgs: StateFlow<List<IIrcEvent.PRIVMSG>>
         get() = mPrivmsgs
 

@@ -23,9 +23,13 @@ interface ClientState {
     val channels: StateFlow<Map<ChannelName, ChannelState>>
 
     /**
-     * Message list represented as a StateFlow.
+     * all notices the client has seen
      */
     val notices: StateFlow<List<IIrcEvent.Notice>>
+
+    /**
+     * all privmsgs the client has seen
+     */
     val privmsgs: StateFlow<List<IIrcEvent.PRIVMSG>>
 
     /**

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.SharedFlow
 /**
  * the mutable singleton eventbus system for the irc engine
  */
+@Suppress("KDocMissingDocumentation") //self documenting
 object MutableEventList : EventList {
 
     val mPing: MutableSharedFlow<IIrcEvent.PING> = MutableSharedFlow()
