@@ -18,12 +18,10 @@ import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
-import launchNow
 import org.junit.Test
 import kotlin.test.fail
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-import co.touchlab.kermit.Logger.Companion.i as info
 
 class StateEventProcessorTests : Logged {
 
@@ -70,16 +68,7 @@ class StateEventProcessorTests : Logged {
         val noticeEvent = IIrcEvent.Notice(
             target = IrcTarget.User("testnick"), from = IrcFrom.User("fromNick"), message = "notice message"
         )
-        info("test") {
-            "expected: $noticeEvent"
-        }
-        launchNow {
-            MutableEventList.mNotice.collect {
-                info("test") {
-                    it.toString()
-                }
-            }
-        }
+
         MutableEventList.mNotice.emit(
             noticeEvent
         )

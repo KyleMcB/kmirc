@@ -6,14 +6,13 @@ package com.xingpeds.kmirc.state
 
 import Logged
 import StartableJob
-import co.touchlab.kermit.Logger.Companion.e
-import co.touchlab.kermit.Logger.Companion.i
-import co.touchlab.kermit.Logger.Companion.v
 import com.xingpeds.kmirc.entities.events.IIrcEvent
 import com.xingpeds.kmirc.events.EventList
 import com.xingpeds.kmirc.state.MutableNickState.isNickMe
+import e
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import v
 import withErrorLogging
 import kotlin.time.Duration.Companion.seconds
 
@@ -27,9 +26,7 @@ object StateEventProcessor : StartableJob, Logged {
 
 
     override fun start(): Job = scope.launch {
-        i("StateEventProcessor") {
-            "start called"
-        }
+        v("start called")
         events.onNOTICE.onEach(::handleNotice).launchIn(scope)
         events.onPRIVMSG.onEach(::handlePrivmsg).launchIn(scope)
         events.onJOIN.onEach(::handleJoin).launchIn(scope)
@@ -44,13 +41,11 @@ object StateEventProcessor : StartableJob, Logged {
     }
 
     private suspend fun handleJoin(event: IIrcEvent.JOIN) = withErrorLogging {
-        v(tag) {
-            "handling join event"
-        }
+        v("handling join event")
         //when join
         //could be a self join or another nick join
         if (isNickMe(event.nick)) {
-            v(tag) { "self join event" }
+            v("self join event")
             //self join
             // add a new channel to state
             val newChannel = MutableChannelState(event.channel)
@@ -58,7 +53,7 @@ object StateEventProcessor : StartableJob, Logged {
                 channelMap + (event.channel to newChannel)
             }
         } else {
-            v(tag) { "other join event" }
+            v("other join event")
             //other join
             // add a nick to a channel's state
             // This could be tricky because channel state might be in flight.
@@ -71,13 +66,13 @@ object StateEventProcessor : StartableJob, Logged {
                     .timeout(4.seconds)
                     .catch { e ->
                         if (e is TimeoutCancellationException) {
-                            e(tag) {
+                            e {
                                 "looking for ${event.channel} timed out while trying to add ${event.nick} to channel roster"
                             }
                         }
                     }.firstOrNull()?.get(event.channel)
             if (channelState == null) {
-                e(tag) {
+                e {
                     "recevied join event for another nick. ${event.channel}. In channel. ${event.channel}. However, state for that chanel can not be found"
                 }
             }

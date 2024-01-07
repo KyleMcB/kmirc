@@ -16,7 +16,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":Utility_Functions"))
-                api("co.touchlab:kermit:2.0.2")
+//                api("co.touchlab:kermit:2.0.2")
             }
 
         }
