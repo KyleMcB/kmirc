@@ -4,22 +4,24 @@
 
 package com.xingpeds.kmirc.state
 
+import Logged
 import StartableJob
+import co.touchlab.kermit.Logger.Companion.e
 import co.touchlab.kermit.Logger.Companion.i
+import co.touchlab.kermit.Logger.Companion.v
 import com.xingpeds.kmirc.entities.events.IIrcEvent
 import com.xingpeds.kmirc.events.EventList
 import com.xingpeds.kmirc.state.MutableNickState.isNickMe
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import withErrorLogging
 import kotlin.time.Duration.Companion.seconds
 
 /**
  * Singleton event processor to update the clients state
  */
-object StateEventProcessor : StartableJob {
+@FlowPreview
+object StateEventProcessor : StartableJob, Logged {
     private val events: EventList = EventList()
     internal var scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
 
@@ -41,10 +43,14 @@ object StateEventProcessor : StartableJob {
         MutableClientState.mNotices.update { it + event }
     }
 
-    private suspend fun handleJoin(event: IIrcEvent.JOIN) {
+    private suspend fun handleJoin(event: IIrcEvent.JOIN) = withErrorLogging {
+        v(tag) {
+            "handling join event"
+        }
         //when join
         //could be a self join or another nick join
         if (isNickMe(event.nick)) {
+            v(tag) { "self join event" }
             //self join
             // add a new channel to state
             val newChannel = MutableChannelState(event.channel)
@@ -52,13 +58,29 @@ object StateEventProcessor : StartableJob {
                 channelMap + (event.channel to newChannel)
             }
         } else {
+            v(tag) { "other join event" }
             //other join
             // add a nick to a channel's state
             // This could be tricky because channel state might be in flight.
-            val channelState: MutableChannelState? = MutableClientState.mChannels.timeout(2.seconds)
-                .first { map ->
-                    map.containsKey(event.channel)
-                }[event.channel]
+
+            val channelState: MutableChannelState? =
+                MutableClientState.mChannels
+                    .filter { map ->
+                        map.containsKey(event.channel)
+                    }
+                    .timeout(4.seconds)
+                    .catch { e ->
+                        if (e is TimeoutCancellationException) {
+                            e(tag) {
+                                "looking for ${event.channel} timed out while trying to add ${event.nick} to channel roster"
+                            }
+                        }
+                    }.firstOrNull()?.get(event.channel)
+            if (channelState == null) {
+                e(tag) {
+                    "recevied join event for another nick. ${event.channel}. In channel. ${event.channel}. However, state for that chanel can not be found"
+                }
+            }
 
             channelState?.mMembers?.update { members: Set<String> ->
                 members + event.nick
@@ -66,4 +88,7 @@ object StateEventProcessor : StartableJob {
         }
 
     }
+
+    override val tag: String
+        get() = "StateEventProvessor"
 }
