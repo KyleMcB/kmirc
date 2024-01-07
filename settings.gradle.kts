@@ -20,7 +20,6 @@ fun includeModules(set: Set<String>, prefix: String, dir: File): Set<String> {
     val gradlePath = "$prefix:${dir.name}".removePrefix(":kmirc")
     val intermediateSet = set + if (dir.listFiles()?.firstOrNull { it.name == "build.gradle.kts" } != null &&
         gradlePath != "") {
-        println("including $gradlePath")
         setOf(gradlePath)
     } else {
         emptySet()
