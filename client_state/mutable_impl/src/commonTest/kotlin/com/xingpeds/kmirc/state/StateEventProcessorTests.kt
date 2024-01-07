@@ -6,6 +6,7 @@
 
 package com.xingpeds.kmirc.state
 
+import LogTag
 import Logged
 import assert
 import com.xingpeds.kmirc.entities.IrcFrom
@@ -23,7 +24,7 @@ import kotlin.test.fail
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-class StateEventProcessorTests : Logged {
+class StateEventProcessorTests : Logged by LogTag("StateEventProcessorTests") {
 
     private fun test(timeout: Duration = 10.seconds, testBlock: suspend CoroutineScope.() -> Unit): Unit =
         runTest(timeout = timeout) {
@@ -75,9 +76,6 @@ class StateEventProcessorTests : Logged {
         val stateSample: IIrcEvent.Notice = MutableClientState.mNotices.filterNot { it.isEmpty() }.first().last()
         stateSample.assert(noticeEvent)
     }
-
-    override val tag: String
-        get() = "StateEventProcessorTests"
 
 }
 

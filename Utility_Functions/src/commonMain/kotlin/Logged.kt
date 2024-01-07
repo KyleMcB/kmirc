@@ -12,12 +12,28 @@ import co.touchlab.kermit.Severity
 
 /**
  * interface for kermit logging. experimental
+ * @param tag this is the tag used in the logs
  */
 interface Logged {
     /**
      * tag for kermit logging
      */
     val tag: String
+
+}
+
+/**
+ *
+ */
+class LogTag(override val tag: String) : Logged {
+    init {
+        v("constructed")
+    }
+
+    /**
+     * log on destroy
+     */
+    fun finalize(): Unit = v("garbage collected")
 
 }
 

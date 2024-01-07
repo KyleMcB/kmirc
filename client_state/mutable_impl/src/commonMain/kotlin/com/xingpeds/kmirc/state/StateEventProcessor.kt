@@ -4,6 +4,7 @@
 
 package com.xingpeds.kmirc.state
 
+import LogTag
 import Logged
 import StartableJob
 import com.xingpeds.kmirc.entities.events.IIrcEvent
@@ -20,9 +21,13 @@ import kotlin.time.Duration.Companion.seconds
  * Singleton event processor to update the clients state
  */
 @FlowPreview
-object StateEventProcessor : StartableJob, Logged {
+object StateEventProcessor : StartableJob, Logged by LogTag("StateEventProvessor") {
     private val events: EventList = EventList()
     internal var scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
+        set(value) {
+            field.cancel()
+            field = value
+        }
 
 
     override fun start(): Job = scope.launch {
@@ -84,6 +89,6 @@ object StateEventProcessor : StartableJob, Logged {
 
     }
 
-    override val tag: String
-        get() = "StateEventProvessor"
+//    override val tag: String
+//        get() = "StateEventProvessor"
 }
