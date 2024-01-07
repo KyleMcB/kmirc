@@ -2,7 +2,9 @@
  * Copyright 2024 Kyle McBurnett
  */
 
+import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Logger.Companion.e
+import co.touchlab.kermit.Severity
 
 /*
  * Copyright 2024 Kyle McBurnett
@@ -18,6 +20,24 @@ interface Logged {
     val tag: String
 
 }
+
+/**
+ * Log an error with tag auto included
+ */
+inline fun Logged.e(throwable: Throwable? = null, message: () -> String): Unit =
+    Logger.log(severity = Severity.Error, tag = this.tag, throwable = throwable, message = message())
+
+/**
+ * Log a debug statement with tag auto included
+ */
+fun Logged.d(message: String): Unit =
+    Logger.log(severity = Severity.Debug, tag = this.tag, throwable = null, message = message)
+
+/**
+ * log a verbose message with tag auto included
+ */
+fun Logged.v(message: String): Unit =
+    Logger.log(severity = Severity.Verbose, tag = this.tag, throwable = null, message = message)
 
 /**
  * basic error logging
