@@ -4,6 +4,8 @@
 
 package com.xingpeds.kmirc.clientnetwork
 
+import LogTag
+import Logged
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
@@ -12,10 +14,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import v
+import withErrorLogging
 import java.net.ConnectException
 import java.nio.ByteBuffer
 
-class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket {
+class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket, Logged by LogTag("SimpleSocketKtorAdapter") {
     private val sendChannel = socket.openWriteChannel(autoFlush = true)
 
     // New SharedFlow for socket closed signal
@@ -23,31 +27,35 @@ class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket {
     override val socketClosed: SharedFlow<Boolean> = _socketClosed
 
     init {
-        val readChannel = socket.openReadChannel()
-        socket.launch {
-            while (!readChannel.isClosedForRead) {
-                readChannel.read(5) { byteBuffer: ByteBuffer ->
-                    val bytes = ByteArray(byteBuffer.remaining())
-                    byteBuffer.get(bytes)
-                    launch {
-                        val string: String = bytes.decodeToString()
-                        _incoming.emit(string)
+        withErrorLogging {
+            val readChannel = socket.openReadChannel()
+            socket.launch {
+                while (!readChannel.isClosedForRead) {
+                    readChannel.read(5) { byteBuffer: ByteBuffer ->
+                        val bytes = ByteArray(byteBuffer.remaining())
+                        byteBuffer.get(bytes)
+                        launch {
+                            val string: String = bytes.decodeToString()
+                            v("incoming: $string")
+                            _incoming.emit(string)
+                        }
                     }
                 }
+                _socketClosed.emit(true)
+                close()
             }
-            _socketClosed.emit(true)
-            close()
         }
     }
 
-    override fun close() {
+    override fun close() = withErrorLogging {
+        v("closing socket")
         socket.close()
         socket.cancel()
 
     }
 
-    override suspend fun write(data: String) {
-        println("[socket] out: $data")
+    override suspend fun write(data: String) = withErrorLogging {
+        v("[socket] out: $data")
         sendChannel.writeStringUtf8(data)
         sendChannel.flush()
     }

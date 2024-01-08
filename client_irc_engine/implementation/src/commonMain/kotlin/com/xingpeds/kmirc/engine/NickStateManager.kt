@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
+import v
 
 /**
  * manages the state machine to get a nick/user/realname registered with the irc server
@@ -31,9 +32,18 @@ class NickStateManager(
     private val messages: Flow<IIrcMessage>,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     private val mState: MutableStateFlow<NickStateMachine> = MutableNickState.selfNick,
+    private val autoStart: Boolean = true
 ) : StartableJob, Logged by LogTag("NickStateManager") {
     private var attemptedNick: String = wantedNick.nick
     private var nickRetryCounter: Int = 0
+
+    init {
+        if (autoStart) {
+            scope.launch {
+                start()
+            }
+        }
+    }
 
     private suspend fun handleNickMessage(message: IIrcMessage) {
         when (message.command) {
@@ -79,6 +89,7 @@ class NickStateManager(
     override fun start(): Job = scope.launch {
         scope.launch {
             events.filterIsInstance<IIrcEvent.INIT>().collect {
+                v("init caught, sending wanted nickname")
                 sendNickAndUserRequest()
             }
         }

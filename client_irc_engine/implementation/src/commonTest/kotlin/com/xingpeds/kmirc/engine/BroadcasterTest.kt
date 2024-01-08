@@ -19,7 +19,7 @@ class BroadcasterTest : Logged by LogTag("BroadcasterTest") {
     @Test
     fun pongCommand(): Unit = runWaitingTest { complete ->
         val longParam = "iW|dHYrFO^"
-        val engine: IClientIrcEngine = EventBroadcaster(
+        val engine: IBroadcaster = EventBroadcaster(
             send = { message: IIrcMessage ->
                 if (message.command == IrcCommand.PONG) {
                     val output = message.toIRCString()

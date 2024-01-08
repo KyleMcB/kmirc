@@ -9,9 +9,10 @@ import com.xingpeds.kmirc.clientnetwork.Connect
 import com.xingpeds.kmirc.clientnetwork.DNSLookupFun
 import com.xingpeds.kmirc.clientnetwork.KtorSocketFactory
 import com.xingpeds.kmirc.engine.EventBroadcaster
-import com.xingpeds.kmirc.engine.IClientIrcEngine
+import com.xingpeds.kmirc.engine.IBroadcaster
+import com.xingpeds.kmirc.engine.NickStateManager
 import com.xingpeds.kmirc.entities.IIrcMessage
-import com.xingpeds.kmirc.entities.MessageProcessor
+import com.xingpeds.kmirc.entities.IIrcUser
 import com.xingpeds.kmirc.parser.IrcLineParser
 import com.xingpeds.kmirc.parser.ParseResult
 import com.xingpeds.kmirc.parser.marshallIrcPackets
@@ -33,9 +34,18 @@ object ImplementationModule {
         sendFun: suspend (IIrcMessage) -> Unit,
         inputFlow: Flow<IIrcMessage>,
         scope: CoroutineScope,
-        processors: Set<MessageProcessor>
-    ): IClientIrcEngine =
-        EventBroadcaster(sendFun, inputFlow, scope)
+        wantedNick: IIrcUser
+    ): IBroadcaster {
+        val eventBroadcaster = EventBroadcaster(sendFun, inputFlow, scope)
+        NickStateManager(
+            wantedNick = wantedNick,
+            send = sendFun,
+            broadcast = eventBroadcaster::sendEvent,
+            events = eventBroadcaster.events,
+            messages = inputFlow
+        )
+        return eventBroadcaster
+    }
 
     fun getParser(): IrcLineParser = Parser
 }

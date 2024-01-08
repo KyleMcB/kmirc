@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.flowOf
 import runWaitingTest
 import kotlin.test.Test
 
-class NickStateManagerTest {
+class
+NickStateManagerTest {
     private val username = "TestUser"
     private val hostname = "testHostname"
     private val realName = "test realname"

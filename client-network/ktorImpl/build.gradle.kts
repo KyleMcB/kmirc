@@ -1,3 +1,7 @@
+/*
+ * Copyright 2024 Kyle McBurnett
+ */
+
 plugins {
     kotlin("multiplatform")
 }
@@ -13,6 +17,7 @@ kotlin {
             dependencies {
                 implementation(project(":client-network:header"))
                 implementation("io.ktor:ktor-network:2.3.6")
+                implementation(project(":Utility_Functions"))
             }
         }
         val commonTest by getting {

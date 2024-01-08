@@ -16,6 +16,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import v
+import withErrorLogging
 
 /**
  * Takes in general irc messages and fires individual event bus events
@@ -25,7 +26,7 @@ class EventBroadcaster(
     val send: suspend (IIrcMessage) -> Unit,
     input: Flow<IIrcMessage>,
     private val engineScope: CoroutineScope,
-) : IClientIrcEngine, Logged by LogTag("EventBroadcaster") {
+) : IBroadcaster, Logged by LogTag("EventBroadcaster") {
     private val mEvents =
         MutableSharedFlow<IIrcEvent>(replay = 100, extraBufferCapacity = 100, onBufferOverflow = BufferOverflow.SUSPEND)
 
@@ -34,6 +35,10 @@ class EventBroadcaster(
             send(IrcMessage(command = IrcCommand.PONG, params = ping.ircParams))
         }.launchIn(engineScope)
 
+    }
+
+    suspend fun sendEvent(event: IIrcEvent): Unit = withErrorLogging {
+        mEvents.emit(event)
     }
 
     override val events: SharedFlow<IIrcEvent>
