@@ -14,7 +14,7 @@ object Parser : IrcLineParser {
         val (command, messageWithoutCommand) = extractCommand(messageWithoutPrefix)
 
         if (command == null) {
-            ParseResult.InvalidIrcLine
+            ParseResult.InvalidIrcLine(ircLine)
         } else {
             val params = extractParameters(messageWithoutCommand)
             val value = IrcMessage(prefix, command, params)

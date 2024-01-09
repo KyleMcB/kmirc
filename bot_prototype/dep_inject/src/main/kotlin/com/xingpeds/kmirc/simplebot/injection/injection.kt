@@ -4,6 +4,8 @@
 
 package com.xingpeds.kmirc.simplebot.injection
 
+import LogTag
+import Logged
 import Parser
 import com.xingpeds.kmirc.clientnetwork.Connect
 import com.xingpeds.kmirc.clientnetwork.DNSLookupFun
@@ -15,10 +17,12 @@ import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.IIrcUser
 import com.xingpeds.kmirc.parser.IrcLineParser
 import com.xingpeds.kmirc.parser.ParseResult
+import com.xingpeds.kmirc.parser.ParseResult.InvalidIrcLine
 import com.xingpeds.kmirc.parser.marshallIrcPackets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import v
 
 
 object ImplementationModule {
@@ -50,14 +54,17 @@ object ImplementationModule {
     fun getParser(): IrcLineParser = Parser
 }
 
-object Adapters {
+object Adapters : Logged by LogTag("Adapters"){
     suspend fun socketToEngineAdapter(socketFlow: Flow<String>): Flow<IIrcMessage> {
         val marshalled = marshallIrcPackets(socketFlow)
         val parsed = Parser.mapToIrcCommand(marshalled)
         return flow {
-            parsed.collect { parsed ->
+            parsed.collect { parsed: ParseResult ->
                 when (parsed) {
-                    ParseResult.InvalidIrcLine -> println("[adapter] ignoring parse failure")
+                    is InvalidIrcLine -> v("""
+                        |ignoring parse failure
+                        |${parsed}
+                    """.trimMargin())
                     is ParseResult.ParseSuccess -> emit(parsed)
                 }
             }

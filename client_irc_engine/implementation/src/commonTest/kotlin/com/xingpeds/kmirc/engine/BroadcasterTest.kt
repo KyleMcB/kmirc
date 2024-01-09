@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flowOf
 import launchNow
 import org.junit.Test
 import runWaitingTest
+import v
 
 class BroadcasterTest : Logged by LogTag("BroadcasterTest") {
 
@@ -41,7 +42,7 @@ class BroadcasterTest : Logged by LogTag("BroadcasterTest") {
         //        :*.freenode.net NOTICE hellobotlongname :*** Found your hostname (c-24-17-115-100.hsd1.wa.comcast.net)
         backgroundScope.launchNow {
             MutableEventList.onNOTICE.collect { notice ->
-                println("[engine test] got $notice")
+                v("[engine test] got $notice")
                 notice.message.assert(longParam)
                 complete()
             }
@@ -62,7 +63,7 @@ class BroadcasterTest : Logged by LogTag("BroadcasterTest") {
 //        :Harambe!~harambe@freenode/service/Harambe PRIVMSG hellobotlongname :VERSION
         backgroundScope.launchNow {
             MutableEventList.onPRIVMSG.collect {
-                println("[engine test] got $it")
+                v("[engine test] got $it")
                 it.message.assert("VERSION")
                 testComplete()
             }
