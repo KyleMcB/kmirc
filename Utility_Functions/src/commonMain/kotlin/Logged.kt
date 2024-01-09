@@ -40,7 +40,7 @@ class LogTag(override val tag: String) : Logged {
 /**
  * Log an error with tag auto included
  */
-inline fun Logged.e(throwable: Throwable? = null, message: () -> String): Unit =
+inline fun Logged.logError(throwable: Throwable? = null, message: () -> String): Unit =
     Logger.log(severity = Severity.Error, tag = this.tag, throwable = throwable, message = message())
 
 /**

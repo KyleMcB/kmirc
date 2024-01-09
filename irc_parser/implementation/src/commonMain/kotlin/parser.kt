@@ -8,10 +8,14 @@ import com.xingpeds.kmirc.parser.ParseResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-object Parser : IrcLineParser {
+object Parser : IrcLineParser, Logged by LogTag("parser") {
     override fun Flow<String>.mapIrcParse(): Flow<ParseResult> = map { ircLine ->
         val (prefix, messageWithoutPrefix) = extractPrefix(ircLine)
+        v("prefix = $prefix")
+        v("messageWithoutPrefix = $messageWithoutPrefix")
         val (command, messageWithoutCommand) = extractCommand(messageWithoutPrefix)
+        v("command = $command")
+        v("messageWithoutCommand = $messageWithoutCommand")
 
         if (command == null) {
             ParseResult.InvalidIrcLine(ircLine)
@@ -28,10 +32,9 @@ object Parser : IrcLineParser {
         val words = message.split(" ", limit = 2)
         val firstWord = words.first().uppercase()
         val remainingString: String = if (words.size > 1) words[1] else ""
-        val command = try {
-            commandLookup[firstWord]
-        } catch (e: IllegalArgumentException) {
-            null
+        val command = commandLookup.get(firstWord)
+        if (command == null) logError {
+            "commandLookup for $firstWord failed"
         }
 
         return Pair(command, remainingString)

@@ -10,7 +10,7 @@ import StartableJob
 import com.xingpeds.kmirc.entities.events.IIrcEvent
 import com.xingpeds.kmirc.events.EventList
 import com.xingpeds.kmirc.state.MutableNickState.isNickMe
-import e
+import logError
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import v
@@ -71,13 +71,13 @@ object StateEventProcessor : StartableJob, Logged by LogTag("StateEventProvessor
                     .timeout(4.seconds)
                     .catch { e ->
                         if (e is TimeoutCancellationException) {
-                            e {
+                            logError {
                                 "looking for ${event.channel} timed out while trying to add ${event.nick} to channel roster"
                             }
                         }
                     }.firstOrNull()?.get(event.channel)
             if (channelState == null) {
-                e {
+                logError {
                     "recevied join event for another nick. ${event.channel}. In channel. ${event.channel}. However, state for that chanel can not be found"
                 }
             }

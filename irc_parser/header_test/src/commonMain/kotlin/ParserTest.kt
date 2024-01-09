@@ -11,8 +11,21 @@ import kotlinx.coroutines.flow.toList
 import kotlin.test.assertTrue
 
 
-abstract class ParserTestBase {
+abstract class ParserTestBase : Logged by LogTag("ParseTestBase") {
     abstract suspend fun getTestSubject(): IrcLineParser
+
+    abstract fun `command005 test`()
+    suspend fun `command005`() {
+        val testSubject = getTestSubject()
+        val inputFlow= flowOf(":*.freenode.net 005 longnicknamebot VLIST=b WATCH=32 WHOX :are supported by this server")
+        val result: List<ParseResult> = testSubject.mapToIrcCommand(inputFlow).toList()
+        val item = result[0]
+        require(item is ParseResult.ParseSuccess)
+        v(item.toString())
+        result.size.assert(1)
+        v(result[0].toString()
+        )
+    }
 
     abstract fun `ping exmaple test`()
     suspend fun `ping example`() {

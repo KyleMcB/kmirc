@@ -13,6 +13,11 @@ class ParserTest : ParserTestBase() {
     }
 
     @Test
+    override fun `command005 test`()=runTest {
+        super.command005()
+    }
+
+    @Test
     override fun `ping exmaple test`() = runTest {
         super.`ping example`()
     }
