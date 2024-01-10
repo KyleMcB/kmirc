@@ -11,13 +11,23 @@ import com.xingpeds.kmirc.entities.*
  */
 sealed interface IIrcEvent {
 
-//    data class TOPIC(val channel: String, val topic: String) : IIrcEvent {
-//        constructor(ircMessage: IrcMessage) : this(
-//            channel = ircMessage.params.list.getOrNull(0)
-//                ?: throw IllegalIRCMessage("topic message is missing target channel"),
-//            topic = ircMessage.params.longParam
-//        )
-//    }
+
+    /**
+     * Represents an INVITE IRC event.
+     *
+     * @property ircFrom The source of the invite message.
+     * @property channel The target channel that the user was invited to.
+     * @constructor Creates an INVITE object with the given IRC from and channel.
+     */
+    data class INVITE(val ircFrom: IrcFrom, val channel: String) : IIrcEvent {
+        constructor(ircMessage: IrcMessage) : this(
+            ircFrom = IrcFrom.fromPrefix(ircMessage.prefix ?: throw IllegalIRCMessage("Invite message missing prefix")),
+            channel = ircMessage.params.list.getOrNull(0)
+                ?: throw IllegalIRCMessage("target channel missing on invite message")
+        ) {
+            if (ircMessage.command != IrcCommand.INVITE) throw IllegalIRCMessage("creating Invite event from ${ircMessage.command} message")
+        }
+    }
 
     /**
      * This class represents an IRC mode/mode change event.
