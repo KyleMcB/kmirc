@@ -39,7 +39,8 @@ NickStateManagerTest {
             scope = backgroundScope,
             events = flowOf(IIrcEvent.INIT),
             broadcast = {},
-            messages = emptyFlow()
+            messages = emptyFlow(),
+            autoStart = false
         ).start().join()
     }
 
@@ -57,7 +58,8 @@ NickStateManagerTest {
             scope = backgroundScope,
             events = flowOf(IIrcEvent.INIT),
             broadcast = {},
-            messages = emptyFlow()
+            messages = emptyFlow(),
+            autoStart = false
         ).start().join()
     }
 }

@@ -12,7 +12,10 @@ import com.xingpeds.kmirc.entities.events.IIrcEvent
 import logError
 import withErrorLogging
 
-object converter : Logged by LogTag("messageToEvent") {
+/**
+ * this object hosts the message to event fun. Being in an object gives it logging
+ */
+object Converter : Logged by LogTag("messageToEvent") {
     /**
      * convert an IRC message into a client event
      */
@@ -191,11 +194,15 @@ object converter : Logged by LogTag("messageToEvent") {
             IrcCommand.RPL_MYINFO -> notYetImpl(message.command)
             IrcCommand.RPL_ISUPPORT -> notYetImpl(message.command)
             IrcCommand.RPL_LOCALUSERS -> notYetImpl(message.command)
+            IrcCommand.RPL_GLOBALUSERS -> notYetImpl(message.command)
         }
     }
 
 
-    fun notYetImpl(command: IrcCommand): IIrcEvent {
+    /**
+     * stub for events that have not been created yet.
+     */
+    private fun notYetImpl(command: IrcCommand): IIrcEvent {
 
         logError {
             "No event mapping for $command"

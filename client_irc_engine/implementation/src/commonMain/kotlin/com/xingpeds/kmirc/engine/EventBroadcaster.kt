@@ -6,7 +6,7 @@ package com.xingpeds.kmirc.engine
 
 import LogTag
 import Logged
-import com.xingpeds.kmirc.engine.converter.messageToEvent
+import com.xingpeds.kmirc.engine.Converter.messageToEvent
 import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcMessage
@@ -14,7 +14,10 @@ import com.xingpeds.kmirc.entities.events.IIrcEvent
 import com.xingpeds.kmirc.events.MutableEventList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import v
 import withErrorLogging
