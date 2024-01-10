@@ -9,7 +9,9 @@ import Logged
 import assert
 import com.xingpeds.kmirc.entities.*
 import com.xingpeds.kmirc.events.MutableEventList
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.shareIn
 import launchNow
 import org.junit.Test
 import runWaitingTest
@@ -20,7 +22,7 @@ class BroadcasterTest : Logged by LogTag("BroadcasterTest") {
     @Test
     fun pongCommand(): Unit = runWaitingTest { complete ->
         val longParam = "iW|dHYrFO^"
-        val engine: IBroadcaster = EventBroadcaster(
+        EventBroadcaster(
             send = { message: IIrcMessage ->
                 if (message.command == IrcCommand.PONG) {
                     val output = message.toIRCString()
@@ -31,7 +33,7 @@ class BroadcasterTest : Logged by LogTag("BroadcasterTest") {
                 IrcMessage(
                     command = IrcCommand.PING, params = IrcParams(longParam = longParam)
                 )
-            ), engineScope = backgroundScope
+            ).shareIn(this, SharingStarted.Lazily), engineScope = backgroundScope
         )
     }
 
@@ -47,14 +49,15 @@ class BroadcasterTest : Logged by LogTag("BroadcasterTest") {
                 complete()
             }
         }
-        val subject = EventBroadcaster(
+        EventBroadcaster(
             send = {}, input = flowOf(
                 IrcMessage(
                     command = IrcCommand.NOTICE,
                     prefix = IrcPrefix("*.freenode.net"),
                     params = IrcParams("hellobotlongname", longParam = longParam)
                 )
-            ), engineScope = backgroundScope
+            ).shareIn(this, SharingStarted.Lazily),
+            engineScope = backgroundScope
         )
     }
 
@@ -69,14 +72,15 @@ class BroadcasterTest : Logged by LogTag("BroadcasterTest") {
             }
 
         }
-        val engine = EventBroadcaster(
+        EventBroadcaster(
             send = {}, input = flowOf(
                 IrcMessage(
                     prefix = IrcPrefix(nickOrServer = "Harambe", user = "harambe", host = "freenode/service/Harambe"),
                     command = IrcCommand.PRIVMSG,
                     params = IrcParams("hellobotlongname", longParam = "VERSION")
                 )
-            ), engineScope = backgroundScope
+            ).shareIn(this, SharingStarted.Lazily),
+            engineScope = backgroundScope
         )
     }
 }

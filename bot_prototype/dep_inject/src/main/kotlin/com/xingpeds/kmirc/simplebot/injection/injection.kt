@@ -20,8 +20,8 @@ import com.xingpeds.kmirc.parser.ParseResult
 import com.xingpeds.kmirc.parser.ParseResult.InvalidIrcLine
 import com.xingpeds.kmirc.parser.marshallIrcPackets
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.*
 import v
 
 
@@ -36,7 +36,7 @@ object ImplementationModule {
 
     fun getEngine(
         sendFun: suspend (IIrcMessage) -> Unit,
-        inputFlow: Flow<IIrcMessage>,
+        inputFlow: SharedFlow<IIrcMessage>,
         scope: CoroutineScope,
         wantedNick: IIrcUser
     ): IBroadcaster {
@@ -55,7 +55,7 @@ object ImplementationModule {
 }
 
 object Adapters : Logged by LogTag("Adapters"){
-    suspend fun socketToEngineAdapter(socketFlow: Flow<String>): Flow<IIrcMessage> {
+     fun socketToEngineAdapter(scope: CoroutineScope, socketFlow: SharedFlow<String>): SharedFlow<IIrcMessage> {
         val marshalled = marshallIrcPackets(socketFlow)
         val parsed = Parser.mapToIrcCommand(marshalled)
         return flow {
@@ -68,7 +68,7 @@ object Adapters : Logged by LogTag("Adapters"){
                     is ParseResult.ParseSuccess -> emit(parsed)
                 }
             }
-        }
+        }.shareIn(scope, SharingStarted.Lazily)
 //        emitAll(message.filterIsInstance<ParseResult.ParseSuccess>())
     }
 }

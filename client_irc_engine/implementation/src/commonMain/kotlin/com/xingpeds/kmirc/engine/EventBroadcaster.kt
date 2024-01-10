@@ -6,6 +6,7 @@ package com.xingpeds.kmirc.engine
 
 import LogTag
 import Logged
+import com.xingpeds.kmirc.engine.converter.messageToEvent
 import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcMessage
@@ -24,7 +25,7 @@ import withErrorLogging
  */
 class EventBroadcaster(
     val send: suspend (IIrcMessage) -> Unit,
-    input: Flow<IIrcMessage>,
+    input: SharedFlow<IIrcMessage>,
     private val engineScope: CoroutineScope,
 ) : IBroadcaster, Logged by LogTag("EventBroadcaster") {
     private val mEvents =
@@ -67,7 +68,7 @@ class EventBroadcaster(
     internal fun startEventBroadcaster() = engineScope.launch {
         v("starting event broadcaster")
         events.collect { event ->
-            v("event: $event")
+            if (event !is IIrcEvent.NotImplYet) v("event: $event")
             when (event) {
                 IIrcEvent.INIT -> MutableEventList.mInit.emit(event as IIrcEvent.INIT)
 
@@ -78,8 +79,9 @@ class EventBroadcaster(
                 is IIrcEvent.PRIVMSG -> MutableEventList.mPrivmsg.emit(event)
 
                 is IIrcEvent.JOIN -> MutableEventList.mJoin.emit(event)
-                IIrcEvent.PickNewNick -> TODO()
+                IIrcEvent.PickNewNick -> Unit
                 is IIrcEvent.PART -> TODO()
+                IIrcEvent.NotImplYet -> Unit
             }
         }
     }

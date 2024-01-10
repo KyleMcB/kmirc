@@ -11,11 +11,7 @@ import kotlinx.coroutines.flow.map
 object Parser : IrcLineParser, Logged by LogTag("parser") {
     override fun Flow<String>.mapIrcParse(): Flow<ParseResult> = map { ircLine ->
         val (prefix, messageWithoutPrefix) = extractPrefix(ircLine)
-        v("prefix = $prefix")
-        v("messageWithoutPrefix = $messageWithoutPrefix")
         val (command, messageWithoutCommand) = extractCommand(messageWithoutPrefix)
-        v("command = $command")
-        v("messageWithoutCommand = $messageWithoutCommand")
 
         if (command == null) {
             ParseResult.InvalidIrcLine(ircLine)

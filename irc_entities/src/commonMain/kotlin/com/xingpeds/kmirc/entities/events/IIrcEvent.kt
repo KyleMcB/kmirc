@@ -10,6 +10,10 @@ import com.xingpeds.kmirc.entities.*
  * IIrcEvent is a sealed interface that represents various IRC events. Including Client only events, such as INIT.
  */
 sealed interface IIrcEvent {
+    /**
+     * stub for messages that have no event yet
+     */
+    data object NotImplYet : IIrcEvent
 
     /**
      * JOIN event

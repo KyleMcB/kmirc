@@ -30,6 +30,7 @@ val connect: Connect = getConnectFun()
 val parser: IrcLineParser = getParser()
 fun main(args: Array<String>) = runBlocking {
     //attempt to connect
+    val primaryScope = CoroutineScope(Dispatchers.Default)
     val addresses = dnsLookUp(serverHostName)
     when (val connectionAttempt = connect(addresses[0], serverPort)) {
         is ConnectionResult.Success -> {
@@ -40,12 +41,13 @@ fun main(args: Array<String>) = runBlocking {
                 }
             }
 //        val nickManager = Nick
+            val inputFlow = Adapters.socketToEngineAdapter(primaryScope, connection.incoming)
             val engine: IBroadcaster = getEngine(
-                inputFlow = Adapters.socketToEngineAdapter(connection.incoming), // I need to get the marshaller and parser
+                inputFlow = inputFlow, // I need to get the marshaller and parser
                 sendFun = { iIrcMessage: IIrcMessage ->
                     connection.write(iIrcMessage.toIRCString())
                 },
-                scope = CoroutineScope(Dispatchers.Default),
+                scope = primaryScope,
                 wantedNick = IrcUser(
                     nick = "longnicknamebot",
                     username = "kmirc bot",
