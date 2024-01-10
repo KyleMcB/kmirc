@@ -12,12 +12,46 @@ import kotlinx.datetime.Instant
  * IIrcEvent is a sealed interface that represents various IRC events. Including Client only events, such as INIT.
  */
 sealed interface IIrcEvent {
+
+    /**
+     * Represents a kick event in an IRC channel.
+     *
+     * @property nick The nickname of the user who was kicked.
+     * @property channel The channel from which the user was kicked.
+     * @property reason The reason for the kick.
+     * @property kickedByNick The nickname of the user who performed the kick.
+     * @property timestamp The timestamp of the kick event.
+     * @constructor Creates a KICK object with the specified properties.
+     */
+    data class KICK(
+        val nick: String,
+        val channel: String,
+        val reason: String,
+        val kickedByNick: String,
+        override val timestamp: Instant
+    ) : IIrcEvent {
+        constructor(ircMessage: IIrcMessage) : this(
+            nick = ircMessage.params.list.getOrNull(1)
+                ?: throw IllegalIRCMessage("kick message missing the kicked nick", ircMessage),
+            channel = ircMessage.params.list.getOrNull(0) ?: throw IllegalIRCMessage(
+                "kick message missing the channel",
+                ircMessage
+            ),
+            reason = ircMessage.params.longParam ?: "", //todo not sure if a reason is required
+            kickedByNick = ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage(
+                "kick message missing prefix",
+                ircMessage
+            ),
+            timestamp = ircMessage.timestamp
+        )
+    }
+
     /**
      * Represents a timestamp of an IRC event.
      *
      * @property timestamp The instant when the event occurred.
      */
-    val timestamp: kotlinx.datetime.Instant
+    val timestamp: Instant
 
     /**
      * Represents an INVITE IRC event.
@@ -30,12 +64,20 @@ sealed interface IIrcEvent {
     data class INVITE(val ircFrom: IrcFrom, val channel: String, override val timestamp: Instant) : IIrcEvent {
         @Throws(IllegalIRCMessage::class)
         constructor(ircMessage: IrcMessage) : this(
-            ircFrom = IrcFrom.fromPrefix(ircMessage.prefix ?: throw IllegalIRCMessage("Invite message missing prefix")),
+            ircFrom = IrcFrom.fromPrefix(
+                ircMessage.prefix ?: throw IllegalIRCMessage(
+                    "Invite message missing prefix",
+                    ircMessage
+                )
+            ),
             channel = ircMessage.params.list.getOrNull(0)
-                ?: throw IllegalIRCMessage("target channel missing on invite message"),
+                ?: throw IllegalIRCMessage("target channel missing on invite message", ircMessage),
             timestamp = ircMessage.timestamp
         ) {
-            if (ircMessage.command != IrcCommand.INVITE) throw IllegalIRCMessage("creating Invite event from ${ircMessage.command} message")
+            if (ircMessage.command != IrcCommand.INVITE) throw IllegalIRCMessage(
+                "creating Invite event from ${ircMessage.command} message",
+                ircMessage
+            )
         }
     }
 
@@ -58,7 +100,10 @@ sealed interface IIrcEvent {
         @Throws(IllegalIRCMessage::class)
         constructor(ircMessage: IrcMessage) : this(from = if (ircMessage.prefix?.user == null || ircMessage.prefix.host == null) {
             IrcFrom.Server(
-                ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage("mode message missing prefix")
+                ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage(
+                    "mode message missing prefix",
+                    ircMessage
+                )
             )
         } else {
             IrcFrom.User(user = ircMessage.prefix.nickOrServer)
@@ -67,7 +112,10 @@ sealed interface IIrcEvent {
         } else {
             IrcTarget.User(ircMessage.params.list[0])
         }, modes = ircMessage.params.list.getOrNull(1).let { modes ->
-            if (modes == null) throw IllegalIRCMessage("modes message missing second parameter. The list of mode changes")
+            if (modes == null) throw IllegalIRCMessage(
+                "modes message missing second parameter. The list of mode changes",
+                ircMessage
+            )
             val plusIndex: Int = modes.indexOf('+')
             if (plusIndex == -1) {
                 emptySet<Char>()
@@ -76,7 +124,10 @@ sealed interface IIrcEvent {
                 modes.substring((plusIndex..end)).toSet()
             }
         }, modesRemoved = ircMessage.params.list.getOrNull(1).let { modes ->
-            if (modes == null) throw IllegalIRCMessage("modes message missing second parameter. The list of mode changes")
+            if (modes == null) throw IllegalIRCMessage(
+                "modes message missing second parameter. The list of mode changes",
+                ircMessage
+            )
             val minusIndex = modes.indexOf('-')
             if (minusIndex == -1) {
                 emptySet<Char>()
@@ -103,8 +154,14 @@ sealed interface IIrcEvent {
     data class UserQuit(val nick: String, val quitMessage: String, override val timestamp: Instant) : IIrcEvent {
         @Throws(IllegalIRCMessage::class)
         constructor(ircMessage: IrcMessage) : this(
-            nick = ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage("quit message missing nick prefix"),
-            quitMessage = ircMessage.params.longParam ?: throw IllegalIRCMessage("quite message missing reason"),
+            nick = ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage(
+                "quit message missing nick prefix",
+                ircMessage
+            ),
+            quitMessage = ircMessage.params.longParam ?: throw IllegalIRCMessage(
+                "quit message missing reason",
+                ircMessage
+            ),
             timestamp = ircMessage.timestamp
         )
     }
@@ -121,9 +178,9 @@ sealed interface IIrcEvent {
         @Throws(IllegalIRCMessage::class)
         constructor(ircMessage: IrcMessage) : this(
             previousNick = ircMessage.prefix?.nickOrServer
-                ?: throw IllegalIRCMessage("Nick change message missing previous nick"),
+                ?: throw IllegalIRCMessage("Nick change message missing previous nick", ircMessage),
             newNick = ircMessage.params.list.getOrNull(0)
-                ?: throw IllegalIRCMessage("nick change message missing new nick"),
+                ?: throw IllegalIRCMessage("nick change message missing new nick", ircMessage),
             timestamp = ircMessage.timestamp
         )
     }
@@ -137,8 +194,10 @@ sealed interface IIrcEvent {
     data class MOTDLINE(val line: String, override val timestamp: Instant) : IIrcEvent {
         @Throws(IllegalIRCMessage::class)
         constructor(ircMessage: IrcMessage) : this(
-            line = ircMessage.params.longParam ?: throw IllegalIRCMessage("motd message missing the text parameter"),
-            timestamp = ircMessage.timestamp
+            line = ircMessage.params.longParam ?: throw IllegalIRCMessage(
+                "motd message missing the text parameter",
+                ircMessage
+            ), timestamp = ircMessage.timestamp
         )
     }
 
@@ -159,7 +218,7 @@ sealed interface IIrcEvent {
         @Throws(IllegalIRCMessage::class)
         constructor(ircMessage: IrcMessage) : this(
             welcomeMessage = ircMessage.params.longParam
-                ?: throw IllegalIRCMessage("server welcome message missing long parameter"),
+                ?: throw IllegalIRCMessage("server welcome message missing long parameter", ircMessage),
             timestamp = ircMessage.timestamp
         )
     }
@@ -175,7 +234,7 @@ sealed interface IIrcEvent {
         @Throws(IllegalIRCMessage::class)
         constructor(ircMessage: IIrcMessage) : this(
             channel = ircMessage.params.list[0],
-            nick = ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage("JOIN message missing nick"),
+            nick = ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage("JOIN message missing nick", ircMessage),
             timestamp = ircMessage.timestamp
         )
     }
@@ -191,7 +250,7 @@ sealed interface IIrcEvent {
         @Throws(IllegalIRCMessage::class)
         constructor(ircMessage: IrcMessage) : this(
             channel = ircMessage.params.list[0],
-            nick = ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage("Part message missing prefix"),
+            nick = ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage("Part message missing prefix", ircMessage),
             timestamp = ircMessage.timestamp
         )
     }
@@ -215,13 +274,13 @@ sealed interface IIrcEvent {
         IIrcEvent {
         @Throws(IllegalIRCMessage::class)
         constructor(message: IIrcMessage) : this(
-            from = prefixToFrom(message.prefix ?: throw IllegalIRCMessage("prefix is missing for Notice message")),
+            from = prefixToFrom(message.prefix ?: throw IllegalIRCMessage("prefix is missing for Notice message", ircMessage = message)),
             target = if (isChannel(message.params.list[0])) {
                 IrcTarget.Channel(message.params.list[0])
             } else {
                 IrcTarget.User(message.params.list[0])
             },
-            message = message.params.longParam ?: throw IllegalIRCMessage("notice missing longparam"),
+            message = message.params.longParam ?: throw IllegalIRCMessage("notice missing longparam", message),
             timestamp = message.timestamp
         )
     }
@@ -253,17 +312,17 @@ sealed interface IIrcEvent {
         constructor(ircMessage: IIrcMessage) : this(
             from = if (ircMessage.prefix?.host == null && ircMessage.prefix?.user == null) {
                 IrcFrom.Server(
-                    ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage("privmsg missing server prefix")
+                    ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage("privmsg missing server prefix", ircMessage)
                 )
             } else {
-                IrcFrom.User(ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage("privmsg missing nick"))
+                IrcFrom.User(ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage("privmsg missing nick", ircMessage))
             },
             target = if (isChannel(ircMessage.params.list[0])) {
                 IrcTarget.Channel(ircMessage.params.list[0])
             } else {
                 IrcTarget.User(ircMessage.params.list[0])
             },
-            message = ircMessage.params.longParam ?: throw IllegalIRCMessage("privmsg missing longparam"),
+            message = ircMessage.params.longParam ?: throw IllegalIRCMessage("privmsg missing longparam", ircMessage),
             timestamp = ircMessage.timestamp
         )
     }
@@ -274,4 +333,4 @@ sealed interface IIrcEvent {
  * This class extends Exception and is used to indicate that an IRC message did not conform
  * to the required format or was missing necessary information.
  */
-class IllegalIRCMessage(override val message: String?) : Exception()
+class IllegalIRCMessage(override val message: String?, val ircMessage: IIrcMessage) : Exception()
