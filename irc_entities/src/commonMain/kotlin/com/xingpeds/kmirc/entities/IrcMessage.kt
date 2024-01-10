@@ -4,6 +4,8 @@
 
 package com.xingpeds.kmirc.entities
 
+import kotlinx.datetime.Instant
+
 /**
  * basic elements of a serialized irc message
  */
@@ -24,6 +26,11 @@ interface IIrcMessage {
     val params: IrcParams
 
     /**
+     * timestamp of message arrival
+     */
+    val timestamp: kotlinx.datetime.Instant
+
+    /**
      * serialize back into an irc 1459 message
      */
     fun toIRCString(): String
@@ -36,6 +43,7 @@ data class IrcMessage(
     override val prefix: IrcPrefix? = null,
     override val command: IrcCommand,
     override val params: IrcParams,
+    override val timestamp: Instant = kotlinx.datetime.Clock.System.now()
 ) : IIrcMessage {
     override fun toIRCString(): String {
         return if (prefix != null) {
