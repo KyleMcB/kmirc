@@ -34,7 +34,7 @@ class IrcEventTest {
     fun part(): Unit = runTest {
         checkAll(nickPrefixArb, Arb.name()) { prefix, channelName ->
             IIrcEvent.PART(
-                message = IrcMessage(
+                IrcMessage(
                     prefix = prefix,
                     command = IrcCommand.PART,
                     params = IrcParams(channelName.toString())
