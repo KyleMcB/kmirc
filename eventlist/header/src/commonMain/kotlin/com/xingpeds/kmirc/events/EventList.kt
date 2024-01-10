@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 @Suppress("KDocMissingDocumentation") // pretty self explanatory
 interface EventList {
+    val onINVITE: SharedFlow<IIrcEvent.INVITE>
     val onPickNewNick: SharedFlow<IIrcEvent.PickNewNick>
     val onUserQuit: SharedFlow<IIrcEvent.UserQuit>
     val onNickChange: SharedFlow<IIrcEvent.NickChange>

@@ -81,7 +81,7 @@ class EventBroadcaster(
                 is IIrcEvent.PRIVMSG -> MutableEventList.mPrivmsg.emit(event)
 
                 is IIrcEvent.JOIN -> MutableEventList.mJoin.emit(event)
-                IIrcEvent.PickNewNick -> MutableEventList.mPickNewNick.emit(event)
+                IIrcEvent.PickNewNick -> MutableEventList.mPickNewNick.emit(event as IIrcEvent.PickNewNick)
                 is IIrcEvent.PART -> MutableEventList.mPART.emit(event)
                 IIrcEvent.NotImplYet -> Unit
                 is IIrcEvent.WELCOME -> MutableEventList.mWELCOME.emit(event)
@@ -89,6 +89,7 @@ class EventBroadcaster(
                 is IIrcEvent.MOTDLINE -> MutableEventList.mMOTDLINE.emit(event)
                 is IIrcEvent.NickChange -> MutableEventList.mNickChange.emit(event)
                 is IIrcEvent.UserQuit -> MutableEventList.mUserQuit.emit(event)
+                is IIrcEvent.INVITE -> MutableEventList.mINVITE.emit(event)
             }
         }
     }

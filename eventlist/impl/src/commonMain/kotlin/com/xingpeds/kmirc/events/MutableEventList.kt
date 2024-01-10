@@ -13,7 +13,11 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 @Suppress("KDocMissingDocumentation") //self documenting
 object MutableEventList : EventList {
-    
+
+    val mINVITE: MutableSharedFlow<IIrcEvent.INVITE> = MutableSharedFlow()
+    override val onINVITE: SharedFlow<IIrcEvent.INVITE>
+        get() = mINVITE
+
     val mPickNewNick: MutableSharedFlow<IIrcEvent.PickNewNick> = MutableSharedFlow()
     override val onPickNewNick: SharedFlow<IIrcEvent.PickNewNick>
         get() = mPickNewNick
