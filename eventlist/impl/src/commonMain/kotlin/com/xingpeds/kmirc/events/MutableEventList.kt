@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 @Suppress("KDocMissingDocumentation") //self documenting
 object MutableEventList : EventList {
+    val mWELCOME : MutableSharedFlow<IIrcEvent.WELCOME> = MutableSharedFlow(1)
+    override val onWELCOME: SharedFlow<IIrcEvent.WELCOME>
+        get() = mWELCOME
 
     val mPing: MutableSharedFlow<IIrcEvent.PING> = MutableSharedFlow()
     override val onPING: SharedFlow<IIrcEvent.PING>
@@ -31,9 +34,9 @@ object MutableEventList : EventList {
     override val onPRIVMSG: SharedFlow<IIrcEvent.PRIVMSG>
         get() = mPrivmsg
     val mJoin: MutableSharedFlow<IIrcEvent.JOIN> = MutableSharedFlow()
-    override val onJOIN: Flow<IIrcEvent.JOIN>
+    override val onJOIN: SharedFlow<IIrcEvent.JOIN>
         get() = mJoin
     val mPart: MutableSharedFlow<IIrcEvent.PART> = MutableSharedFlow()
-    override val onPART: Flow<IIrcEvent.PART>
+    override val onPART: SharedFlow<IIrcEvent.PART>
         get() = mPart
 }

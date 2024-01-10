@@ -82,6 +82,7 @@ class EventBroadcaster(
                 IIrcEvent.PickNewNick -> Unit
                 is IIrcEvent.PART -> TODO()
                 IIrcEvent.NotImplYet -> Unit
+                is IIrcEvent.WELCOME -> MutableEventList.mWELCOME.emit(event)
             }
         }
     }

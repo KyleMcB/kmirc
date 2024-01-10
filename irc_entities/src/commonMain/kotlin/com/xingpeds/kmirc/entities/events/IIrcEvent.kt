@@ -15,6 +15,10 @@ sealed interface IIrcEvent {
      */
     data object NotImplYet : IIrcEvent
 
+    data class WELCOME(val rawIrcLine:IIrcMessage) : IIrcEvent {
+        val welcomeMessage = rawIrcLine.params.longParam
+    }
+
     /**
      * JOIN event
      * @param [channel] the name of the channel someone joined

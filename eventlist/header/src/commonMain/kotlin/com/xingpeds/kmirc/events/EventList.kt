@@ -6,17 +6,19 @@ package com.xingpeds.kmirc.events
 
 import com.xingpeds.kmirc.entities.events.IIrcEvent
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 /**
  * This is an eventBus of irc events
  */
 @Suppress("KDocMissingDocumentation") // pretty self explanatory
 interface EventList {
-    val onPING: Flow<IIrcEvent.PING>
-    val onNOTICE: Flow<IIrcEvent.Notice>
-    val onINIT: Flow<IIrcEvent.INIT>
-    val onPRIVMSG: Flow<IIrcEvent.PRIVMSG>
-    val onJOIN: Flow<IIrcEvent.JOIN>
-    val onPART: Flow<IIrcEvent.PART>
+    val onWELCOME: SharedFlow<IIrcEvent.WELCOME>
+    val onPING: SharedFlow<IIrcEvent.PING>
+    val onNOTICE: SharedFlow<IIrcEvent.Notice>
+    val onINIT: SharedFlow<IIrcEvent.INIT>
+    val onPRIVMSG: SharedFlow<IIrcEvent.PRIVMSG>
+    val onJOIN: SharedFlow<IIrcEvent.JOIN>
+    val onPART: SharedFlow<IIrcEvent.PART>
 
 }
