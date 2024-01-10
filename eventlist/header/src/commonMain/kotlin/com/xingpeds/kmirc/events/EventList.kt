@@ -5,7 +5,6 @@
 package com.xingpeds.kmirc.events
 
 import com.xingpeds.kmirc.entities.events.IIrcEvent
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 
 /**
@@ -13,6 +12,11 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 @Suppress("KDocMissingDocumentation") // pretty self explanatory
 interface EventList {
+    val onUserQuit: SharedFlow<IIrcEvent.UserQuit>
+    val onNickChange: SharedFlow<IIrcEvent.NickChange>
+    val onMOTDLINE: SharedFlow<IIrcEvent.MOTDLINE>
+    val onPart: SharedFlow<IIrcEvent.PART>
+    val onMODE: SharedFlow<IIrcEvent.MODE>
     val onWELCOME: SharedFlow<IIrcEvent.WELCOME>
     val onPING: SharedFlow<IIrcEvent.PING>
     val onNOTICE: SharedFlow<IIrcEvent.Notice>

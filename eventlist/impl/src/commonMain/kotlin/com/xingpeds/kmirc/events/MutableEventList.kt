@@ -5,7 +5,6 @@
 package com.xingpeds.kmirc.events
 
 import com.xingpeds.kmirc.entities.events.IIrcEvent
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 
@@ -14,7 +13,28 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 @Suppress("KDocMissingDocumentation") //self documenting
 object MutableEventList : EventList {
-    val mWELCOME : MutableSharedFlow<IIrcEvent.WELCOME> = MutableSharedFlow(1)
+
+
+    val mUserQuit: MutableSharedFlow<IIrcEvent.UserQuit> = MutableSharedFlow()
+    override val onUserQuit: SharedFlow<IIrcEvent.UserQuit>
+        get() = mUserQuit
+
+    val mNickChange: MutableSharedFlow<IIrcEvent.NickChange> = MutableSharedFlow()
+    override val onNickChange: SharedFlow<IIrcEvent.NickChange>
+        get() = mNickChange
+
+    val mMOTDLINE: MutableSharedFlow<IIrcEvent.MOTDLINE> = MutableSharedFlow()
+    override val onMOTDLINE: SharedFlow<IIrcEvent.MOTDLINE>
+        get() = mMOTDLINE
+
+    val mPART: MutableSharedFlow<IIrcEvent.PART> = MutableSharedFlow()
+    override val onPart: SharedFlow<IIrcEvent.PART>
+        get() = mPART
+
+    val mMODE: MutableSharedFlow<IIrcEvent.MODE> = MutableSharedFlow()
+    override val onMODE: SharedFlow<IIrcEvent.MODE>
+        get() = mMODE
+    val mWELCOME: MutableSharedFlow<IIrcEvent.WELCOME> = MutableSharedFlow(1)
     override val onWELCOME: SharedFlow<IIrcEvent.WELCOME>
         get() = mWELCOME
 
