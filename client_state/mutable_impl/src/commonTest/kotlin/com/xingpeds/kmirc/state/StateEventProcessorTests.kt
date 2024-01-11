@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 @file:OptIn(FlowPreview::class)
@@ -14,6 +14,7 @@ import com.xingpeds.kmirc.entities.IrcTarget
 import com.xingpeds.kmirc.entities.events.JOIN
 import com.xingpeds.kmirc.entities.events.NOTICE
 import com.xingpeds.kmirc.events.MutableEventList
+import com.xingpeds.kmirc.state.processing.StateEventProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.filterNot
