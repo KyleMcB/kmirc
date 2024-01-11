@@ -4,7 +4,7 @@
 
 package com.xingpeds.kmirc.events
 
-import com.xingpeds.kmirc.entities.events.IIrcEvent
+import com.xingpeds.kmirc.entities.events.*
 import kotlinx.coroutines.flow.SharedFlow
 
 /**
@@ -12,19 +12,19 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 @Suppress("KDocMissingDocumentation") // pretty self explanatory
 interface EventList {
-    val onINVITE: SharedFlow<IIrcEvent.INVITE>
-    val onPickNewNick: SharedFlow<IIrcEvent.PickNewNick>
-    val onUserQuit: SharedFlow<IIrcEvent.UserQuit>
-    val onNickChange: SharedFlow<IIrcEvent.NickChange>
-    val onMOTDLINE: SharedFlow<IIrcEvent.MOTDLINE>
-    val onPart: SharedFlow<IIrcEvent.PART>
-    val onMODE: SharedFlow<IIrcEvent.MODE>
-    val onWELCOME: SharedFlow<IIrcEvent.WELCOME>
-    val onPING: SharedFlow<IIrcEvent.PING>
-    val onNOTICE: SharedFlow<IIrcEvent.Notice>
-    val onINIT: SharedFlow<IIrcEvent.INIT>
-    val onPRIVMSG: SharedFlow<IIrcEvent.PRIVMSG>
-    val onJOIN: SharedFlow<IIrcEvent.JOIN>
-    val onPART: SharedFlow<IIrcEvent.PART>
+    val onINVITE: SharedFlow<INVITE>
+    val onPickNewNick: SharedFlow<PickNewNick>
+    val onUserQuit: SharedFlow<UserQuit>
+    val onNickChange: SharedFlow<NickChange>
+    val onMOTDLINE: SharedFlow<MOTDLINE>
+    val onPart: SharedFlow<PART>
+    val onMODE: SharedFlow<MODE>
+    val onWELCOME: SharedFlow<WELCOME>
+    val onPING: SharedFlow<PING>
+    val onNOTICE: SharedFlow<NOTICE>
+    val onINIT: SharedFlow<TCPConnected>
+    val onPRIVMSG: SharedFlow<PRIVMSG>
+    val onJOIN: SharedFlow<JOIN>
+    val onPART: SharedFlow<PART>
 
 }

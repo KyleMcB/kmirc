@@ -9,6 +9,8 @@ import Logged
 import StartableJob
 import com.xingpeds.kmirc.entities.*
 import com.xingpeds.kmirc.entities.events.IIrcEvent
+import com.xingpeds.kmirc.entities.events.TCPConnected
+import com.xingpeds.kmirc.entities.events.PickNewNick
 import com.xingpeds.kmirc.state.MutableNickState
 import com.xingpeds.kmirc.state.NickStateMachine
 import kotlinx.coroutines.CoroutineScope
@@ -54,7 +56,7 @@ class NickStateManager(
             IrcCommand.ERR_ERRONEUSNICKNAME -> {
                 nickRetryCounter++
                 mState.emit(NickStateMachine.Refused("In use", nickRetryCounter))
-                broadcast(IIrcEvent.PickNewNick)
+                broadcast(PickNewNick)
             }
 
             else -> {
@@ -88,7 +90,7 @@ class NickStateManager(
 
     override fun start(): Job = scope.launch {
         scope.launch {
-            events.filterIsInstance<IIrcEvent.INIT>().collect {
+            events.filterIsInstance<TCPConnected>().collect {
                 v("init caught, sending wanted nickname")
                 sendNickAndUserRequest()
             }

@@ -7,7 +7,7 @@ package com.xingpeds.kmirc.engine
 import assert
 import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcUser
-import com.xingpeds.kmirc.entities.events.IIrcEvent
+import com.xingpeds.kmirc.entities.events.TCPConnected
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import runWaitingTest
@@ -37,7 +37,7 @@ NickStateManagerTest {
 
             },
             scope = backgroundScope,
-            events = flowOf(IIrcEvent.INIT),
+            events = flowOf(TCPConnected),
             broadcast = {},
             messages = emptyFlow(),
             autoStart = false
@@ -56,7 +56,7 @@ NickStateManagerTest {
 
             },
             scope = backgroundScope,
-            events = flowOf(IIrcEvent.INIT),
+            events = flowOf(TCPConnected),
             broadcast = {},
             messages = emptyFlow(),
             autoStart = false

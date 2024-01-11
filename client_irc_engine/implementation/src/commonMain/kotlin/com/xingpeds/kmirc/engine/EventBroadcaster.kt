@@ -10,7 +10,7 @@ import com.xingpeds.kmirc.engine.Converter.messageToEvent
 import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcMessage
-import com.xingpeds.kmirc.entities.events.IIrcEvent
+import com.xingpeds.kmirc.entities.events.*
 import com.xingpeds.kmirc.events.MutableEventList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
@@ -35,7 +35,7 @@ class EventBroadcaster(
         MutableSharedFlow<IIrcEvent>(replay = 100, extraBufferCapacity = 100, onBufferOverflow = BufferOverflow.SUSPEND)
 
     init {
-        MutableEventList.onPING.onEach { ping: IIrcEvent.PING ->
+        MutableEventList.onPING.onEach { ping: PING ->
             send(IrcMessage(command = IrcCommand.PONG, params = ping.ircParams))
         }.launchIn(engineScope)
 
@@ -64,7 +64,7 @@ class EventBroadcaster(
         startEventBroadcaster()
 
         engineScope.launch {
-            mEvents.emit(IIrcEvent.INIT)
+            mEvents.emit(TCPConnected)
         }
     }
 
@@ -72,24 +72,25 @@ class EventBroadcaster(
         v("starting event broadcaster")
         events.collect { event ->
             when (event) {
-                IIrcEvent.INIT -> MutableEventList.mInit.emit(event as IIrcEvent.INIT)
+                TCPConnected -> MutableEventList.mInit.emit(event as TCPConnected)
 
-                is IIrcEvent.PING -> MutableEventList.mPing.emit(event)
+                is PING -> MutableEventList.mPing.emit(event)
 
-                is IIrcEvent.Notice -> MutableEventList.mNotice.emit(event)
+                is NOTICE -> MutableEventList.mNotice.emit(event)
 
-                is IIrcEvent.PRIVMSG -> MutableEventList.mPrivmsg.emit(event)
+                is PRIVMSG -> MutableEventList.mPrivmsg.emit(event)
 
-                is IIrcEvent.JOIN -> MutableEventList.mJoin.emit(event)
-                IIrcEvent.PickNewNick -> MutableEventList.mPickNewNick.emit(event as IIrcEvent.PickNewNick)
-                is IIrcEvent.PART -> MutableEventList.mPART.emit(event)
-                IIrcEvent.NotImplYet -> Unit
-                is IIrcEvent.WELCOME -> MutableEventList.mWELCOME.emit(event)
-                is IIrcEvent.MODE -> MutableEventList.mMODE.emit(event)
-                is IIrcEvent.MOTDLINE -> MutableEventList.mMOTDLINE.emit(event)
-                is IIrcEvent.NickChange -> MutableEventList.mNickChange.emit(event)
-                is IIrcEvent.UserQuit -> MutableEventList.mUserQuit.emit(event)
-                is IIrcEvent.INVITE -> MutableEventList.mINVITE.emit(event)
+                is JOIN -> MutableEventList.mJoin.emit(event)
+                PickNewNick -> MutableEventList.mPickNewNick.emit(event as PickNewNick)
+                is PART -> MutableEventList.mPART.emit(event)
+                NotImplYet -> Unit
+                is WELCOME -> MutableEventList.mWELCOME.emit(event)
+                is MODE -> MutableEventList.mMODE.emit(event)
+                is MOTDLINE -> MutableEventList.mMOTDLINE.emit(event)
+                is NickChange -> MutableEventList.mNickChange.emit(event)
+                is UserQuit -> MutableEventList.mUserQuit.emit(event)
+                is INVITE -> MutableEventList.mINVITE.emit(event)
+                is KICK -> TODO()
             }
         }
     }

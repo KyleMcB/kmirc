@@ -25,15 +25,15 @@ class IrcEventTest {
     fun functionlessDataObjectEvents() {
         // this is for line coverage.
         val list = listOf<IIrcEvent>(
-            IIrcEvent.PickNewNick,
-            IIrcEvent.INIT
+            PickNewNick,
+            TCPConnected
         )
     }
 
     @Test
     fun part(): Unit = runTest {
         checkAll(nickPrefixArb, Arb.name()) { prefix, channelName ->
-            IIrcEvent.PART(
+            PART(
                 IrcMessage(
                     prefix = prefix,
                     command = IrcCommand.PART,
@@ -46,7 +46,7 @@ class IrcEventTest {
     @Test
     fun ping(): Unit = runTest {
         checkAll(Arb.domain()) { domain ->
-            IIrcEvent.PING(IrcParams(longParam = domain))
+            PING(IrcParams(longParam = domain))
         }
     }
 
@@ -56,7 +56,7 @@ class IrcEventTest {
         checkAll(nickPrefixArb, Arb.name()) { prefix, channelName ->
             val message: IIrcMessage =
                 IrcMessage(prefix, command = IrcCommand.JOIN, params = IrcParams(channelName.toString()))
-            IIrcEvent.JOIN(message)
+            JOIN(message)
         }
     }
 
@@ -72,7 +72,7 @@ class IrcEventTest {
                     }, longParam = message
                 )
             )
-            IIrcEvent.Notice(line)
+            NOTICE(line)
         }
     }
 
@@ -89,7 +89,7 @@ class IrcEventTest {
                     }, longParam = message
                 )
             )
-            IIrcEvent.PRIVMSG(line)
+            PRIVMSG(line)
         }
     }
 
@@ -111,7 +111,7 @@ class IrcEventTest {
                     }, longParam = message
                 )
             )
-            IIrcEvent.PRIVMSG(line)
+            PRIVMSG(line)
         }
     }
 
@@ -120,7 +120,7 @@ class IrcEventTest {
         val message: IIrcMessage =
             IrcMessage(null, command = IrcCommand.JOIN, params = IrcParams("#hello"))
         assertFailsWith<IllegalIRCMessage> {
-            IIrcEvent.JOIN(message)
+            JOIN(message)
 
         }
     }

@@ -7,7 +7,9 @@ package com.xingpeds.kmirc.state
 import LogTag
 import Logged
 import StartableJob
-import com.xingpeds.kmirc.entities.events.IIrcEvent
+import com.xingpeds.kmirc.entities.events.JOIN
+import com.xingpeds.kmirc.entities.events.NOTICE
+import com.xingpeds.kmirc.entities.events.PRIVMSG
 import com.xingpeds.kmirc.events.EventList
 import com.xingpeds.kmirc.state.MutableNickState.isNickMe
 import logError
@@ -37,15 +39,15 @@ object StateEventProcessor : StartableJob, Logged by LogTag("StateEventProvessor
         events.onJOIN.onEach(::handleJoin).launchIn(scope)
     }
 
-    private suspend fun handlePrivmsg(event: IIrcEvent.PRIVMSG) {
+    private suspend fun handlePrivmsg(event: PRIVMSG) {
         MutableClientState.mPrivmsgs.update { it + event }
     }
 
-    private suspend fun handleNotice(event: IIrcEvent.Notice) {
+    private suspend fun handleNotice(event: NOTICE) {
         MutableClientState.mNotices.update { it + event }
     }
 
-    private suspend fun handleJoin(event: IIrcEvent.JOIN) = withErrorLogging {
+    private suspend fun handleJoin(event: JOIN) = withErrorLogging {
         v("handling join event")
         //when join
         //could be a self join or another nick join

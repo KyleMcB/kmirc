@@ -8,7 +8,7 @@ import LogTag
 import Logged
 import com.xingpeds.kmirc.entities.IIrcMessage
 import com.xingpeds.kmirc.entities.IrcCommand
-import com.xingpeds.kmirc.entities.events.IIrcEvent
+import com.xingpeds.kmirc.entities.events.*
 import logError
 import withErrorLogging
 
@@ -28,7 +28,7 @@ object Converter : Logged by LogTag("messageToEvent") {
             IrcCommand.OPER -> notYetImpl(message.command)
             IrcCommand.QUIT -> notYetImpl(message.command)
             IrcCommand.SQUIT -> notYetImpl(message.command)
-            IrcCommand.JOIN -> IIrcEvent.JOIN(message)
+            IrcCommand.JOIN -> JOIN(message)
             IrcCommand.PART -> notYetImpl(message.command)
             IrcCommand.MODE -> notYetImpl(message.command)
             IrcCommand.TOPIC -> notYetImpl(message.command)
@@ -44,13 +44,13 @@ object Converter : Logged by LogTag("messageToEvent") {
             IrcCommand.TRACE -> notYetImpl(message.command)
             IrcCommand.ADMIN -> notYetImpl(message.command)
             IrcCommand.INFO -> notYetImpl(message.command)
-            IrcCommand.PRIVMSG -> IIrcEvent.PRIVMSG(message)
-            IrcCommand.NOTICE -> IIrcEvent.Notice(message)
+            IrcCommand.PRIVMSG -> PRIVMSG(message)
+            IrcCommand.NOTICE -> NOTICE(message)
             IrcCommand.WHO -> notYetImpl(message.command)
             IrcCommand.WHOIS -> notYetImpl(message.command)
             IrcCommand.WHOWAS -> notYetImpl(message.command)
             IrcCommand.KILL -> notYetImpl(message.command)
-            IrcCommand.PING -> IIrcEvent.PING(message.params)
+            IrcCommand.PING -> PING(message.params)
             IrcCommand.PONG -> notYetImpl(message.command)
             IrcCommand.ERROR -> notYetImpl(message.command)
             IrcCommand.AWAY -> notYetImpl(message.command)
@@ -207,7 +207,7 @@ object Converter : Logged by LogTag("messageToEvent") {
         logError {
             "No event mapping for $command"
         }
-        return IIrcEvent.NotImplYet
+        return NotImplYet
     }
 
 

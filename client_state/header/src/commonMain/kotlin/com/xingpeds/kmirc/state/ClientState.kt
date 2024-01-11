@@ -5,7 +5,8 @@
 
 package com.xingpeds.kmirc.state
 
-import com.xingpeds.kmirc.entities.events.IIrcEvent
+import com.xingpeds.kmirc.entities.events.NOTICE
+import com.xingpeds.kmirc.entities.events.PRIVMSG
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -25,12 +26,12 @@ interface ClientState {
     /**
      * all notices the client has seen
      */
-    val notices: StateFlow<List<IIrcEvent.Notice>>
+    val notices: StateFlow<List<NOTICE>>
 
     /**
      * all privmsgs the client has seen
      */
-    val privmsgs: StateFlow<List<IIrcEvent.PRIVMSG>>
+    val privmsgs: StateFlow<List<PRIVMSG>>
 
     /**
      * Client's nickname state represented as a StateFlow.

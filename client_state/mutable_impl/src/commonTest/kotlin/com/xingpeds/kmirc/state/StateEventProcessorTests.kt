@@ -11,7 +11,8 @@ import Logged
 import assert
 import com.xingpeds.kmirc.entities.IrcFrom
 import com.xingpeds.kmirc.entities.IrcTarget
-import com.xingpeds.kmirc.entities.events.IIrcEvent
+import com.xingpeds.kmirc.entities.events.JOIN
+import com.xingpeds.kmirc.entities.events.NOTICE
 import com.xingpeds.kmirc.events.MutableEventList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
@@ -42,7 +43,7 @@ class StateEventProcessorTests : Logged by LogTag("StateEventProcessorTests") {
         val nick = "otherNick"
         MutableNickState.selfNick.emit(NickStateMachine.Accept(selfNick))
         MutableClientState.mChannels.update { it + (channelName to MutableChannelState(channelName)) }
-        val joinEvent = IIrcEvent.JOIN(channel = channelName, nick = nick)
+        val joinEvent = JOIN(channel = channelName, nick = nick)
         MutableEventList.mJoin.emit(joinEvent)
         val state: ChannelState = MutableClientState.channels.filterNot { it.isEmpty() }.first().get(channelName)
             ?: fail("channel state not found")
@@ -55,7 +56,7 @@ class StateEventProcessorTests : Logged by LogTag("StateEventProcessorTests") {
         val selfNick = "testSelfNick"
         val channelName = "#channelName"
         MutableNickState.selfNick.emit(NickStateMachine.Accept(selfNick))
-        val joinEvent = IIrcEvent.JOIN(channel = channelName, nick = selfNick)
+        val joinEvent = JOIN(channel = channelName, nick = selfNick)
         //fire event
         MutableEventList.mJoin.emit(joinEvent)
         // check state
@@ -66,14 +67,14 @@ class StateEventProcessorTests : Logged by LogTag("StateEventProcessorTests") {
 
     @Test
     fun notice(): Unit = test {
-        val noticeEvent = IIrcEvent.Notice(
+        val noticeEvent = NOTICE(
             target = IrcTarget.User("testnick"), from = IrcFrom.User("fromNick"), message = "notice message"
         )
 
         MutableEventList.mNotice.emit(
             noticeEvent
         )
-        val stateSample: IIrcEvent.Notice = MutableClientState.mNotices.filterNot { it.isEmpty() }.first().last()
+        val stateSample: NOTICE = MutableClientState.mNotices.filterNot { it.isEmpty() }.first().last()
         stateSample.assert(noticeEvent)
     }
 

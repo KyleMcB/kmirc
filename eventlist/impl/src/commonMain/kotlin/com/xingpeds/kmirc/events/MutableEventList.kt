@@ -4,7 +4,7 @@
 
 package com.xingpeds.kmirc.events
 
-import com.xingpeds.kmirc.entities.events.IIrcEvent
+import com.xingpeds.kmirc.entities.events.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 
@@ -14,56 +14,56 @@ import kotlinx.coroutines.flow.SharedFlow
 @Suppress("KDocMissingDocumentation") //self documenting
 object MutableEventList : EventList {
 
-    val mINVITE: MutableSharedFlow<IIrcEvent.INVITE> = MutableSharedFlow()
-    override val onINVITE: SharedFlow<IIrcEvent.INVITE>
+    val mINVITE: MutableSharedFlow<INVITE> = MutableSharedFlow()
+    override val onINVITE: SharedFlow<INVITE>
         get() = mINVITE
 
-    val mPickNewNick: MutableSharedFlow<IIrcEvent.PickNewNick> = MutableSharedFlow()
-    override val onPickNewNick: SharedFlow<IIrcEvent.PickNewNick>
+    val mPickNewNick: MutableSharedFlow<PickNewNick> = MutableSharedFlow()
+    override val onPickNewNick: SharedFlow<PickNewNick>
         get() = mPickNewNick
 
-    val mUserQuit: MutableSharedFlow<IIrcEvent.UserQuit> = MutableSharedFlow()
-    override val onUserQuit: SharedFlow<IIrcEvent.UserQuit>
+    val mUserQuit: MutableSharedFlow<UserQuit> = MutableSharedFlow()
+    override val onUserQuit: SharedFlow<UserQuit>
         get() = mUserQuit
 
-    val mNickChange: MutableSharedFlow<IIrcEvent.NickChange> = MutableSharedFlow()
-    override val onNickChange: SharedFlow<IIrcEvent.NickChange>
+    val mNickChange: MutableSharedFlow<NickChange> = MutableSharedFlow()
+    override val onNickChange: SharedFlow<NickChange>
         get() = mNickChange
 
-    val mMOTDLINE: MutableSharedFlow<IIrcEvent.MOTDLINE> = MutableSharedFlow()
-    override val onMOTDLINE: SharedFlow<IIrcEvent.MOTDLINE>
+    val mMOTDLINE: MutableSharedFlow<MOTDLINE> = MutableSharedFlow()
+    override val onMOTDLINE: SharedFlow<MOTDLINE>
         get() = mMOTDLINE
 
-    val mPART: MutableSharedFlow<IIrcEvent.PART> = MutableSharedFlow()
-    override val onPart: SharedFlow<IIrcEvent.PART>
+    val mPART: MutableSharedFlow<PART> = MutableSharedFlow()
+    override val onPart: SharedFlow<PART>
         get() = mPART
 
-    val mMODE: MutableSharedFlow<IIrcEvent.MODE> = MutableSharedFlow()
-    override val onMODE: SharedFlow<IIrcEvent.MODE>
+    val mMODE: MutableSharedFlow<MODE> = MutableSharedFlow()
+    override val onMODE: SharedFlow<MODE>
         get() = mMODE
-    val mWELCOME: MutableSharedFlow<IIrcEvent.WELCOME> = MutableSharedFlow(1)
-    override val onWELCOME: SharedFlow<IIrcEvent.WELCOME>
+    val mWELCOME: MutableSharedFlow<WELCOME> = MutableSharedFlow(1)
+    override val onWELCOME: SharedFlow<WELCOME>
         get() = mWELCOME
 
-    val mPing: MutableSharedFlow<IIrcEvent.PING> = MutableSharedFlow()
-    override val onPING: SharedFlow<IIrcEvent.PING>
+    val mPing: MutableSharedFlow<PING> = MutableSharedFlow()
+    override val onPING: SharedFlow<PING>
         get() = mPing
 
-    val mNotice: MutableSharedFlow<IIrcEvent.Notice> = MutableSharedFlow()
-    override val onNOTICE: SharedFlow<IIrcEvent.Notice>
+    val mNotice: MutableSharedFlow<NOTICE> = MutableSharedFlow()
+    override val onNOTICE: SharedFlow<NOTICE>
         get() = mNotice
 
-    val mInit: MutableSharedFlow<IIrcEvent.INIT> = MutableSharedFlow(1)
-    override val onINIT: SharedFlow<IIrcEvent.INIT>
+    val mInit: MutableSharedFlow<TCPConnected> = MutableSharedFlow(1)
+    override val onINIT: SharedFlow<TCPConnected>
         get() = mInit
 
-    val mPrivmsg: MutableSharedFlow<IIrcEvent.PRIVMSG> = MutableSharedFlow()
-    override val onPRIVMSG: SharedFlow<IIrcEvent.PRIVMSG>
+    val mPrivmsg: MutableSharedFlow<PRIVMSG> = MutableSharedFlow()
+    override val onPRIVMSG: SharedFlow<PRIVMSG>
         get() = mPrivmsg
-    val mJoin: MutableSharedFlow<IIrcEvent.JOIN> = MutableSharedFlow()
-    override val onJOIN: SharedFlow<IIrcEvent.JOIN>
+    val mJoin: MutableSharedFlow<JOIN> = MutableSharedFlow()
+    override val onJOIN: SharedFlow<JOIN>
         get() = mJoin
-    val mPart: MutableSharedFlow<IIrcEvent.PART> = MutableSharedFlow()
-    override val onPART: SharedFlow<IIrcEvent.PART>
+    val mPart: MutableSharedFlow<PART> = MutableSharedFlow()
+    override val onPART: SharedFlow<PART>
         get() = mPart
 }
