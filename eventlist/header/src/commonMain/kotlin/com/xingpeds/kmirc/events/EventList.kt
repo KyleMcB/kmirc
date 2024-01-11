@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 package com.xingpeds.kmirc.events
@@ -12,6 +12,10 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 @Suppress("KDocMissingDocumentation") // pretty self explanatory
 interface EventList {
+    val onEndOfMOTD: SharedFlow<EndOfMOTD>
+    val onERROR: SharedFlow<ERROR>
+    val onAWAY: SharedFlow<AWAY>
+    val onKICK: SharedFlow<KICK>
     val onINVITE: SharedFlow<INVITE>
     val onPickNewNick: SharedFlow<PickNewNick>
     val onUserQuit: SharedFlow<UserQuit>

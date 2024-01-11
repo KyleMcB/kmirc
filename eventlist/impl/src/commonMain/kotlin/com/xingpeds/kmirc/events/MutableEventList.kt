@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 package com.xingpeds.kmirc.events
@@ -14,7 +14,19 @@ import kotlinx.coroutines.flow.SharedFlow
 @Suppress("KDocMissingDocumentation") //self documenting
 object MutableEventList : EventList {
 
+    val mEndOfMOTD: MutableSharedFlow<EndOfMOTD> = MutableSharedFlow(1)
+    val mERROR: MutableSharedFlow<ERROR> = MutableSharedFlow()
+    val mAWAY: MutableSharedFlow<AWAY> = MutableSharedFlow()
+    val mKICK: MutableSharedFlow<KICK> = MutableSharedFlow()
     val mINVITE: MutableSharedFlow<INVITE> = MutableSharedFlow()
+    override val onEndOfMOTD: SharedFlow<EndOfMOTD>
+        get() = mEndOfMOTD
+    override val onERROR: SharedFlow<ERROR>
+        get() = mERROR
+    override val onAWAY: SharedFlow<AWAY>
+        get() = mAWAY
+    override val onKICK: SharedFlow<KICK>
+        get() = mKICK
     override val onINVITE: SharedFlow<INVITE>
         get() = mINVITE
 

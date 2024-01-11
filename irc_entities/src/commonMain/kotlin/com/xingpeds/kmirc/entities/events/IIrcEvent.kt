@@ -1,10 +1,11 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 package com.xingpeds.kmirc.entities.events
 
-import com.xingpeds.kmirc.entities.*
+import com.xingpeds.kmirc.entities.IIrcMessage
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 /**
@@ -21,6 +22,23 @@ sealed interface IIrcEvent {
      */
     val timestamp: Instant
 
+}
+
+data class TOPIC(val channel: String, val topic: String, override val timestamp: Instant) : IIrcEvent {
+    @Throws(IllegalIRCMessage::class)
+    constructor(ircMessage: IIrcMessage) : this(
+        channel = ircMessage.params.list.getOrNull(0) ?: throw IllegalIRCMessage(
+            "topic message missing change param",
+            ircMessage
+        ),
+        topic = ircMessage.params.longParam ?: throw IllegalIRCMessage("topic message missing the topic", ircMessage),
+        timestamp = ircMessage.timestamp
+    )
+}
+
+data object EndOfMOTD : IIrcEvent {
+    override val timestamp: Instant
+        get() = Clock.System.now()
 }
 
 /**

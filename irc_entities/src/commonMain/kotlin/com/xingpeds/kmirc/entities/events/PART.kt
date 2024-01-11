@@ -1,6 +1,10 @@
+/*
+ * Copyright (c) Kyle McBurnett 2024.
+ */
+
 package com.xingpeds.kmirc.entities.events
 
-import com.xingpeds.kmirc.entities.IrcMessage
+import com.xingpeds.kmirc.entities.IIrcMessage
 import kotlinx.datetime.Instant
 
 /**
@@ -12,7 +16,7 @@ import kotlinx.datetime.Instant
  */
 data class PART(val channel: String, val nick: String, override val timestamp: Instant) : IIrcEvent {
     @Throws(IllegalIRCMessage::class)
-    constructor(ircMessage: IrcMessage) : this(
+    constructor(ircMessage: IIrcMessage) : this(
         channel = ircMessage.params.list[0],
         nick = ircMessage.prefix?.nickOrServer ?: throw IllegalIRCMessage("Part message missing prefix", ircMessage),
         timestamp = ircMessage.timestamp

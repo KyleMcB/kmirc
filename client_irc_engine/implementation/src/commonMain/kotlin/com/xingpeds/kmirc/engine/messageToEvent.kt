@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 package com.xingpeds.kmirc.engine
@@ -26,12 +26,12 @@ object Converter : Logged by LogTag("messageToEvent") {
             IrcCommand.USER -> notYetImpl(message.command)
             IrcCommand.SERVER -> notYetImpl(message.command)
             IrcCommand.OPER -> notYetImpl(message.command)
-            IrcCommand.QUIT -> notYetImpl(message.command)
+            IrcCommand.QUIT -> UserQuit(message)
             IrcCommand.SQUIT -> notYetImpl(message.command)
             IrcCommand.JOIN -> JOIN(message)
-            IrcCommand.PART -> notYetImpl(message.command)
-            IrcCommand.MODE -> notYetImpl(message.command)
-            IrcCommand.TOPIC -> notYetImpl(message.command)
+            IrcCommand.PART -> PART(message)
+            IrcCommand.MODE -> MODE(message)
+            IrcCommand.TOPIC -> TOPIC(message)
             IrcCommand.NAMES -> notYetImpl(message.command)
             IrcCommand.LIST -> notYetImpl(message.command)
             IrcCommand.INVITE -> notYetImpl(message.command)
@@ -140,7 +140,7 @@ object Converter : Logged by LogTag("messageToEvent") {
             IrcCommand.RPL_ENDOFINFO -> notYetImpl(message.command)
             IrcCommand.RPL_MOTDSTART -> notYetImpl(message.command)
             IrcCommand.RPL_MOTD -> notYetImpl(message.command)
-            IrcCommand.RPL_ENDOFMOTD -> notYetImpl(message.command)
+            IrcCommand.RPL_ENDOFMOTD -> EndOfMOTD
             IrcCommand.RPL_YOUREOPER -> notYetImpl(message.command)
             IrcCommand.RPL_REHASHING -> notYetImpl(message.command)
             IrcCommand.RPL_TIME -> notYetImpl(message.command)

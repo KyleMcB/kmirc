@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Clock
 import org.junit.Test
 import kotlin.test.fail
 import kotlin.time.Duration
@@ -44,7 +45,7 @@ class StateEventProcessorTests : Logged by LogTag("StateEventProcessorTests") {
         val nick = "otherNick"
         MutableNickState.selfNick.emit(NickStateMachine.Accept(selfNick))
         MutableClientState.mChannels.update { it + (channelName to MutableChannelState(channelName)) }
-        val joinEvent = JOIN(channel = channelName, nick = nick)
+        val joinEvent = JOIN(channel = channelName, nick = nick, Clock.System.now())
         MutableEventList.mJoin.emit(joinEvent)
         val state: ChannelState = MutableClientState.channels.filterNot { it.isEmpty() }.first().get(channelName)
             ?: fail("channel state not found")
@@ -57,7 +58,7 @@ class StateEventProcessorTests : Logged by LogTag("StateEventProcessorTests") {
         val selfNick = "testSelfNick"
         val channelName = "#channelName"
         MutableNickState.selfNick.emit(NickStateMachine.Accept(selfNick))
-        val joinEvent = JOIN(channel = channelName, nick = selfNick)
+        val joinEvent = JOIN(channel = channelName, nick = selfNick, Clock.System.now())
         //fire event
         MutableEventList.mJoin.emit(joinEvent)
         // check state
@@ -69,7 +70,10 @@ class StateEventProcessorTests : Logged by LogTag("StateEventProcessorTests") {
     @Test
     fun notice(): Unit = test {
         val noticeEvent = NOTICE(
-            target = IrcTarget.User("testnick"), from = IrcFrom.User("fromNick"), message = "notice message"
+            target = IrcTarget.User("testnick"),
+            from = IrcFrom.User("fromNick"),
+            message = "notice message",
+            timestamp = Clock.System.now()
         )
 
         MutableEventList.mNotice.emit(

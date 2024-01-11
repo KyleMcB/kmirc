@@ -1,9 +1,10 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 package com.xingpeds.kmirc.engine
 
+import com.xingpeds.kmirc.entities.IrcMessage
 import com.xingpeds.kmirc.entities.events.IIrcEvent
 import com.xingpeds.kmirc.events.EventList
 import com.xingpeds.kmirc.state.ClientState
@@ -25,7 +26,11 @@ interface IBroadcaster {
 /**
  *
  */
-interface IIrcClientEngine : IBroadcaster, EventList, ClientState
+interface IIrcClientEngine {
+    val eventList: EventList
+    val state: ClientState
+    suspend fun send(ircMessage: IrcMessage): Unit
+}
 
 
 

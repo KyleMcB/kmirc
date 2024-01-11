@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 package com.xingpeds.kmirc.engine
@@ -90,7 +90,10 @@ class EventBroadcaster(
                 is NickChange -> MutableEventList.mNickChange.emit(event)
                 is UserQuit -> MutableEventList.mUserQuit.emit(event)
                 is INVITE -> MutableEventList.mINVITE.emit(event)
-                is KICK -> TODO()
+                is KICK -> MutableEventList.mKICK.emit(event)
+                is AWAY -> MutableEventList.mAWAY.emit(event)
+                is ERROR -> MutableEventList.mERROR.emit(event)
+                EndOfMOTD -> MutableEventList.mEndOfMOTD.emit(event as EndOfMOTD)
             }
         }
     }

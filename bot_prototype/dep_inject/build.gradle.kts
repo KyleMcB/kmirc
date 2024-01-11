@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 plugins {
@@ -9,18 +9,21 @@ plugins {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation(project(":irc_entities"))
-    implementation(project(":client-network:header"))
+    api(project(":irc_entities"))
+    api(project(":client-network:header"))
     implementation(project(":client-network:ktorImpl"))
-    implementation(project(":client_state:header"))
+    api(project(":client_state:header"))
+    api(project(":client_state:DI"))
     implementation(project(":irc_parser:implementation"))
-    implementation(project(":irc_parser:header"))
+    api(project(":irc_parser:header"))
+    api(project(":eventlist:header"))
+    api(project(":eventlist:DI"))
 
 
 
 
 
-    implementation(project(":client_irc_engine:header"))
+    api(project(":client_irc_engine:header"))
     implementation(project(":client_irc_engine:implementation"))
     testImplementation(project(":TestUtils"))
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.20")
