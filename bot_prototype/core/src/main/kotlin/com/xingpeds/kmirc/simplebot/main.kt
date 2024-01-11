@@ -45,17 +45,26 @@ fun main(args: Array<String>): Unit = runBlocking {
                 inputFlow = inputFlow, // I need to get the marshaller and parser
                 sendFun = { iIrcMessage: IIrcMessage ->
                     connection.write(iIrcMessage.toIRCString())
-                },
-                scope = primaryScope,
-                wantedNick = IrcUser(
-                    nick = "longnicknamebot",
-                    username = "kmirc bot",
-                    realName = "IRC bot made by kyle mcburnett"
+                }, scope = primaryScope, wantedNick = IrcUser(
+                    nick = "longnicknamebot", username = "kmirc bot", realName = "IRC bot made by kyle mcburnett"
                 )
             )
             launch {
                 engine.eventList.onEndOfMOTD.collect {
                     engine.send(IrcMessage(command = IrcCommand.JOIN, params = IrcParams("#kmirc")))
+                }
+            }
+            launch {
+                engine.eventList.onPRIVMSG.collect { priv ->
+                    if (priv.message.startsWith("sleep")) {
+                        engine.send(
+                            IrcMessage(
+                                command = IrcCommand.QUIT,
+                                params = IrcParams(longParam = "farewell")
+                            )
+                        )
+                        exitProcess(0)
+                    }
                 }
             }
         }

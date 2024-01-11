@@ -1,13 +1,15 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 package com.xingpeds.kmirc.state
 
 import com.xingpeds.kmirc.entities.events.NOTICE
 import com.xingpeds.kmirc.entities.events.PRIVMSG
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
+import kotlin.time.Duration.Companion.seconds
+
+typealias ChannelStateMapFlow = MutableStateFlow<Map<ChannelName, MutableChannelState>>
 
 /**
  * MutableClientState class represents a singleton implementation of the ClientState interface.
@@ -19,7 +21,7 @@ object MutableClientState : ClientState {
     /**
      * map of channel name to channel state
      */
-    val mChannels: MutableStateFlow<Map<ChannelName, MutableChannelState>> = MutableStateFlow(emptyMap())
+    val mChannels: ChannelStateMapFlow = MutableStateFlow(emptyMap())
     override val channels: StateFlow<Map<ChannelName, ChannelState>>
         get() = mChannels
 
@@ -39,4 +41,11 @@ object MutableClientState : ClientState {
 
     override val nickState: StateFlow<NickStateMachine>
         get() = MutableNickState.selfNick
+
+}
+
+suspend fun ChannelStateMapFlow.lookupChannel(channelName: String): MutableChannelState? = try {
+    this.filter { it.containsKey(channelName) }.timeout(2.seconds).first().get(channelName)
+} catch (e: Exception) {
+    null
 }

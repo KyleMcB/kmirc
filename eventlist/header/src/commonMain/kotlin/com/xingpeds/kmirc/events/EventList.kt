@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 @Suppress("KDocMissingDocumentation") // pretty self explanatory
 interface EventList {
+    val onTOPIC: SharedFlow<TOPIC>
     val onEndOfMOTD: SharedFlow<EndOfMOTD>
     val onERROR: SharedFlow<ERROR>
     val onAWAY: SharedFlow<AWAY>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 import com.xingpeds.kmirc.entities.*
@@ -17,7 +17,7 @@ object Parser : IrcLineParser, Logged by LogTag("parser") {
             ParseResult.InvalidIrcLine(ircLine)
         } else {
             val params = extractParameters(messageWithoutCommand)
-            val value = IrcMessage(prefix, command, params)
+            val value = IrcMessage(prefix, command, params, rawMessage = ircLine)
             ParseResult.ParseSuccess(value)
         }
     }

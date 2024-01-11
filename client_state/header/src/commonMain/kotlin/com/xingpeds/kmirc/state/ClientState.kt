@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 
@@ -37,6 +37,7 @@ interface ClientState {
      * Client's nickname state represented as a StateFlow.
      */
     val nickState: StateFlow<NickStateMachine>
+
 }
 
 /**

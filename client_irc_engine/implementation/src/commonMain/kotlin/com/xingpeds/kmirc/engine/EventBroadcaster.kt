@@ -94,6 +94,7 @@ class EventBroadcaster(
                 is AWAY -> MutableEventList.mAWAY.emit(event)
                 is ERROR -> MutableEventList.mERROR.emit(event)
                 EndOfMOTD -> MutableEventList.mEndOfMOTD.emit(event as EndOfMOTD)
+                is TOPIC -> MutableEventList.mTOPIC.emit(event)
             }
         }
     }

@@ -10,13 +10,16 @@ import StartableJob
 import com.xingpeds.kmirc.entities.events.NOTICE
 import com.xingpeds.kmirc.entities.events.PART
 import com.xingpeds.kmirc.entities.events.PRIVMSG
+import com.xingpeds.kmirc.entities.events.TOPIC
 import com.xingpeds.kmirc.events.EventList
 import com.xingpeds.kmirc.state.MutableClientState
+import com.xingpeds.kmirc.state.lookupChannel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import logError
 import v
 
 /**
@@ -38,6 +41,22 @@ object StateEventProcessor : StartableJob, Logged by LogTag("StateEventProvessor
         events.onPRIVMSG.onEach(::handlePrivmsg).launchIn(scope)
         events.onJOIN.onEach(::processJoinEvent).launchIn(scope)
         events.onPART.onEach(::handlePart).launchIn(scope)
+        events.onTOPIC.onEach(::handleTopic).launchIn(scope)
+
+    }
+
+    private suspend fun handleTopic(event: TOPIC) {
+        //if we just joined the channel, channel state might be inflight
+        val channel = MutableClientState.mChannels.lookupChannel(event.channel)
+        if (channel == null) {
+            logError {
+                "TOPIC event for ${event.channel}, channel not found"
+            }
+            return
+        }
+        channel.mTopic.emit(event.topic)
+
+
     }
 
     private suspend fun handlePrivmsg(event: PRIVMSG) {

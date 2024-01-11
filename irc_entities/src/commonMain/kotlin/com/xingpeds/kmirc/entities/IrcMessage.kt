@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 package com.xingpeds.kmirc.entities
@@ -10,6 +10,8 @@ import kotlinx.datetime.Instant
  * basic elements of a serialized irc message
  */
 interface IIrcMessage {
+    val rawMessage: String?
+
     /**
      * who/server a message is from
      */
@@ -43,6 +45,7 @@ data class IrcMessage(
     override val prefix: IrcPrefix? = null,
     override val command: IrcCommand,
     override val params: IrcParams,
+    override val rawMessage: String? = null,
     override val timestamp: Instant = kotlinx.datetime.Clock.System.now()
 ) : IIrcMessage {
     override fun toIRCString(): String {

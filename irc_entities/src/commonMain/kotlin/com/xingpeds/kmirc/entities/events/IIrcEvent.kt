@@ -46,4 +46,12 @@ data object EndOfMOTD : IIrcEvent {
  * This class extends Exception and is used to indicate that an IRC message did not conform
  * to the required format or was missing necessary information.
  */
-class IllegalIRCMessage(override val message: String?, val ircMessage: IIrcMessage) : Exception()
+class IllegalIRCMessage(val exceptionMessage: String?, val ircMessage: IIrcMessage) : Exception() {
+    override val message: String
+        get() {
+            return """
+            $exceptionMessage
+            $ircMessage
+        """.trimIndent()
+        }
+}

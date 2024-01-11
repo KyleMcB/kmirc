@@ -19,6 +19,9 @@ object MutableEventList : EventList {
     val mAWAY: MutableSharedFlow<AWAY> = MutableSharedFlow()
     val mKICK: MutableSharedFlow<KICK> = MutableSharedFlow()
     val mINVITE: MutableSharedFlow<INVITE> = MutableSharedFlow()
+    val mTOPIC: MutableSharedFlow<TOPIC> = MutableSharedFlow()
+    override val onTOPIC: SharedFlow<TOPIC>
+        get() = mTOPIC
     override val onEndOfMOTD: SharedFlow<EndOfMOTD>
         get() = mEndOfMOTD
     override val onERROR: SharedFlow<ERROR>
