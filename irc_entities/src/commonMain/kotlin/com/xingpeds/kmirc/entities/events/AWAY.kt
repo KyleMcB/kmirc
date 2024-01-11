@@ -1,11 +1,14 @@
+/*
+ * Copyright (c) Kyle McBurnett 2024.
+ */
+
 package com.xingpeds.kmirc.entities.events
 
-import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcMessage
 import kotlinx.datetime.Instant
-import kotlin.jvm.Throws
 
 /**
+ *
  * The `AWAY` class is used to represent an IRC event indicating that a user has set an away message.
  * It implements the `IIrcEvent` interface.
  *
@@ -14,7 +17,7 @@ import kotlin.jvm.Throws
  *
  * @throws IllegalIRCMessage If the IRC message provided does not conform to the required format or is missing necessary information.
  */
-class AWAY(val awayMessage:String?, override val timestamp: Instant) : IIrcEvent {
+class AWAY(val awayMessage: String?, override val timestamp: Instant) : IIrcEvent {
     /**
      * The `AWAY` class is used to represent an IRC event indicating that a user has set an away message.
      * It implements the `IIrcEvent` interface.
