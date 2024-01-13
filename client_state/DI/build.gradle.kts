@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Kyle McBurnett 2024.
+ * Copyright 2024 Kyle McBurnett
  */
 
 plugins {
@@ -18,6 +18,7 @@ kotlin {
 
                 implementation(project(":client_state:header"))
                 implementation(project(":client_state:mutable_impl"))
+                implementation(project(":container"))
 
             }
         }

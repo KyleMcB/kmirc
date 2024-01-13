@@ -1,6 +1,9 @@
+/*
+ * Copyright 2024 Kyle McBurnett
+ */
+
 package com.xingpeds.kmirc.clientnetwork
 
-fun DNSLookupFun() = DnsResolverAdapter
 
 object DnsResolverAdapter : DNSLookupFun {
     override fun invoke(hostname: String): List<Address> = dnsResolver(hostname)

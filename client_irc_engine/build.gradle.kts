@@ -12,12 +12,13 @@ dependencies {
     api(project(":irc_entities"))
     api(project(":client-network:header"))
     implementation(project(":client-network:ktorImpl"))
+    implementation(project(":client-network:DI"))
     api(project(":client_state:header"))
-    api(project(":client_state:DI"))
+    implementation(project(":client_state:DI"))
     implementation(project(":irc_parser:implementation"))
     api(project(":irc_parser:header"))
     api(project(":eventlist:header"))
-    api(project(":eventlist:DI"))
+    implementation(project(":eventlist:DI"))
     implementation(project(":container"))
 
 

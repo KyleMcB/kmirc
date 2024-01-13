@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Kyle McBurnett 2024.
+ * Copyright 2024 Kyle McBurnett
  */
 
 package com.xingpeds.kmirc.simplebot.injection
@@ -10,6 +10,7 @@ import Parser
 import com.xingpeds.kmirc.clientnetwork.Connect
 import com.xingpeds.kmirc.clientnetwork.DNSLookupFun
 import com.xingpeds.kmirc.clientnetwork.KtorSocketFactory
+import com.xingpeds.kmirc.container.DIContainer
 import com.xingpeds.kmirc.engine.EventBroadcaster
 import com.xingpeds.kmirc.engine.IIrcClientEngine
 import com.xingpeds.kmirc.engine.NickStateManager
@@ -54,11 +55,12 @@ object ImplementationModule {
             events = eventBroadcaster.events,
             messages = inputFlow
         )
+        val clientState: ClientState = DIContainer.getClientState()
         return object : IIrcClientEngine {
             override val eventList: EventList
                 get() = EventList()
             override val state: ClientState
-                get() = getClientState()
+                get() = clientState
 
             override suspend fun send(ircMessage: IrcMessage) = sendFun(ircMessage)
 

@@ -16,9 +16,9 @@ kotlin {
             // Dependencies common across all platforms
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-                implementation(project(":irc_entities"))
-                implementation(project(":client_state:header"))
-                implementation(project(":eventlist:header"))
+                api(project(":irc_entities"))
+                api(project(":client_state:header"))
+                api(project(":eventlist:header"))
             }
         }
         val commonTest by getting {
