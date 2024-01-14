@@ -36,7 +36,7 @@ class SimpleSocketKtorAdapter(private val socket: Socket) : SimpleSocket, Logged
                         byteBuffer.get(bytes)
                         launch {
                             val string: String = bytes.decodeToString()
-                            v("incoming: $string")
+                            v("""incoming:START $string END""")
                             _incoming.emit(string)
                         }
                     }
