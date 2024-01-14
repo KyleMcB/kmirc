@@ -28,10 +28,50 @@ data class TOPIC(val channel: String, val topic: String, override val timestamp:
     @Throws(IllegalIRCMessage::class)
     constructor(ircMessage: IIrcMessage) : this(
         channel = ircMessage.params.list.getOrNull(0) ?: throw IllegalIRCMessage(
-            "topic message missing change param",
-            ircMessage
+            "topic message missing change param", ircMessage
         ),
         topic = ircMessage.params.longParam ?: throw IllegalIRCMessage("topic message missing the topic", ircMessage),
+        timestamp = ircMessage.timestamp
+    )
+}
+
+/**
+ *
+ */
+data class NAMES(val channel: String, val symbol: Char, val nicks: List<String>, override val timestamp: Instant) :
+    IIrcEvent {
+    /**
+     * RPL_NAMREPLY (353)
+     *   "<client> <symbol> <channel> :[prefix]<nick>{ [prefix]<nick>}"
+     *   :*.freenode.net 353 DogBot2 = #kmirc :@DogBot2
+     * Sent as a reply to the NAMES command, this numeric lists the clients that are joined to <channel> and their status in that channel.
+     *
+     * <symbol> notes the status of the channel. It can be one of the following:
+     *
+     * ("=", 0x3D) - Public channel.
+     * ("@", 0x40) - Secret channel (secret channel mode "+s").
+     * ("*", 0x2A) - Private channel (was "+p", no longer widely used today).
+     * <nick> is the nickname of a client joined to that channel, and <prefix> is the highest channel membership prefix that client has in the channel, if they have one.
+     * The last parameter of this numeric is a list of [prefix]<nick> pairs, delimited by a SPACE character (' ', 0x20).
+     */
+    constructor(ircMessage: IIrcMessage) : this(
+        channel = ircMessage.params.list.getOrNull(2).let { channelName: String? ->
+            if (channelName == null) throw IllegalIRCMessage("names reply message is missing", ircMessage)
+            if (!channelName.startsWith('#')) throw IllegalIRCMessage(
+                "names reply does not a valid channel", ircMessage
+            )
+            channelName
+        },
+        symbol = kotlin.run {
+            val sym = ircMessage.params.list.getOrNull(1) ?: throw IllegalIRCMessage(
+                "symbol missing in names reply message", ircMessage
+            )
+            if (sym.length > 1) throw IllegalIRCMessage("names reply message symbol is too long", ircMessage)
+            sym[0]
+        },
+        nicks = ircMessage.params.longParam?.split(' ') ?: throw IllegalIRCMessage(
+            "names reply messages missing nicks", ircMessage
+        ),
         timestamp = ircMessage.timestamp
     )
 }

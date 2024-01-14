@@ -97,6 +97,7 @@ class EventBroadcaster(
                 is TOPIC -> MutableEventList.mTOPIC.emit(event)
                 is ServerInfoMessage -> v("server message: ${event.message}")
                 StartOfMOTD -> Unit
+                is NAMES -> MutableEventList.mNAMES.emit(event)
             }
         }
     }

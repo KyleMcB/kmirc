@@ -130,7 +130,7 @@ object Converter : Logged by LogTag("messageToEvent") {
             IrcCommand.RPL_VERSION -> notYetImpl(message.command)
             IrcCommand.RPL_WHOREPLY -> notYetImpl(message.command)
             IrcCommand.RPL_ENDOFWHO -> notYetImpl(message.command)
-            IrcCommand.RPL_NAMREPLY -> notYetImpl(message.command)
+            IrcCommand.RPL_NAMREPLY -> NAMES(message)
             IrcCommand.RPL_ENDOFNAMES -> notYetImpl(message.command)
             IrcCommand.RPL_LINKS -> notYetImpl(message.command)
             IrcCommand.RPL_ENDOFLINKS -> notYetImpl(message.command)
