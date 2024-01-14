@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Kyle McBurnett 2024.
+ * Copyright 2024 Kyle McBurnett
  */
 
 package com.xingpeds.kmirc.state.processing
@@ -7,10 +7,7 @@ package com.xingpeds.kmirc.state.processing
 import LogTag
 import Logged
 import StartableJob
-import com.xingpeds.kmirc.entities.events.NOTICE
-import com.xingpeds.kmirc.entities.events.PART
-import com.xingpeds.kmirc.entities.events.PRIVMSG
-import com.xingpeds.kmirc.entities.events.TOPIC
+import com.xingpeds.kmirc.entities.events.*
 import com.xingpeds.kmirc.events.EventList
 import com.xingpeds.kmirc.state.MutableClientState
 import com.xingpeds.kmirc.state.lookupChannel
@@ -42,7 +39,14 @@ object StateEventProcessor : StartableJob, Logged by LogTag("StateEventProvessor
         events.onJOIN.onEach(::processJoinEvent).launchIn(scope)
         events.onPART.onEach(::handlePart).launchIn(scope)
         events.onTOPIC.onEach(::handleTopic).launchIn(scope)
+        events.onNAMES.onEach(::handleNames).launchIn(scope)
+    }
 
+    private suspend fun handleNames(event: NAMES) {
+        MutableClientState.mChannels.lookupChannel(event.channel)?.mMembers?.update { members: Set<String> ->
+            members + event.nicks
+            //todo This leaves in mod symbol in the nick string
+        }
     }
 
     private suspend fun handleTopic(event: TOPIC) {
