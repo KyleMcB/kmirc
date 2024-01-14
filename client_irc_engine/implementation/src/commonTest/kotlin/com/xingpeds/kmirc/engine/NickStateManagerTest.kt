@@ -8,8 +8,10 @@ import assert
 import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcUser
 import com.xingpeds.kmirc.entities.events.TCPConnected
+import io.kotest.mpp.log
 import io.kotest.property.forAll
 import ircUserArb
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -39,7 +41,7 @@ NickStateManagerTest {
 //        ; User gets registered with username
 //        "danp" and real name "Ronnie Reagan"
         forAll(ircUserArb) { ircUser: IrcUser ->
-            var result = false
+            val completed = CompletableDeferred<Boolean>()
             NickStateManager(
                 wantedNick = ircUser,
                 scope = backgroundScope,
@@ -49,11 +51,19 @@ NickStateManagerTest {
                 autoStart = false,
                 send = { message ->
                     if (message.command == IrcCommand.USER) {
-                        if (message.params.list.size != 3 && message.params.longParam != null) result = true
+                        if (message.params.list.size != 3) {
+                            log { "incorrect param size" }
+                            completed.complete(false)
+                        }
+                        if (message.params.longParam == null) {
+                            log { "missing realname" }
+                            completed.complete(false)
+                        }
+                        completed.complete(true)
                     }
                 }
             ).start().join()
-            true
+            completed.await()
         }
     }
 

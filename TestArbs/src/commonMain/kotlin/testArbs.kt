@@ -10,6 +10,7 @@ import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.domain
 import io.kotest.property.arbitrary.orNull
 import io.kotest.property.arbitrary.string
+import io.kotest.property.arbs.firstName
 
 
 val nickPrefixArb = arbitrary { rs: RandomSource ->
@@ -19,11 +20,10 @@ val serverPrefixArb = arbitrary {
     IrcPrefix(nickOrServer = Arb.domain().bind())
 }
 val ircUserArb = arbitrary {
-
     IrcUser(
         nick = Arb.string().bind(),
-        username = Arb.string().orNull().bind(),
-        hostname = Arb.string().orNull().bind(),
+        username = Arb.firstName().orNull().bind()?.name,
+        hostname = Arb.firstName().orNull().bind()?.name,
         realName = Arb.string().orNull().bind()
     )
 }
