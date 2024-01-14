@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Kyle McBurnett 2024.
+ * Copyright 2024 Kyle McBurnett
  */
 
 package com.xingpeds.kmirc.engine
@@ -95,6 +95,8 @@ class EventBroadcaster(
                 is ERROR -> MutableEventList.mERROR.emit(event)
                 EndOfMOTD -> MutableEventList.mEndOfMOTD.emit(event as EndOfMOTD)
                 is TOPIC -> MutableEventList.mTOPIC.emit(event)
+                is ServerInfoMessage -> v("server message: ${event.message}")
+                StartOfMOTD -> Unit
             }
         }
     }

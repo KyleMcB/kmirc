@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Kyle McBurnett 2024.
+ * Copyright 2024 Kyle McBurnett
  */
 
 import co.touchlab.kermit.Logger
@@ -67,8 +67,7 @@ inline fun <T> Logged.withErrorLogging(action: () -> T): T {
         }
         val typename: String = e.javaClass.name
         e(tag) {
-            """
-                wild caught exception
+            """wild caught exception
                 type: $typename
                 message: ${e.message}
                 cause: ${e.cause}

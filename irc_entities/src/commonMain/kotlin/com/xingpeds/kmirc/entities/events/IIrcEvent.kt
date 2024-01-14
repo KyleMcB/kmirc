@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Kyle McBurnett 2024.
+ * Copyright 2024 Kyle McBurnett
  */
 
 package com.xingpeds.kmirc.entities.events
@@ -37,6 +37,11 @@ data class TOPIC(val channel: String, val topic: String, override val timestamp:
 }
 
 data object EndOfMOTD : IIrcEvent {
+    override val timestamp: Instant
+        get() = Clock.System.now()
+}
+
+data object StartOfMOTD : IIrcEvent {
     override val timestamp: Instant
         get() = Clock.System.now()
 }

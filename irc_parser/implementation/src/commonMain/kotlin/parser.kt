@@ -30,6 +30,11 @@ object Parser : IrcLineParser, Logged by LogTag("Parser") {
         val (command, messageWithoutCommand) = extractCommand(messageWithoutPrefix)
 
         if (command == null) {
+            logError {
+                """parse failed
+                    |line = $ircLine
+                """.trimMargin()
+            }
             ParseResult.InvalidIrcLine(ircLine)
         } else {
             val params = extractParameters(messageWithoutCommand)
@@ -44,10 +49,7 @@ object Parser : IrcLineParser, Logged by LogTag("Parser") {
         val words = message.split(" ", limit = 2)
         val firstWord = words.first().uppercase()
         val remainingString: String = if (words.size > 1) words[1] else ""
-        val command = commandLookup.get(firstWord)
-        if (command == null) logError {
-            "commandLookup for $firstWord failed"
-        }
+        val command = commandLookup[firstWord]
 
         return Pair(command, remainingString)
     }

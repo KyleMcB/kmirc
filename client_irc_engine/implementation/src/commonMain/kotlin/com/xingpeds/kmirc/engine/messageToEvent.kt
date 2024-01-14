@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Kyle McBurnett 2024.
+ * Copyright 2024 Kyle McBurnett
  */
 
 package com.xingpeds.kmirc.engine
@@ -74,7 +74,7 @@ object Converter : Logged by LogTag("messageToEvent") {
             IrcCommand.ERR_NOTOPLEVEL -> notYetImpl(message.command)
             IrcCommand.ERR_WILDTOPLEVEL -> notYetImpl(message.command)
             IrcCommand.ERR_UNKNOWNCOMMAND -> notYetImpl(message.command)
-            IrcCommand.ERR_NOMOTD -> notYetImpl(message.command)
+            IrcCommand.ERR_NOMOTD -> ServerInfoMessage(message)
             IrcCommand.ERR_NOADMININFO -> notYetImpl(message.command)
             IrcCommand.ERR_FILEERROR -> notYetImpl(message.command)
             IrcCommand.ERR_NONICKNAMEGIVEN -> notYetImpl(message.command)
@@ -138,8 +138,8 @@ object Converter : Logged by LogTag("messageToEvent") {
             IrcCommand.RPL_ENDOFBANLIST -> notYetImpl(message.command)
             IrcCommand.RPL_INFO -> notYetImpl(message.command)
             IrcCommand.RPL_ENDOFINFO -> notYetImpl(message.command)
-            IrcCommand.RPL_MOTDSTART -> notYetImpl(message.command)
-            IrcCommand.RPL_MOTD -> notYetImpl(message.command)
+            IrcCommand.RPL_MOTDSTART -> StartOfMOTD
+            IrcCommand.RPL_MOTD -> MOTDLINE(message)
             IrcCommand.RPL_ENDOFMOTD -> EndOfMOTD
             IrcCommand.RPL_YOUREOPER -> notYetImpl(message.command)
             IrcCommand.RPL_REHASHING -> notYetImpl(message.command)
@@ -188,13 +188,13 @@ object Converter : Logged by LogTag("messageToEvent") {
             IrcCommand.RPL_INFOSTART -> notYetImpl(message.command)
             IrcCommand.ERR_YOUWILLBEBANNED -> notYetImpl(message.command)
             IrcCommand.ERR_NOSERVICEHOST -> notYetImpl(message.command)
-            IrcCommand.RPL_WELCOME -> notYetImpl(message.command)
-            IrcCommand.RPL_YOURHOST -> notYetImpl(message.command)
-            IrcCommand.RPL_CREATED -> notYetImpl(message.command)
-            IrcCommand.RPL_MYINFO -> notYetImpl(message.command)
-            IrcCommand.RPL_ISUPPORT -> notYetImpl(message.command)
-            IrcCommand.RPL_LOCALUSERS -> notYetImpl(message.command)
-            IrcCommand.RPL_GLOBALUSERS -> notYetImpl(message.command)
+            IrcCommand.RPL_WELCOME -> ServerInfoMessage(message)
+            IrcCommand.RPL_YOURHOST -> ServerInfoMessage(message)
+            IrcCommand.RPL_CREATED -> ServerInfoMessage(message)
+            IrcCommand.RPL_MYINFO -> ServerInfoMessage(message)
+            IrcCommand.RPL_ISUPPORT -> ServerInfoMessage(message)
+            IrcCommand.RPL_LOCALUSERS -> ServerInfoMessage(message)
+            IrcCommand.RPL_GLOBALUSERS -> ServerInfoMessage(message)
         }
     }
 
