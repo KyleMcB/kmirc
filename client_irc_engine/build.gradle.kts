@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":client_state:DI"))
     implementation(project(":irc_parser:implementation"))
     api(project(":irc_parser:header"))
+    implementation(project(":irc_parser:DI"))
     api(project(":eventlist:header"))
     implementation(project(":eventlist:DI"))
     implementation(project(":container"))

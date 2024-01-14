@@ -8,8 +8,11 @@ import assert
 import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcUser
 import com.xingpeds.kmirc.entities.events.TCPConnected
+import io.kotest.property.forAll
+import ircUserArb
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import runWaitingTest
 import kotlin.test.Test
 
@@ -22,6 +25,37 @@ NickStateManagerTest {
     private val ircUser = IrcUser(
         nickName, username = username, hostname = hostname, realName = realName
     )
+
+    @Test
+    fun alwaysSendsValidRequest(): Unit = runTest {
+//        USER guest 0 * :Ronnie Reagan
+//        ; No ident server
+//        ; User gets registered with username
+//        "~guest" and real name "Ronnie Reagan"
+//
+//        USER guest 0 * :Ronnie Reagan
+//        ; Ident server gets contacted and
+//        returns the name "danp"
+//        ; User gets registered with username
+//        "danp" and real name "Ronnie Reagan"
+        forAll(ircUserArb) { ircUser: IrcUser ->
+            var result = false
+            NickStateManager(
+                wantedNick = ircUser,
+                scope = backgroundScope,
+                events = flowOf(TCPConnected),
+                broadcast = {},
+                messages = emptyFlow(),
+                autoStart = false,
+                send = { message ->
+                    if (message.command == IrcCommand.USER) {
+                        if (message.params.list.size != 3 && message.params.longParam != null) result = true
+                    }
+                }
+            ).start().join()
+            true
+        }
+    }
 
     @Test
     fun userCommand(): Unit = runWaitingTest { complete ->

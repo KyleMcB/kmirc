@@ -7,6 +7,7 @@ package com.xingpeds.kmirc.state
 import com.xingpeds.kmirc.container.DIContainer
 
 fun getClientState(): ClientState = MutableClientState
+fun ClientState(): ClientState = MutableClientState
 
 /**
  *

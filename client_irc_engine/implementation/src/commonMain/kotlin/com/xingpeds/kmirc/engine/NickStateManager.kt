@@ -9,8 +9,8 @@ import Logged
 import StartableJob
 import com.xingpeds.kmirc.entities.*
 import com.xingpeds.kmirc.entities.events.IIrcEvent
-import com.xingpeds.kmirc.entities.events.TCPConnected
 import com.xingpeds.kmirc.entities.events.PickNewNick
+import com.xingpeds.kmirc.entities.events.TCPConnected
 import com.xingpeds.kmirc.state.MutableNickState
 import com.xingpeds.kmirc.state.NickStateMachine
 import kotlinx.coroutines.CoroutineScope
@@ -79,10 +79,10 @@ class NickStateManager(
             IrcMessage(
                 command = IrcCommand.USER,
                 params = IrcParams(
-                    wantedNick.username,
-                    wantedNick.hostname,
+                    wantedNick.username ?: "empty username",
+                    wantedNick.hostname ?: "*",
                     "*"/* server name */,
-                    longParam = wantedNick.realName
+                    longParam = wantedNick.realName ?: ""
                 )
             )
         )

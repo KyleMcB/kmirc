@@ -1,8 +1,9 @@
 /*
  * Copyright 2024 Kyle McBurnett
  */
+package com.xingpeds.kmirc.parser
 
-import com.xingpeds.kmirc.parser.IrcLineParser
+import ParserTestBase
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
@@ -13,7 +14,7 @@ class ParserTest : ParserTestBase() {
     }
 
     @Test
-    override fun `command005 test`()=runTest {
+    override fun `command005 test`() = runTest {
         super.command005()
     }
 

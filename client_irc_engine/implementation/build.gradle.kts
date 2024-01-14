@@ -28,6 +28,7 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(project(":TestUtils"))
+                implementation(project(":TestArbs"))
                 implementation("org.jetbrains.kotlin:kotlin-test:1.9.20")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
             }

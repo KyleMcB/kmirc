@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Kyle McBurnett 2024.
+ * Copyright 2024 Kyle McBurnett
  */
 
 package com.xingpeds.kmirc.engine
@@ -27,6 +27,7 @@ interface IBroadcaster {
  *
  */
 interface IIrcClientEngine {
+    val serverHostName: String
     val eventList: EventList
     val state: ClientState
     suspend fun send(ircMessage: IrcMessage): Unit

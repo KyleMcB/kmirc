@@ -1,14 +1,30 @@
 /*
- * Copyright (c) Kyle McBurnett 2024.
+ * Copyright 2024 Kyle McBurnett
  */
 
+package com.xingpeds.kmirc.parser
+
+
+import LogTag
+import Logged
 import com.xingpeds.kmirc.entities.*
-import com.xingpeds.kmirc.parser.IrcLineParser
-import com.xingpeds.kmirc.parser.ParseResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import logError
 
-object Parser : IrcLineParser, Logged by LogTag("parser") {
+/**
+ * The Parser class is responsible for parsing IRC lines and extracting relevant information.
+ * It implements the IrcLineParser interface.
+ *
+ * @since 1.0.0
+ */
+object Parser : IrcLineParser, Logged by LogTag("Parser") {
+    /**
+     * Parses an IRC line and returns a [ParseResult] object.
+     *
+     * @receiver The flow of IRC lines to be parsed.
+     * @return A flow of [ParseResult] objects.
+     */
     override fun Flow<String>.mapIrcParse(): Flow<ParseResult> = map { ircLine ->
         val (prefix, messageWithoutPrefix) = extractPrefix(ircLine)
         val (command, messageWithoutCommand) = extractCommand(messageWithoutPrefix)
