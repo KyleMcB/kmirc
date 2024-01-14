@@ -10,8 +10,6 @@ import com.xingpeds.kmirc.entities.IrcCommand
 import com.xingpeds.kmirc.entities.IrcMessage
 import com.xingpeds.kmirc.entities.IrcParams
 import com.xingpeds.kmirc.entities.IrcUser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -25,10 +23,9 @@ const val serverPort = 6667
 /**
  *
  */
+@Suppress("UNUSED_PARAMETER")
 fun main(args: Array<String>): Unit = runBlocking {
     //attempt to connect
-    val primaryScope = CoroutineScope(Dispatchers.Default)
-
     val engine: IIrcClientEngine = Engine.connect(
         hostname = serverHostName,
         port = serverPort,

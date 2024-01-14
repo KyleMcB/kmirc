@@ -135,7 +135,7 @@ object Engine : Logged by LogTag("public Engine") {
             input = ircMessageFlow,
             engineScope = engineScope
         )
-        val nickStateManager = NickStateManager(
+        NickStateManager(
             wantedNick = ircUser,
             send = sendFun,
             broadcast = eventBroadcaster::sendEvent,
