@@ -17,10 +17,24 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(compose.runtime)
                 implementation(compose.foundation)
-                implementation(compose.material)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
+
                 implementation(compose.desktop.common)
+                implementation(compose.material3)
+                val voyagerVersion = "1.0.0"
+
+                // Multiplatform
+
+                // Navigator
+                implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+
+                // Screen Model
+                implementation("cafe.adriel.voyager:voyager-screenmodel:$voyagerVersion")
+                implementation("com.russhwolf:multiplatform-settings:1.1.1")
+                implementation(project(":client_irc_engine"))
+                implementation(project(":client-network:DI"))
+                implementation(project(":client-network:header"))
             }
         }
     }

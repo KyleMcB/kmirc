@@ -8,6 +8,7 @@ import LogTag
 import Logged
 import com.xingpeds.kmirc.clientnetwork.*
 import com.xingpeds.kmirc.engine.EventBroadcaster
+import com.xingpeds.kmirc.engine.IBroadcaster
 import com.xingpeds.kmirc.engine.IIrcClientEngine
 import com.xingpeds.kmirc.engine.NickStateManager
 import com.xingpeds.kmirc.entities.IIrcMessage
@@ -18,6 +19,7 @@ import com.xingpeds.kmirc.parser.ParseResult
 import com.xingpeds.kmirc.parser.Parser.mapIrcParse
 import com.xingpeds.kmirc.parser.marshallIrcPackets
 import com.xingpeds.kmirc.state.ClientState
+import com.xingpeds.kmirc.state.startEventProcessing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -142,7 +144,10 @@ object Engine : Logged by LogTag("public Engine") {
             events = eventBroadcaster.events,
             messages = ircMessageFlow
         )
+        startEventProcessing()
         return object : IIrcClientEngine {
+            override val broadcaster: IBroadcaster
+                get() = eventBroadcaster
             override val serverHostName: String = hostname
             override val eventList: EventList
                 get() = EventList()

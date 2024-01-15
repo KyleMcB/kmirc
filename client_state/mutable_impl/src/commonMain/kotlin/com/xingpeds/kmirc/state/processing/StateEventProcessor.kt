@@ -23,23 +23,25 @@ import v
  * Singleton event processor to update the clients state
  */
 @FlowPreview
-object StateEventProcessor : StartableJob, Logged by LogTag("StateEventProvessor") {
+object StateEventProcessor : StartableJob, Logged by LogTag("StateEventProcessor") {
     private val events: EventList = EventList()
-    internal var scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
+    internal var scope: CoroutineScope? = null
         set(value) {
-            field.cancel()
+            field?.cancel()
             field = value
         }
 
-
-    override fun start(): Job = scope.launch {
-        v("start called")
-        events.onNOTICE.onEach(::handleNotice).launchIn(scope)
-        events.onPRIVMSG.onEach(::handlePrivmsg).launchIn(scope)
-        events.onJOIN.onEach(::processJoinEvent).launchIn(scope)
-        events.onPART.onEach(::handlePart).launchIn(scope)
-        events.onTOPIC.onEach(::handleTopic).launchIn(scope)
-        events.onNAMES.onEach(::handleNames).launchIn(scope)
+    override fun start(): Job {
+        val _scope = scope ?: CoroutineScope(Dispatchers.Default)
+        return _scope.launch {
+            v("start called")
+            events.onNOTICE.onEach(::handleNotice).launchIn(_scope)
+            events.onPRIVMSG.onEach(::handlePrivmsg).launchIn(_scope)
+            events.onJOIN.onEach(::processJoinEvent).launchIn(_scope)
+            events.onPART.onEach(::handlePart).launchIn(_scope)
+            events.onTOPIC.onEach(::handleTopic).launchIn(_scope)
+            events.onNAMES.onEach(::handleNames).launchIn(_scope)
+        }
     }
 
     private suspend fun handleNames(event: NAMES) {

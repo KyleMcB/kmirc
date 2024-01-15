@@ -27,6 +27,7 @@ interface IBroadcaster {
  *
  */
 interface IIrcClientEngine {
+    val broadcaster: IBroadcaster
     val serverHostName: String
     val eventList: EventList
     val state: ClientState

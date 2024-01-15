@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Kyle McBurnett 2024.
+ * Copyright 2024 Kyle McBurnett
  */
 
 package com.xingpeds.kmirc.state.processing
@@ -19,7 +19,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
 internal suspend fun StateEventProcessor.processJoinEvent(event: JOIN) = withErrorLogging {
-    v("handling join event")
+    v("handling join event: $event")
     //when join
     //could be a self join or another nick join
     if (MutableNickState.isNickMe(event.nick)) {
@@ -28,7 +28,9 @@ internal suspend fun StateEventProcessor.processJoinEvent(event: JOIN) = withErr
         // add a new channel to state
         val newChannel = MutableChannelState(event.channel)
         MutableClientState.mChannels.update { channelMap: Map<ChannelName, MutableChannelState> ->
-            channelMap + (event.channel to newChannel)
+            val new = channelMap + (event.channel to newChannel)
+            v("new channel list: ${new.keys}")
+            new
         }
     } else {
         v("other join event")

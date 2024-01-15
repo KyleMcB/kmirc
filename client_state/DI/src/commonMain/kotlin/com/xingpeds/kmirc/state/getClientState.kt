@@ -5,9 +5,12 @@
 package com.xingpeds.kmirc.state
 
 import com.xingpeds.kmirc.container.DIContainer
+import com.xingpeds.kmirc.state.processing.StateEventProcessor
+import kotlinx.coroutines.Job
 
-fun getClientState(): ClientState = MutableClientState
 fun ClientState(): ClientState = MutableClientState
+
+fun startEventProcessing(): Job = StateEventProcessor.start()
 
 /**
  *

@@ -5,4 +5,4 @@
 package com.xingpeds.kmirc.clientnetwork
 
 fun getConnectFun(): Connect = KtorSocketFactory
-fun getDNSLookupFun() = DnsResolverAdapter
+fun getDNSLookupFun(): DNSLookupFun = DnsResolverAdapter
