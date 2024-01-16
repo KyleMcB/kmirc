@@ -121,9 +121,9 @@ data class IrcMainScreen(val engine: IIrcClientEngine) : Screen, Logged by LogTa
             }
         }
         Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-            ChannelListView(channels.value, selected, { selected = it })
-            ChannelMessageView(channelMessages)
-            NickList(nicks)
+            ChannelListView(channels.value, selected, Modifier, { selected = it })
+            ChannelMessageView(Modifier, channelMessages)
+            NickList(Modifier, nicks)
         }
 
     }

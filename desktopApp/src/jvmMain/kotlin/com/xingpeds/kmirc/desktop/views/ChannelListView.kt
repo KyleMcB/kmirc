@@ -26,8 +26,8 @@ import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
-fun ChannelListView(channelList: List<ChannelState>, selected: Int, onClick: (Int) -> Unit): Unit {
-    LazyColumn() {
+fun ChannelListView(channelList: List<ChannelState>, selected: Int, modifier: Modifier, onClick: (Int) -> Unit): Unit {
+    LazyColumn(modifier = modifier) {
         items(channelList.size) { index ->
             val channelState = channelList[index]
             val channelName = remember { channelState.name }
@@ -43,13 +43,6 @@ fun ChannelListView(channelList: List<ChannelState>, selected: Int, onClick: (In
                     colors = colors,
                     headlineContent = { Text(channelName) },
                     supportingContent = { Text(channelState.topic.collectAsState().value ?: "") },
-//                trailingContent = { Text("meta") },
-//                    leadingContent = {
-//                        Icon(
-//                            Icons.Filled.Favorite,
-//                            contentDescription = "Localized description",
-//                        )
-//                    }
                 )
             }
 
@@ -74,6 +67,7 @@ private fun ChannlListViewPreview() {
             }
         ),
         selected = selected,
+        modifier = Modifier,
         onClick = {
             selected = it
         }

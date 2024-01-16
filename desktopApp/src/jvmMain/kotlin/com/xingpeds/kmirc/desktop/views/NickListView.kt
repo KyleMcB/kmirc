@@ -9,14 +9,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 interface IChannelNick {
     val nick: String
 }
 
+data class ChannelNick(override val nick: String) : IChannelNick {
+
+}
+
 @Composable
-fun NickList(nicks: List<IChannelNick>): Unit {
-    LazyColumn {
+fun NickList(modifier: Modifier, nicks: List<IChannelNick>): Unit {
+    LazyColumn(modifier) {
         items(nicks.size) { index ->
             val nick = nicks[index]
             ListItem(
@@ -36,5 +41,5 @@ private fun NickListPreview() {
 
         }
     }
-    NickList(list)
+    NickList(Modifier, list)
 }

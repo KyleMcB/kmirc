@@ -18,10 +18,14 @@ interface IChannelMessage {
     val message: String
 }
 
-@Composable
-fun ChannelMessageView(list: List<IChannelMessage>): Unit {
+data class ChannelMessage(override val from: String, override val message: String) : IChannelMessage {
 
-    LazyColumn {
+}
+
+@Composable
+fun ChannelMessageView(modifier: Modifier, list: List<IChannelMessage>): Unit {
+
+    LazyColumn(modifier) {
         items(list.size) { index ->
             val channelMessage = list[index]
             Row(modifier = Modifier.padding(vertical = 2.dp)) {
@@ -48,7 +52,7 @@ private fun ChannelMessageViewPreview() {
         "Nulla facilisi. Donec ac convallis quam, ac vehicula augue."
     )
     val nickList = listOf("euclid", "pear", "zhan")
-    ChannelMessageView(contentList.map { message ->
+    ChannelMessageView(Modifier, contentList.map { message ->
         object : IChannelMessage {
             override val from: String = nickList.random()
             override val message: String = message
