@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
@@ -28,6 +28,7 @@ kotlin {
 
                 // Navigator
                 implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+                implementation("androidx.window:window:1.2.0")
 
                 // Screen Model
                 implementation("cafe.adriel.voyager:voyager-screenmodel:$voyagerVersion")

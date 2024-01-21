@@ -2,13 +2,10 @@
  * Copyright (c) Kyle McBurnett 2024.
  */
 
-import RowItem.NoBorder
-import RowItem.RightBorder
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Text
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -23,74 +20,102 @@ import androidx.compose.ui.window.singleWindowApplication
 import java.awt.Cursor
 import java.awt.Cursor.E_RESIZE_CURSOR
 
-@OptIn(ExperimentalFoundationApi::class)
 fun main() = singleWindowApplication {
-//    var topBoxOffset by remember { mutableStateOf(Offset(0f, 0f)) }
-//
-//    Box(modifier = Modifier.offset {
-//        IntOffset(topBoxOffset.x.toInt(), topBoxOffset.y.toInt())
-//    }.size(100.dp)
-//        .background(Color.Green)
-//        .pointerInput(Unit) {
-//            detectDragGestures(
-//                matcher = PointerMatcher.Primary
-//            ) {
-//                topBoxOffset += it
-//            }
-//        }
-//    ) {
-//        Text(text = "Drag with LMB", modifier = Modifier.align(Alignment.Center))
-//    }
-    ResizableBorder(listOf(RightBorder { Text("First panel") }, NoBorder { Text("middle") }))
+    ResizableBorder(
+        RightBorder(containerModifier = Modifier.background(color = Color.Red)) { Text("First panel") },
+        NoBorder { Text("middle") },
+        LeftBorder(containerModifier = Modifier.background(Color.Blue)) { Text("last panel") }
+    )
 }
 
-sealed class RowItem {
-    abstract val item: @Composable () -> Unit
-
-    data class RightBorder(val initialWidth: Dp = 200.dp, override val item: @Composable () -> Unit) : RowItem()
-    data class NoBorder(override val item: @Composable () -> Unit) : RowItem()
+sealed interface RowItem {
+    val content: @Composable BoxScope.() -> Unit
 }
+
+sealed interface Bordered : RowItem {
+    val containerModifier: Modifier
+    val borderModifier: Modifier
+    val borderWidth: Dp
+}
+
+data class RightBorder(
+    val initialWidth: Dp = 200.dp,
+    override val borderWidth: Dp = 6.dp,
+    override val containerModifier: Modifier = Modifier,
+    override val borderModifier: Modifier = Modifier
+        .fillMaxHeight()
+        .background(
+            brush = Brush.horizontalGradient(
+                colors = listOf(Color.LightGray, Color.Black, Color.LightGray)
+            )
+        ),
+    override val content: @Composable BoxScope.() -> Unit
+) : Bordered
+
+data class LeftBorder(
+    val initialWidth: Dp = 200.dp,
+    override val borderWidth: Dp = 6.dp,
+    override val containerModifier: Modifier = Modifier,
+    override val borderModifier: Modifier = Modifier
+        .fillMaxHeight()
+        .background(
+            brush = Brush.horizontalGradient(
+                colors = listOf(Color.LightGray, Color.Black, Color.LightGray)
+            )
+        ),
+    override val content: @Composable BoxScope.() -> Unit,
+) : Bordered
+
+data class NoBorder(override val content: @Composable BoxScope.() -> Unit) : RowItem
 
 
 @Composable
-fun ResizableBorder(items: List<RowItem>) {
-    require(items.count { it is NoBorder } <= 1)
-//    val resizePointerIcon = remember { MouseCursor { PointerIcon(Cursor(E_RESIZE_CURSOR)) } }
-    val resizeBorderThickness = 5.dp
-    val gradient = Brush.horizontalGradient(
-        colors = listOf(Color.LightGray, Color.DarkGray, Color.LightGray),
-        startX = 0f,
-        endX = resizeBorderThickness.value
-    )
-    Row(modifier = Modifier.fillMaxSize()) {
+fun ResizableBorder(vararg items: RowItem) {
+    Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly) {
         items.forEach { rowItem ->
             when (rowItem) {
+                is LeftBorder -> {
+                    val item: LeftBorder = rowItem
+                    var width by remember { mutableStateOf(rowItem.initialWidth) }
+                    Box(modifier = Modifier
+                        .pointerInput(Unit) {
+                            detectHorizontalDragGestures(onHorizontalDrag = { change: PointerInputChange, dragAmount: Float ->
+                                width -= (dragAmount / 2).dp
+                            })
+                        }
+                        .pointerHoverIcon(PointerIcon(Cursor(E_RESIZE_CURSOR)))
+                        .width(rowItem.borderWidth)
+                        .then(rowItem.borderModifier)
+                    )
+                    Box(
+                        modifier = Modifier.width(width).then(rowItem.containerModifier)
+                    ) {
+                        item.content(this)
+                    }
+                }
+
                 is RightBorder -> {
                     var width by remember { mutableStateOf(rowItem.initialWidth) }
 
-                    Box() {
-                        Box(
-                            modifier = Modifier.width(width).fillMaxHeight().background(Color.Gray)
-                        ) {
-                            rowItem.item()
-                        }
-
-
+                    Box(
+                        modifier = Modifier.width(width).then(rowItem.containerModifier)
+                    ) {
+                        rowItem.content(this)
                     }
-                    Box(modifier = Modifier.fillMaxHeight().width(resizeBorderThickness).background(brush = gradient)
+                    Box(modifier = Modifier
                         .pointerInput(Unit) {
                             detectHorizontalDragGestures(onHorizontalDrag = { change: PointerInputChange, dragAmount: Float ->
                                 width += (dragAmount / 2).dp
                             })
                         }
                         .pointerHoverIcon(PointerIcon(Cursor(E_RESIZE_CURSOR)))
+                        .width(rowItem.borderWidth)
+                        .then(rowItem.borderModifier)
                     )
                 }
 
-                is NoBorder -> rowItem.item()
+                is NoBorder -> Box(modifier = Modifier.weight(1f)) { rowItem.content(this) }
             }
         }
     }
 }
-
-

@@ -1,7 +1,9 @@
 /*
- * Copyright 2024 Kyle McBurnett
+ * Copyright (c) Kyle McBurnett 2024.
  */
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -21,7 +23,9 @@ import com.xingpeds.kmirc.Engine
 import com.xingpeds.kmirc.clientnetwork.Address
 import com.xingpeds.kmirc.clientnetwork.DNSLookupFun
 import com.xingpeds.kmirc.clientnetwork.getDNSLookupFun
-import com.xingpeds.kmirc.desktop.views.*
+import com.xingpeds.kmirc.desktop.views.IChannelMessage
+import com.xingpeds.kmirc.desktop.views.IChannelNick
+import com.xingpeds.kmirc.desktop.views.TripplePane
 import com.xingpeds.kmirc.engine.IIrcClientEngine
 import com.xingpeds.kmirc.entities.*
 import com.xingpeds.kmirc.entities.events.NOTICE
@@ -45,11 +49,12 @@ val dnsLookup: DNSLookupFun = getDNSLookupFun()
 @OptIn(ExperimentalResourceApi::class)
 fun main(): Unit = application {
     Window(
-        state = WindowState(size = DpSize(350.dp, 500.dp)),
+        state = WindowState(size = DpSize(1000.dp, 500.dp)),
         onCloseRequest = ::exitApplication,
         title = "KMIRC",
         icon = painterResource("kmirc_icon.png")
     ) {
+
         Navigator(LoginScreen)
     }
 }
@@ -120,15 +125,22 @@ data class IrcMainScreen(val engine: IIrcClientEngine) : Screen, Logged by LogTa
                 }
             }
         }
-        Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-            ChannelListView(channels.value, selected, Modifier, { selected = it })
-            ChannelMessageView(Modifier, channelMessages)
-            NickList(Modifier, nicks)
-        }
-
+        val channelName = channels.value[selected].name
+        TripplePane(channels = channels.value,
+            selected = selected,
+            channelMessages = channelMessages,
+            nicks = nicks,
+            onChannelClick = { selected = it },
+            onSend = {
+                engine.send(
+                    IrcMessage(
+                        command = IrcCommand.PRIVMSG, params = IrcParams(channelName, longParam = it)
+                    )
+                )
+            })
     }
-
 }
+
 
 object LoginScreen : Screen {
     /**
