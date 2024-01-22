@@ -1,6 +1,7 @@
 /*
  * Copyright (c) Kyle McBurnett 2024.
  */
+package com.xingpeds.resizerow
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -20,7 +21,7 @@ import androidx.compose.ui.window.singleWindowApplication
 import java.awt.Cursor
 import java.awt.Cursor.E_RESIZE_CURSOR
 
-fun main() = singleWindowApplication {
+private fun main() = singleWindowApplication {
     ResizableBorder(
         RightBorder(containerModifier = Modifier.background(color = Color.Red)) { Text("First panel") },
         NoBorder { Text("middle") },
@@ -28,16 +29,25 @@ fun main() = singleWindowApplication {
     )
 }
 
+/**
+ * top level representation for content in the resizable row
+ */
 sealed interface RowItem {
     val content: @Composable BoxScope.() -> Unit
 }
 
+/**
+ * for items that have a left or right border
+ */
 sealed interface Bordered : RowItem {
     val containerModifier: Modifier
     val borderModifier: Modifier
     val borderWidth: Dp
 }
 
+/**
+ * simple data class for an item with a right border
+ */
 data class RightBorder(
     val initialWidth: Dp = 200.dp,
     override val borderWidth: Dp = 6.dp,
@@ -52,6 +62,9 @@ data class RightBorder(
     override val content: @Composable BoxScope.() -> Unit
 ) : Bordered
 
+/**
+ * simple data class for an item with a left border
+ */
 data class LeftBorder(
     val initialWidth: Dp = 200.dp,
     override val borderWidth: Dp = 6.dp,
@@ -66,9 +79,18 @@ data class LeftBorder(
     override val content: @Composable BoxScope.() -> Unit,
 ) : Bordered
 
+/**
+ * simple data class for a row section that has no border.
+ * This will expand to fit any left over area in the resizable row.
+ */
 data class NoBorder(override val content: @Composable BoxScope.() -> Unit) : RowItem
 
 
+/**
+ * A composable function that creates a resizable border for a row layout.
+ *
+ * @param items Vararg of [RowItem] representing the content and properties for each section of the resizable row.
+ */
 @Composable
 fun ResizableBorder(vararg items: RowItem) {
     Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly) {

@@ -2,7 +2,7 @@
  * Copyright (c) Kyle McBurnett 2024.
  */
 
-package com.xingpeds.kmirc.desktop.views.channel
+package com.xingpeds.kmirc.compose.channel
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
@@ -13,10 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Tag
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.singleWindowApplication
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ChannelView(channel: IChannelViewInfo, selected: Boolean, onClick: () -> Unit) {
     val topic by channel.topic.collectAsState(null)
@@ -44,7 +45,8 @@ fun ChannelView(channel: IChannelViewInfo, selected: Boolean, onClick: () -> Uni
             Box(
                 modifier = Modifier.background(color = Color.LightGray, shape = RoundedCornerShape(100)).padding(6.dp)
             ) {
-                Text("#")
+//                Icon(Icons.Default._3p, "one on one chat")
+                Icon(Icons.Default.Tag, "one on one chat")
             }
         }
     )

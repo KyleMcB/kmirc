@@ -4,10 +4,6 @@
 
 package com.xingpeds.kmirc.desktop.views
 
-import LeftBorder
-import NoBorder
-import ResizableBorder
-import RightBorder
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,6 +16,10 @@ import com.xingpeds.kmirc.desktop.views.channel.ChannelListView
 import com.xingpeds.kmirc.desktop.views.channel.IChannelViewInfo
 import com.xingpeds.kmirc.state.ChannelState
 import com.xingpeds.kmirc.state.MutableChannelState
+import com.xingpeds.resizerow.LeftBorder
+import com.xingpeds.resizerow.NoBorder
+import com.xingpeds.resizerow.ResizableBorder
+import com.xingpeds.resizerow.RightBorder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.ExperimentalResourceApi

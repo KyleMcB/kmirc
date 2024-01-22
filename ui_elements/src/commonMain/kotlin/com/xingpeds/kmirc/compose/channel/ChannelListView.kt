@@ -1,7 +1,7 @@
 /*
  * Copyright (c) Kyle McBurnett 2024.
  */
-package com.xingpeds.kmirc.desktop.views.channel
+package com.xingpeds.kmirc.compose.channel
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.lazy.LazyColumn
