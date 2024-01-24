@@ -12,7 +12,7 @@ plugins {
 kotlin {
     jvm()
     sourceSets {
-        val jvmMain by getting {
+        val commonMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(compose.runtime)
@@ -22,8 +22,7 @@ kotlin {
                 implementation(compose.materialIconsExtended)
                 implementation(compose.desktop.common)
                 implementation(compose.material3)
-                val voyagerVersion = "1.0.0"
-
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:+") // Added kotlinx datetime
                 // Multiplatform
 
                 // Navigator

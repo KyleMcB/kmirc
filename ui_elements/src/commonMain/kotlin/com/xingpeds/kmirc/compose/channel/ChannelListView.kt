@@ -12,21 +12,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.datetime.Clock.System
+import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import kotlin.time.Duration.Companion.minutes
 
 
 @Composable
 fun ChannelListView(
-    channelList: List<IChannelViewInfo>,
+    channelList: List<IChatWindowInfo>,
     selected: Int,
     modifier: Modifier = Modifier,
     onClick: (Int) -> Unit
 ): Unit {
     LazyColumn(modifier = modifier) {
         items(channelList.size) { index ->
-            val channel = channelList[index]
-            ChannelView(channel, selected = selected == index) { onClick(index) }
+            when (val channel: IChatWindowInfo = channelList[index]) {
+                is IChannelViewInfo -> ChannelTabView(
+                    channel,
+                    selected = selected == index
+                ) {
+                    onClick(selected)
+                }
+
+                is IOneOnOneViewInfo -> PrivateChatTabView(
+                    channel,
+                    selected = selected == index
+                ) {
+                    onClick(selected)
+                }
+            }
+
+
         }
     }
 }
@@ -35,10 +56,38 @@ fun ChannelListView(
 @Composable
 private fun ChannlListViewPreview() {
     var selected by remember { mutableStateOf(0) }
-    ChannelListView(
-        listOf(
+    val list = List<IChatWindowInfo>(10) {
+        if ((0..9).random() > 3) {
+            object : IOneOnOneViewInfo {
+                override val name: String
+                    get() = listOf("#KMIRC", "#help", "#try2hack").random()
+                override val mostRecentActivity: Flow<Instant>
+                    get() = flow {
+                        emit(System.now() - ((1..9999).random().minutes))
+                    }
+            }
+        } else {
+            object : IChannelViewInfo {
+                override val memberCount: Flow<Int>
+                    get() = flow {
+                        emit(
+                            (1..99999).random()
+                        )
+                    }
+                override val topic: Flow<String?>
+                    get() = flow {
+                        emit("ugh")
+                    }
+                override val name: String
+                    get() = "Euclid"
+                override val mostRecentActivity: Flow<Instant>
+                    get() = flowOf(System.now())
 
-        ),
+            }
+        }
+    }
+    ChannelListView(
+        list,
         selected = selected,
         modifier = Modifier,
         onClick = {
