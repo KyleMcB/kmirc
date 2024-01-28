@@ -37,6 +37,7 @@ kotlin {
                 implementation(project(":client-network:DI"))
                 implementation(project(":client-network:header"))
                 implementation(project(":ResizableRow"))
+                implementation(project(":ui_elements"))
             }
         }
     }

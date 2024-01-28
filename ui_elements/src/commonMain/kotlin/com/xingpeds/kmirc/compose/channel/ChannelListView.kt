@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.Clock.System
 import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
 import kotlin.time.Duration.Companion.minutes
 
 
@@ -36,14 +35,14 @@ fun ChannelListView(
                     channel,
                     selected = selected == index
                 ) {
-                    onClick(selected)
+                    onClick(index)
                 }
 
                 is IOneOnOneViewInfo -> PrivateChatTabView(
                     channel,
                     selected = selected == index
                 ) {
-                    onClick(selected)
+                    onClick(index)
                 }
             }
 
@@ -57,13 +56,14 @@ fun ChannelListView(
 private fun ChannlListViewPreview() {
     var selected by remember { mutableStateOf(0) }
     val list = List<IChatWindowInfo>(10) {
-        if ((0..9).random() > 3) {
+        if ((0..9).random() < 4) {
             object : IOneOnOneViewInfo {
                 override val name: String
-                    get() = listOf("#KMIRC", "#help", "#try2hack").random()
+                    get() = listOf("Euclid", "llama").random()
+                val value = System.now() - ((1..99).random().minutes)
                 override val mostRecentActivity: Flow<Instant>
                     get() = flow {
-                        emit(System.now() - ((1..9999).random().minutes))
+                        emit(value)
                     }
             }
         } else {
@@ -79,9 +79,12 @@ private fun ChannlListViewPreview() {
                         emit("ugh")
                     }
                 override val name: String
-                    get() = "Euclid"
+                    get() = listOf("#KMIRC", "#help", "#try2hack").random()
+                val time = System.now() - ((1..99).random().minutes)
                 override val mostRecentActivity: Flow<Instant>
-                    get() = flowOf(System.now())
+                    get() {
+                        return flowOf(time)
+                    }
 
             }
         }
@@ -102,7 +105,6 @@ private fun main(): Unit = application {
         state = WindowState(size = DpSize(350.dp, 500.dp)),
         onCloseRequest = ::exitApplication,
         title = "KMIRC",
-        icon = painterResource("kmirc_icon.png")
     ) {
         ChannlListViewPreview()
     }

@@ -12,8 +12,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import com.xingpeds.kmirc.desktop.views.channel.ChannelListView
-import com.xingpeds.kmirc.desktop.views.channel.IChannelViewInfo
+import com.xingpeds.kmirc.compose.channel.ChannelListView
+import com.xingpeds.kmirc.compose.channel.IChannelViewInfo
+import com.xingpeds.kmirc.compose.channel.IOneOnOneViewInfo
 import com.xingpeds.kmirc.state.ChannelState
 import com.xingpeds.kmirc.state.MutableChannelState
 import com.xingpeds.resizerow.LeftBorder
@@ -22,12 +23,14 @@ import com.xingpeds.resizerow.ResizableBorder
 import com.xingpeds.resizerow.RightBorder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun ChannelOutputView(
     channels: List<ChannelState>,
+    privateChats: List<IOneOnOneViewInfo>,
     selected: Int,
     onChannelClick: (Int) -> Unit,
     channelMessages: List<IChannelMessage>,
@@ -35,7 +38,13 @@ fun ChannelOutputView(
 ): Unit {
 
     ResizableBorder(
-        RightBorder { ChannelListView(channels.toChannelViewInfo(), selected, onClick = onChannelClick) },
+        RightBorder {
+            ChannelListView(
+                channels.toChannelViewInfo() + privateChats,
+                selected,
+                onClick = onChannelClick
+            )
+        },
         NoBorder { ChannelMessageView(Modifier, channelMessages) },
         LeftBorder { NickList(Modifier, nicks) }
     )
@@ -45,6 +54,8 @@ private fun List<ChannelState>.toChannelViewInfo(): List<IChannelViewInfo> = map
     object : IChannelViewInfo {
         override val name: String
             get() = state.name
+        override val mostRecentActivity: Flow<Instant>
+            get() = TODO("Not yet implemented")
         override val topic: Flow<String?>
             get() = state.topic
         override val memberCount: Flow<Int>
@@ -61,7 +72,7 @@ private fun ChannelOutputViewPreview() {
     val onChannelClick: (Int) -> Unit = {}
     val channelMessages = listOf<IChannelMessage>(ChannelMessage("euclid", "Hello there"))
     val nicks = listOf<IChannelNick>(ChannelNick("Euclid"), ChannelNick("ben"))
-    ChannelOutputView(channels, selected, onChannelClick, channelMessages, nicks)
+    ChannelOutputView(channels, emptyList(), selected, onChannelClick, channelMessages, nicks)
 }
 
 @OptIn(ExperimentalResourceApi::class)
@@ -72,6 +83,7 @@ private fun main(): Unit = application {
         title = "KMIRC",
         icon = painterResource("kmirc_icon.png")
     ) {
+
         ChannelOutputViewPreview()
     }
 }

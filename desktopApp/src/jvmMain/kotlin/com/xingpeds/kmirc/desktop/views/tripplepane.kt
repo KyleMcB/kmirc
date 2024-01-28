@@ -30,7 +30,8 @@ fun TripplePane(
                 selected = selected,
                 onChannelClick = onChannelClick,
                 channelMessages = channelMessages,
-                nicks = nicks
+                nicks = nicks,
+                privateChats = emptyList()
             )
         }
         if (selected > 0) {
